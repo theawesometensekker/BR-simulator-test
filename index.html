@@ -1,0 +1,304 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Simulador Tensec</title>
+<style>
+body{
+font-family: Inter, Arial, sans-serif;
+background:#eef1f6;
+display:flex;
+justify-content:center;
+padding:20px;
+}
+
+.panel{
+width:420px;
+background:#fff;
+border-radius:20px;
+padding:20px;
+box-shadow:0 10px 30px rgba(0,0,0,0.08);
+}
+
+.title{
+font-weight:700;
+font-size:18px;
+margin-bottom:6px;
+}
+
+.subtitle{
+font-size:12px;
+color:#6b7280;
+margin-bottom:16px;
+}
+
+.card{
+border:1px solid #d9dfeb;
+border-radius:16px;
+padding:14px;
+margin-bottom:14px;
+}
+
+.amount{
+font-size:28px;
+font-weight:800;
+}
+
+input.amountInput{
+font-size:28px;
+font-weight:800;
+border:none;
+outline:none;
+width:100%;
+}
+
+.fx{
+border:1px solid #d9dfeb;
+border-radius:16px;
+padding:14px;
+margin-bottom:14px;
+}
+
+.row{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin:10px 0;
+}
+
+.label{
+font-weight:600;
+}
+
+.hint{
+color:#6b7280;
+font-size:12px;
+margin-left:6px;
+}
+
+.value{
+font-weight:700;
+}
+
+input.smallInput{
+width:70px;
+padding:4px;
+border:1px solid #cfd7e8;
+border-radius:6px;
+text-align:right;
+}
+
+.final{
+background:#f4f6fb;
+padding:12px;
+border-radius:12px;
+display:flex;
+justify-content:space-between;
+font-weight:800;
+margin-top:10px;
+}
+
+.settlement{
+display:flex;
+gap:10px;
+margin-bottom:14px;
+}
+
+.settle{
+flex:1;
+border:1px solid #d9dfeb;
+border-radius:10px;
+padding:8px;
+text-align:center;
+cursor:pointer;
+}
+
+.settle.active{
+border-color:#2f6df6;
+background:#eef4ff;
+}
+
+.info{
+border:1px solid #d9dfeb;
+border-radius:14px;
+padding:10px;
+display:grid;
+grid-template-columns:1fr 1fr 1fr;
+gap:10px;
+margin-bottom:14px;
+}
+
+.small{
+font-size:11px;
+color:#6b7280;
+}
+
+.green{
+color:#16a34a;
+font-weight:800;
+}
+
+button.cta{
+width:100%;
+background:#2f6df6;
+color:#fff;
+border:none;
+border-radius:12px;
+padding:14px;
+font-weight:700;
+font-size:16px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="panel">
+
+<div class="title">Simular transação (Natureza de Câmbio sujeita ao IOF de 3,5%)</div>
+<div class="subtitle">Obtenha a taxa de câmbio do cliente antes de confirmar a operação</div>
+
+<div class="card">
+<div class="small">Valor a enviar (USD)</div>
+<input id="usd" class="amountInput" type="number" value="428653" step="0.01">
+</div>
+
+<div class="card">
+<div class="small">Cliente paga (BRL)</div>
+<div id="brlResult" class="amount"></div>
+</div>
+
+<div class="fx">
+
+<div class="row">
+<div class="label">Detalhamento da taxa de câmbio</div>
+<div>
+<div class="small">Taxa USD Spot</div>
+<div class="value">BRL 5,1398</div>
+</div>
+</div>
+
+<div class="row">
+<div>
+<span class="label">FXFee</span>
+<span class="hint">(Mark-up no Spot)</span>
+</div>
+<div class="value">+ 1,00%</div>
+</div>
+
+<div class="row">
+<div class="label">Spread</div>
+<div>
+<input id="spread" class="smallInput" type="number" value="2" step="0.01"> %
+</div>
+</div>
+
+<div class="row">
+<div class="label">Custo total (IOF incluso)</div>
+<div id="totalCost" class="value"></div>
+</div>
+
+<div class="final">
+<div>Taxa final de câmbio (IOF incluso)</div>
+<div id="finalRate"></div>
+</div>
+
+</div>
+
+<div class="small" style="margin-bottom:6px;font-weight:600;">Data de liquidação</div>
+
+<div class="settlement">
+<div class="settle active" data="0">D+0</div>
+<div class="settle" data="0.00055">D+1</div>
+<div class="settle" data="0.001103">D+2</div>
+<div class="settle" data="0.001655">D+3</div>
+</div>
+
+<div class="info">
+<div>
+<div class="small">Impostos a serem retidos</div>
+<div>BRL 24,53</div>
+</div>
+
+<div>
+<div class="small">Prazo para envio</div>
+<div>Hoje 16:30</div>
+</div>
+
+<div>
+<div class="small green">Sua Receita - isenta de PIS, COFINS e ISS</div>
+<div id="revenue" class="green"></div>
+</div>
+</div>
+
+<button class="cta">Confirmar taxa e iniciar transação</button>
+
+</div>
+
+<script>
+
+const spot = 5.1398
+const fee = 0.01
+let settlementAdj = 0
+
+const usdInput = document.getElementById("usd")
+const spreadInput = document.getElementById("spread")
+
+const brlResult = document.getElementById("brlResult")
+const finalRateEl = document.getElementById("finalRate")
+const totalCostEl = document.getElementById("totalCost")
+const revenueEl = document.getElementById("revenue")
+
+
+function parseFlexibleNumber(value){
+value = value.toString().trim()
+value = value.replace(/\./g,'').replace(',','.')
+return parseFloat(value)
+}
+
+function calc(){
+
+let usd = parseFlexibleNumber(usdInput.value)
+let spread = parseFlexibleNumber(spreadInput.value)/100
+
+let totalCost = fee + spread
+
+let baseFinal = spot*(1+totalCost)
+let finalRate = baseFinal*(1+settlementAdj)
+
+let brl = usd * finalRate
+
+let spreadBRL = spot*spread
+let revenue = usd * spreadBRL * 0.7
+
+finalRateEl.innerText = "BRL "+finalRate.toFixed(4)
+totalCostEl.innerText = (totalCost*100).toFixed(2)+"%"
+brlResult.innerText = brl.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})
+revenueEl.innerText = revenue.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})
+
+}
+
+usdInput.addEventListener("input", calc)
+usdInput.addEventListener("change", calc)
+usdInput.addEventListener("keyup", calc)
+
+spreadInput.addEventListener("input", calc)
+spreadInput.addEventListener("change", calc)
+spreadInput.addEventListener("keyup", calc)
+
+document.querySelectorAll(".settle").forEach(btn=>{
+btn.onclick=()=>{
+document.querySelectorAll(".settle").forEach(b=>b.classList.remove("active"))
+btn.classList.add("active")
+settlementAdj=parseFloat(btn.getAttribute("data"))
+calc()
+}
+})
+
+calc()
+
+</script>
+
+</body>
+</html>
