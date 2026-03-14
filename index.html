@@ -1,304 +1,571 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Simulador Tensec</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tensec — Simulador de Câmbio | Pagamentos Internacionais B2B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Manrope:wght@600;700&display=swap" rel="stylesheet">
 <style>
-body{
-font-family: Inter, Arial, sans-serif;
-background:#eef1f6;
-display:flex;
-justify-content:center;
-padding:20px;
+:root {
+  --primary-blue: #1435C3;
+  --gradient-start: #4EA6D7;
+  --gradient-end: #214CE4;
+  --brand-gradient: linear-gradient(135deg, #4EA6D7 0%, #214CE4 100%);
+  --white: #FFFFFF;
+  --almost-black: #151720;
+  --muted-purple-grey: #50485B;
+  --light-grey: #CCCCCC;
+  --bg-light: #FFFFFF;
+  --bg-dark: #0A0D1F;
+  --bg-gradient-dark: linear-gradient(180deg, #0A0D1F 0%, #1435C3 100%);
+  --success: #22C55E;
+  --warning: #F59E0B;
+  --error: #EF4444;
+  --info: #3B82F6;
+  --hover-overlay: rgba(255, 255, 255, 0.1);
+  --active-overlay: rgba(255, 255, 255, 0.2);
+  --focus-ring: rgba(20, 53, 195, 0.3);
+  --skeleton-base: #E5E7EB;
+  --skeleton-shimmer: #F3F4F6;
+  --font-heading: 'Manrope', sans-serif;
+  --font-body: 'Poppins', sans-serif;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 32px;
+  --spacing-xl: 64px;
+  --spacing-2xl: 96px;
+  --container-max-width: 1280px;
+  --section-padding-y: 96px;
+  --section-padding-x: 24px;
+  --border-radius-sm: 5px;
+  --border-radius-pill: 9999px;
+  --timing-fast: 150ms;
+  --timing-base: 250ms;
+  --timing-slow: 400ms;
+  --timing-slower: 600ms;
+  --easing-standard: cubic-bezier(0.4, 0.0, 0.2, 1);
+  --easing-decelerate: cubic-bezier(0.0, 0.0, 0.2, 1);
+  --easing-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 8px 16px rgba(20, 53, 195, 0.15);
+  --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
-.panel{
-width:420px;
-background:#fff;
-border-radius:20px;
-padding:20px;
-box-shadow:0 10px 30px rgba(0,0,0,0.08);
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+body { font-family: var(--font-body); color: var(--almost-black); background: var(--bg-light); line-height: 1.6; }
+img, video { max-width: 100%; height: auto; display: block; }
+a { color: var(--primary-blue); text-decoration: none; transition: color var(--timing-fast) var(--easing-standard); }
+a:hover { color: var(--gradient-end); }
+
+h1, h2, h3, h4 { font-family: var(--font-heading); }
+h1 { font-weight: 700; font-size: clamp(40px, 5vw, 72px); line-height: 1.1; letter-spacing: -0.02em; }
+h2 { font-weight: 600; font-size: clamp(28px, 3.5vw, 48px); line-height: 1.2; letter-spacing: -0.01em; }
+h3 { font-weight: 600; font-size: clamp(20px, 2.5vw, 32px); line-height: 1.3; }
+p { font-size: 18px; line-height: 1.6; }
+
+.container { max-width: var(--container-max-width); margin: 0 auto; padding: 0 var(--section-padding-x); }
+
+/* NAV */
+.nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(10, 13, 31, 0.95); backdrop-filter: blur(10px); padding: 16px 0; transition: all var(--timing-base) var(--easing-standard); }
+.nav-container { max-width: var(--container-max-width); margin: 0 auto; padding: 0 var(--section-padding-x); display: flex; align-items: center; justify-content: space-between; }
+.nav-logo { height: 36px; }
+.nav-links { display: flex; align-items: center; gap: 32px; list-style: none; }
+.nav-link { font-family: var(--font-body); font-size: 16px; font-weight: 500; color: rgba(255,255,255,0.8); text-decoration: none; transition: color var(--timing-fast); }
+.nav-link:hover { color: var(--white); }
+.btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--brand-gradient); border: none; border-radius: var(--border-radius-pill); padding: 14px 32px; font-family: var(--font-body); font-weight: 600; font-size: 16px; color: var(--white); cursor: pointer; position: relative; overflow: hidden; transition: all var(--timing-base) var(--easing-standard); }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); filter: brightness(1.1); }
+.btn-primary:active { transform: translateY(0) scale(0.98); }
+.btn-ghost { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: transparent; border: 2px solid var(--white); border-radius: var(--border-radius-pill); padding: 12px 30px; font-family: var(--font-body); font-weight: 600; font-size: 16px; color: var(--white); cursor: pointer; transition: all var(--timing-base) var(--easing-standard); }
+.btn-ghost:hover { background: var(--hover-overlay); transform: translateY(-2px); }
+
+/* HERO */
+.hero { background: var(--bg-gradient-dark); color: var(--white); padding: 160px 0 var(--spacing-2xl); min-height: 100vh; display: flex; align-items: center; }
+.hero .container { display: flex; align-items: center; gap: var(--spacing-xl); flex-wrap: wrap; }
+.hero-content { flex: 1 1 480px; }
+.hero-content .hero-title { animation: hero-reveal 0.8s var(--easing-decelerate) 0.1s forwards; opacity: 0; }
+.hero-content .hero-subtitle { animation: hero-reveal 0.8s var(--easing-decelerate) 0.2s forwards; opacity: 0; font-size: 20px; color: rgba(255,255,255,0.7); margin-top: var(--spacing-md); }
+.hero-content .hero-cta { animation: hero-reveal 0.8s var(--easing-decelerate) 0.3s forwards; opacity: 0; margin-top: var(--spacing-lg); display: flex; gap: var(--spacing-md); flex-wrap: wrap; }
+
+@keyframes hero-reveal { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+
+/* SIMULATOR CARD */
+.simulator-wrap { flex: 1 1 420px; max-width: 480px; animation: hero-reveal 0.8s var(--easing-decelerate) 0.4s forwards; opacity: 0; }
+.simulator-card { background: var(--white); border-radius: 16px; padding: var(--spacing-lg); color: var(--almost-black); box-shadow: var(--shadow-xl); }
+.simulator-card h3 { margin-bottom: 4px; font-size: 22px; }
+.simulator-card .subtitle { color: var(--muted-purple-grey); font-size: 14px; margin-bottom: var(--spacing-lg); }
+.sim-section { background: #F7F8FA; border-radius: 12px; padding: var(--spacing-md); margin-bottom: var(--spacing-md); }
+.sim-section-label { font-size: 13px; color: var(--muted-purple-grey); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: var(--spacing-xs); }
+.sim-amount { font-family: var(--font-heading); font-weight: 700; font-size: clamp(28px, 4vw, 36px); color: var(--almost-black); }
+.sim-input { font-family: var(--font-heading); font-weight: 700; font-size: clamp(26px, 3.5vw, 34px); color: var(--almost-black); background: var(--white); border: 2px solid var(--light-grey); border-radius: 8px; outline: none; width: 100%; padding: 6px 40px 6px 12px; -moz-appearance: textfield; transition: border-color var(--timing-base), box-shadow var(--timing-base); cursor: text; }
+.sim-input::placeholder { color: #B8B3BF; font-weight: 500; font-size: clamp(14px, 2vw, 16px); }
+.sim-input::-webkit-outer-spin-button, .sim-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.sim-input:focus { border-color: var(--primary-blue); box-shadow: 0 0 0 3px var(--focus-ring); }
+.sim-input:hover:not(:focus) { border-color: var(--gradient-start); }
+
+.sim-input-sm { font-family: var(--font-body); font-weight: 600; font-size: 14px; color: var(--almost-black); background: var(--white); border: 1.5px solid var(--light-grey); border-radius: 6px; outline: none; width: 64px; text-align: right; padding: 4px 24px 4px 8px; -moz-appearance: textfield; transition: border-color var(--timing-base), box-shadow var(--timing-base); cursor: text; }
+.sim-input-sm::placeholder { color: #B8B3BF; font-weight: 400; font-size: 13px; }
+.sim-input-sm::-webkit-outer-spin-button, .sim-input-sm::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.sim-input-sm:focus { border-color: var(--primary-blue); box-shadow: 0 0 0 3px var(--focus-ring); }
+.sim-input-sm:hover:not(:focus) { border-color: var(--gradient-start); }
+
+/* Pencil icon + Tooltip for editable fields */
+.editable-wrap { position: relative; display: inline-flex; align-items: center; }
+.editable-wrap .edit-icon { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 14px; color: var(--light-grey); pointer-events: none; transition: color var(--timing-fast); }
+.editable-wrap:hover .edit-icon { color: var(--gradient-start); }
+.editable-wrap:focus-within .edit-icon { color: var(--primary-blue); }
+.editable-wrap::after { content: 'Clique para editar'; position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: var(--almost-black); color: var(--white); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-family: var(--font-body); white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity var(--timing-fast); z-index: 10; }
+.editable-wrap:hover::after { opacity: 1; }
+.editable-wrap:focus-within::after { opacity: 0; }
+.sim-readonly { color: var(--muted-purple-grey); opacity: 0.7; cursor: not-allowed; }
+.sim-amount-sub { font-size: 14px; color: var(--muted-purple-grey); }
+.sim-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 15px; }
+.sim-row-label { color: var(--muted-purple-grey); }
+.sim-row-value { font-weight: 600; }
+.sim-row-value.highlight { color: var(--primary-blue); }
+
+.sim-tabs { display: flex; gap: var(--spacing-sm); margin-bottom: var(--spacing-md); }
+.sim-tab { flex: 1; text-align: center; padding: 10px 8px; border-radius: var(--border-radius-pill); border: 2px solid var(--light-grey); cursor: pointer; font-size: 14px; font-weight: 600; transition: all var(--timing-fast); color: var(--muted-purple-grey); }
+.sim-tab.active { border-color: var(--primary-blue); color: var(--primary-blue); background: rgba(20,53,195,0.06); }
+
+.sim-settlement { display: flex; gap: var(--spacing-sm); margin-bottom: var(--spacing-md); }
+.sim-settlement-option { flex: 1; text-align: center; padding: 10px 4px; border-radius: 12px; border: 2px solid var(--light-grey); font-size: 13px; font-weight: 600; cursor: pointer; transition: all var(--timing-fast); }
+.sim-settlement-option.active { border-color: var(--primary-blue); color: var(--primary-blue); background: rgba(20,53,195,0.06); }
+.sim-settlement-option small { display: block; font-weight: 400; color: var(--muted-purple-grey); font-size: 11px; }
+
+.sim-summary { display: flex; justify-content: space-between; padding: var(--spacing-sm) 0 var(--spacing-md); font-size: 13px; color: var(--muted-purple-grey); }
+.sim-summary .revenue { color: var(--success); font-weight: 700; font-size: 16px; }
+.sim-lock-btn { width: 100%; padding: 16px; border: none; border-radius: var(--border-radius-pill); background: var(--brand-gradient); color: var(--white); font-family: var(--font-body); font-weight: 700; font-size: 17px; cursor: pointer; transition: all var(--timing-base); }
+.sim-lock-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); filter: brightness(1.1); }
+.sim-lock-btn:active { transform: scale(0.98); }
+.sim-footer { text-align: center; font-size: 12px; color: var(--muted-purple-grey); margin-top: var(--spacing-sm); }
+
+.live-dot { display: inline-block; width: 8px; height: 8px; background: var(--success); border-radius: 50%; margin-right: 6px; animation: pulse-dot 1.5s infinite; }
+@keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+.currency-flag { font-size: 18px; margin-right: 4px; }
+
+/* STATS */
+.stats-section { background: var(--almost-black); padding: var(--spacing-xl) 0; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-lg); }
+.stat-item { text-align: center; }
+.stat-value { font-family: var(--font-heading); font-weight: 700; font-size: 48px; background: var(--brand-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; }
+.stat-label { font-size: 14px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.05em; }
+
+/* FEATURES */
+.features-section { background: var(--bg-light); padding: var(--spacing-2xl) 0; }
+.features-section h2 { text-align: center; margin-bottom: var(--spacing-xl); }
+.feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--spacing-lg); }
+.feature-card { position: relative; background: var(--white); border: 1px solid var(--light-grey); border-radius: var(--border-radius-sm); padding: 32px; box-shadow: var(--shadow-sm); transition: all var(--timing-base) var(--easing-standard); cursor: pointer; }
+.feature-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--primary-blue); }
+.feature-card::before { content: ''; position: absolute; inset: 0; border-radius: var(--border-radius-sm); padding: 1px; background: var(--brand-gradient); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; opacity: 0; transition: opacity var(--timing-base); }
+.feature-card:hover::before { opacity: 0.5; }
+.feature-icon { width: 56px; height: 56px; margin-bottom: 20px; padding: 12px; background: linear-gradient(135deg, rgba(78,166,215,0.1), rgba(33,76,228,0.1)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+.feature-title { font-family: var(--font-heading); font-weight: 600; font-size: 20px; margin-bottom: 12px; }
+.feature-desc { font-size: 15px; color: var(--muted-purple-grey); line-height: 1.6; }
+
+/* SCROLL REVEAL */
+.scroll-reveal { opacity: 0; transform: translateY(30px); transition: opacity var(--timing-slower) var(--easing-decelerate), transform var(--timing-slower) var(--easing-decelerate); }
+.scroll-reveal.visible { opacity: 1; transform: translateY(0); }
+.scroll-reveal:nth-child(1) { transition-delay: 0ms; }
+.scroll-reveal:nth-child(2) { transition-delay: 100ms; }
+.scroll-reveal:nth-child(3) { transition-delay: 200ms; }
+.scroll-reveal:nth-child(4) { transition-delay: 300ms; }
+.scroll-reveal:nth-child(5) { transition-delay: 400ms; }
+.scroll-reveal:nth-child(6) { transition-delay: 500ms; }
+
+/* CTA SECTION */
+.cta-section { background: var(--bg-gradient-dark); padding: var(--spacing-2xl) 0; text-align: center; color: var(--white); }
+.cta-section h2 { margin-bottom: var(--spacing-md); }
+.cta-section p { color: rgba(255,255,255,0.7); font-size: 18px; max-width: 600px; margin: 0 auto var(--spacing-lg); }
+
+/* FOOTER */
+footer { background: var(--almost-black); padding: var(--spacing-lg) 0; text-align: center; color: rgba(255,255,255,0.5); font-size: 14px; }
+
+/* REDUCED MOTION */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
 
-.title{
-font-weight:700;
-font-size:18px;
-margin-bottom:6px;
-}
+*:focus { outline: none; }
+*:focus-visible { outline: 2px solid var(--primary-blue); outline-offset: 2px; }
 
-.subtitle{
-font-size:12px;
-color:#6b7280;
-margin-bottom:16px;
-}
-
-.card{
-border:1px solid #d9dfeb;
-border-radius:16px;
-padding:14px;
-margin-bottom:14px;
-}
-
-.amount{
-font-size:28px;
-font-weight:800;
-}
-
-input.amountInput{
-font-size:28px;
-font-weight:800;
-border:none;
-outline:none;
-width:100%;
-}
-
-.fx{
-border:1px solid #d9dfeb;
-border-radius:16px;
-padding:14px;
-margin-bottom:14px;
-}
-
-.row{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin:10px 0;
-}
-
-.label{
-font-weight:600;
-}
-
-.hint{
-color:#6b7280;
-font-size:12px;
-margin-left:6px;
-}
-
-.value{
-font-weight:700;
-}
-
-input.smallInput{
-width:70px;
-padding:4px;
-border:1px solid #cfd7e8;
-border-radius:6px;
-text-align:right;
-}
-
-.final{
-background:#f4f6fb;
-padding:12px;
-border-radius:12px;
-display:flex;
-justify-content:space-between;
-font-weight:800;
-margin-top:10px;
-}
-
-.settlement{
-display:flex;
-gap:10px;
-margin-bottom:14px;
-}
-
-.settle{
-flex:1;
-border:1px solid #d9dfeb;
-border-radius:10px;
-padding:8px;
-text-align:center;
-cursor:pointer;
-}
-
-.settle.active{
-border-color:#2f6df6;
-background:#eef4ff;
-}
-
-.info{
-border:1px solid #d9dfeb;
-border-radius:14px;
-padding:10px;
-display:grid;
-grid-template-columns:1fr 1fr 1fr;
-gap:10px;
-margin-bottom:14px;
-}
-
-.small{
-font-size:11px;
-color:#6b7280;
-}
-
-.green{
-color:#16a34a;
-font-weight:800;
-}
-
-button.cta{
-width:100%;
-background:#2f6df6;
-color:#fff;
-border:none;
-border-radius:12px;
-padding:14px;
-font-weight:700;
-font-size:16px;
+@media (max-width: 768px) {
+  .hero .container { flex-direction: column; }
+  .simulator-wrap { max-width: 100%; }
+  .nav-links { display: none; }
+  .sim-amount { font-size: 28px; }
 }
 </style>
 </head>
-
 <body>
 
-<div class="panel">
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-container">
+    <img class="nav-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABUwAAAGkCAYAAADqoG8yAAABTGlDQ1BJQ0MgUHJvZmlsZQAAKJF9kM9KQlEQh79bilRGLQpatHARRGAhdqW1WVTgQrToz+56NQ3UDtcr0a5HaBE9QvQAgRAtWvQAQVDQKmjVMgI3Jbc5WmlFncPw+/idmWHOQE/QUqrkA8oV10kvzYc2NrdCgSeC+OljEtOyqyqeSiUlhU/9fhq3GFpvpnWv3+//nv5cvmqLvkmYtnJcMCLCqT1XaT4QHnFkKOEjzYU2n2rOtvmilbOaTghfCw/bRSsn/CAcznb5hS4ul2r2xwx6+mC+spYRHZMYZ4FFknJDZIgyJxFjmcwfNWarJsEuin0cdihQxJXquDiKEnnhFSrYzBAWjhLRPfWuf+6w45UVxORvhtnxcs9wfgaDjx1vogZDh3A1qizH+tqs0fBVt2ejbR6og//Y817WITAFzTvPe617XvMEeu/hsvEOOMlcrwIZV44AAABWZVhJZk1NACoAAAAIAAGHaQAEAAAAAQAAABoAAAAAAAOShgAHAAAAEgAAAESgAgAEAAAAAQAABUygAwAEAAAAAQAAAaQAAAAAQVNDSUkAAABTY3JlZW5zaG90+u4BYgAAAddpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IlhNUCBDb3JlIDYuMC4wIj4KICAgPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICAgICAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgICAgICAgICAgeG1sbnM6ZXhpZj0iaHR0cDovL25zLmFkb2JlLmNvbS9leGlmLzEuMC8iPgogICAgICAgICA8ZXhpZjpQaXhlbFlEaW1lbnNpb24+NDIwPC9leGlmOlBpeGVsWURpbWVuc2lvbj4KICAgICAgICAgPGV4aWY6UGl4ZWxYRGltZW5zaW9uPjEzNTY8L2V4aWY6UGl4ZWxYRGltZW5zaW9uPgogICAgICAgICA8ZXhpZjpVc2VyQ29tbWVudD5TY3JlZW5zaG90PC9leGlmOlVzZXJDb21tZW50PgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6eG1wbWV0YT4K0u2O2gAAQABJREFUeAHsnQn81HP+/98/Ulq1o7SRkLQRQ1G2SlFIdikayzC2mTFmI4YZzIIZxlgm+1" alt="Tensec" style="height:36px;">
+    <ul class="nav-links">
+      <li><a class="nav-link" href="#simulador">Simulador</a></li>
+      <li><a class="nav-link" href="#numeros">Números</a></li>
+      <li><a class="nav-link" href="#vantagens">Vantagens</a></li>
+      <li><a class="nav-link" href="#contato">Contato</a></li>
+    </ul>
+    <a href="#contato" class="btn-primary" style="font-size:14px; padding:10px 24px;">Agendar Demo</a>
+  </div>
+</nav>
 
-<div class="title">Simular transação (Natureza de Câmbio sujeita ao IOF de 3,5%)</div>
-<div class="subtitle">Obtenha a taxa de câmbio do cliente antes de confirmar a operação</div>
+<!-- HERO -->
+<section class="hero" id="simulador">
+  <div class="container">
+    <div class="hero-content">
+      <h1 class="hero-title">Câmbio inteligente para negócios globais</h1>
+      <p class="hero-subtitle">
+        Fundada por veteranos do PayPal, Meta, Goldman Sachs, Visa e Mastercard. A Tensec reimagina pagamentos cross-border com IA para a necessidade de câmbio de seus clientes - combinando agilidade jamais vista com o rigor regulatório das maiores empresas globais do setor.
+      </p>
+      <div class="hero-cta">
+        <a href="#contato" class="btn-primary">Comece agora →</a>
+        <a href="#vantagens" class="btn-ghost">Saiba mais</a>
+      </div>
+    </div>
 
-<div class="card">
-<div class="small">Valor a enviar (USD)</div>
-<input id="usd" class="amountInput" type="number" value="428653" step="0.01">
-</div>
+    <div class="simulator-wrap">
+      <div class="simulator-card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <h3>Simular uma transação</h3>
+          <span style="font-size:13px; color:var(--success);"><span class="live-dot" id="liveDot"></span><span id="liveLabel">Taxas ao vivo</span></span>
+        </div>
+        <p class="subtitle">Natureza de câmbio com 3,5% de IOF</p>
 
-<div class="card">
-<div class="small">Cliente paga (BRL)</div>
-<div id="brlResult" class="amount"></div>
-</div>
+        <!-- TABS -->
+        <div class="sim-tabs">
+          <div class="sim-tab active">↗ Enviar</div>
+          <div class="sim-tab">↙ Receber</div>
+        </div>
 
-<div class="fx">
+        <!-- AMOUNT TO SEND (EDITABLE) -->
+        <div class="sim-section" style="background:var(--white); border:1px solid #E8E6EB;">
+          <div class="sim-section-label">Valor a enviar (USD)</div>
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+            <div class="editable-wrap" style="flex:1;">
+              <input type="text" id="usdAmount" class="sim-input" value="100.000,00" inputmode="decimal" autocomplete="off">
+              <span class="edit-icon">✏️</span>
+            </div>
+            <span style="font-size:15px; font-weight:600; white-space:nowrap;">🇺🇸 USD</span>
+          </div>
+          <div class="sim-amount-sub">Para Estados Unidos</div>
+        </div>
 
-<div class="row">
-<div class="label">Detalhamento da taxa de câmbio</div>
-<div>
-<div class="small">Taxa USD Spot</div>
-<div class="value">BRL 5,1398</div>
-</div>
-</div>
+        <!-- CLIENTE DEPOSITA (READ-ONLY, CALCULATED) -->
+        <div class="sim-section">
+          <div class="sim-section-label">Cliente deposita (BRL)</div>
+          <div style="display:flex; justify-content:space-between; align-items:baseline;">
+            <div class="sim-amount" id="brlAmount" style="font-size:22px; color:var(--muted-purple-grey);">0,00</div>
+            <span style="font-size:15px; font-weight:600;">🇧🇷 BRL</span>
+          </div>
+          <div class="sim-amount-sub">Do Brasil · Valor em USD × Taxa de Câmbio Final</div>
+        </div>
 
-<div class="row">
-<div>
-<span class="label">FXFee</span>
-<span class="hint">(Mark-up no Spot)</span>
-</div>
-<div class="value">+ 1,00%</div>
-</div>
+        <!-- RATE BREAKDOWN -->
+        <div class="sim-section" style="background: transparent; padding:0; border-top: 1px solid #eee; padding-top: var(--spacing-md);">
+          <div style="margin-bottom:8px;">
+            <span style="font-weight:600; font-size:15px;">Composição da Taxa de Câmbio</span>
+          </div>
+          <div class="sim-row">
+            <span class="sim-row-label">Taxa de Câmbio Spot</span>
+            <span class="sim-row-value" id="spotRate">BRL 5,1398</span>
+          </div>
+          <div class="sim-row">
+            <span class="sim-row-label">FXFee (mark-up spot)</span>
+            <span class="sim-row-value">
+              <span class="sim-readonly">1,00%</span>
+              <span id="fxFeeAbsBrl" style="color:var(--muted-purple-grey); font-weight:400; font-size:13px; margin-left:4px;">(BRL 0,0514)</span>
+            </span>
+          </div>
+          <div class="sim-row">
+            <span class="sim-row-label">Spread 🔗</span>
+            <span class="sim-row-value" style="display:flex; align-items:center; gap:4px;">
+              <div class="editable-wrap">
+                <input type="text" id="spreadPct" class="sim-input-sm" value="2,50" inputmode="decimal" autocomplete="off">
+                <span class="edit-icon" style="right:6px; font-size:11px;">✏️</span>
+              </div><span>%</span>
+              <span id="spreadAbsBrl" style="color:var(--muted-purple-grey); font-weight:400; font-size:13px; margin-left:4px;">(BRL 0,0000)</span>
+            </span>
+          </div>
+          <div class="sim-row" style="border-top:1px solid #eee; padding-top:12px; margin-top:4px;">
+            <span style="font-weight:600; color:var(--muted-purple-grey);">Custo Total (IOF Incluso)</span>
+            <span class="sim-row-value" id="totalCostPct">1,0000%</span>
+          </div>
+          <div class="sim-row" style="border-top:1px solid #eee; padding-top:12px; margin-top:4px;">
+            <span style="font-weight:700;">Taxa de Câmbio Final (IOF incluso)</span>
+            <span class="sim-row-value highlight" id="finalRate" style="font-size:18px;">BRL 5,1912</span>
+          </div>
+        </div>
 
-<div class="row">
-<div class="label">Spread</div>
-<div>
-<input id="spread" class="smallInput" type="number" value="2" step="0.01"> %
-</div>
-</div>
+        <!-- SETTLEMENT -->
+        <div style="margin-top:var(--spacing-md);">
+          <div class="sim-section-label" style="margin-bottom:8px;">Data de liquidação</div>
+          <div class="sim-settlement">
+            <div class="sim-settlement-option active" data-settlement="0">D+0<small>Hoje</small></div>
+            <div class="sim-settlement-option" data-settlement="0.055">D+1<small>Amanhã</small></div>
+            <div class="sim-settlement-option" data-settlement="0.1103">D+2<small>7 Mar</small></div>
+            <div class="sim-settlement-option" data-settlement="0.1655">D+3<small>8 Mar</small></div>
+          </div>
+        </div>
 
-<div class="row">
-<div class="label">Custo total (IOF incluso)</div>
-<div id="totalCost" class="value"></div>
-</div>
+        <!-- SUMMARY -->
+        <div class="sim-summary">
+          <div>Liquidar até<br><strong>Hoje, 16:30</strong></div>
+          <div style="text-align:right;">Sua receita <span style="font-size:11px; font-weight:400;">(isenta de PIS, COFINS e ISS)</span><br><span class="revenue" id="revenueVal">0,00</span></div>
+        </div>
 
-<div class="final">
-<div>Taxa final de câmbio (IOF incluso)</div>
-<div id="finalRate"></div>
-</div>
+        <!-- CTA -->
+        <button class="sim-lock-btn">Travar FX e iniciar transação</button>
+        <p class="sim-footer" id="rateFooter">Cotação ao vivo · Próxima atualização em <strong id="rateCountdown">10</strong>s · Travar é definitivo</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-</div>
+<!-- FEATURES -->
+<section class="features-section" id="vantagens">
+  <div class="container">
+    <h2 style="text-align:center;">Por que escolher a Tensec?</h2>
+    <p style="text-align:center; color:var(--muted-purple-grey); max-width:600px; margin:0 auto var(--spacing-xl);">Tecnologia de ponta com inteligência artificial para operações cross-border, sem integração complexa.</p>
+    <div class="feature-grid">
+      <div class="feature-card scroll-reveal">
+        <div class="feature-icon">⚡</div>
+        <div class="feature-title">Onboarding instantâneo</div>
+        <div class="feature-desc">Comece em minutos, não em meses. Onboarding sem fricção, reimaginando a experiência do cliente.</div>
+      </div>
+      <div class="feature-card scroll-reveal">
+        <div class="feature-icon">🤖</div>
+        <div class="feature-title">Compliance com IA</div>
+        <div class="feature-desc">Gestão de risco e compliance potencializada por inteligência artificial, reduzindo custo e esforço.</div>
+      </div>
+      <div class="feature-card scroll-reveal">
+        <div class="feature-icon">🔗</div>
+        <div class="feature-title">Zero integração</div>
+        <div class="feature-desc">Plataforma cutting-edge sem complexidade de integração. Desbloqueie receita sem atrito.</div>
+      </div>
+      <div class="feature-card scroll-reveal">
+        <div class="feature-icon">📊</div>
+        <div class="feature-title">Taxas transparentes</div>
+        <div class="feature-desc">Visualize o breakdown completo da taxa FX antes de travar. Sem custos ocultos, sem surpresas.</div>
+      </div>
+      <div class="feature-card scroll-reveal">
+        <div class="feature-icon">🔒</div>
+        <div class="feature-title">Segurança enterprise</div>
+        <div class="feature-desc">Infraestrutura robusta com criptografia de ponta a ponta e conformidade regulatória global.</div>
+      </div>
+    </div>
+  </div>
+</section>
 
-<div class="small" style="margin-bottom:6px;font-weight:600;">Data de liquidação</div>
+<!-- CTA -->
+<section class="cta-section" id="contato">
+  <div class="container">
+    <h2>Pronto para reimaginar seus pagamentos?</h2>
+    <p>Agende uma demonstração e descubra como a Tensec pode desbloquear novas receitas para o seu negócio global.</p>
+    <a href="mailto:contato@tensec.io" class="btn-primary" style="font-size:18px; padding:16px 40px;">Falar com especialista →</a>
+  </div>
+</section>
 
-<div class="settlement">
-<div class="settle active" data="0">D+0</div>
-<div class="settle" data="0.00055">D+1</div>
-<div class="settle" data="0.001103">D+2</div>
-<div class="settle" data="0.001655">D+3</div>
-</div>
-
-<div class="info">
-<div>
-<div class="small">Impostos a serem retidos</div>
-<div>BRL 24,53</div>
-</div>
-
-<div>
-<div class="small">Prazo para envio</div>
-<div>Hoje 16:30</div>
-</div>
-
-<div>
-<div class="small green">Sua Receita - isenta de PIS, COFINS e ISS</div>
-<div id="revenue" class="green"></div>
-</div>
-</div>
-
-<button class="cta">Confirmar taxa e iniciar transação</button>
-
-</div>
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <p>© 2026 Tensec. Todos os direitos reservados.</p>
+  </div>
+</footer>
 
 <script>
-
-const spot = 5.1398
-const fee = 0.01
-let settlementAdj = 0
-
-const usdInput = document.getElementById("usd")
-const spreadInput = document.getElementById("spread")
-
-const brlResult = document.getElementById("brlResult")
-const finalRateEl = document.getElementById("finalRate")
-const totalCostEl = document.getElementById("totalCost")
-const revenueEl = document.getElementById("revenue")
-
-
-function parseFlexibleNumber(value){
-value = value.toString().trim()
-value = value.replace(/\./g,'').replace(',','.')
-return parseFloat(value)
+// ===== Scroll Reveal =====
+function initScrollReveal() {
+  const els = document.querySelectorAll('.scroll-reveal');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+  els.forEach(el => obs.observe(el));
 }
 
-function calc(){
-
-let usd = parseFlexibleNumber(usdInput.value)
-let spread = parseFlexibleNumber(spreadInput.value)/100
-
-let totalCost = fee + spread
-
-let baseFinal = spot*(1+totalCost)
-let finalRate = baseFinal*(1+settlementAdj)
-
-let brl = usd * finalRate
-
-let spreadBRL = spot*spread
-let revenue = usd * spreadBRL * 0.7
-
-finalRateEl.innerText = "BRL "+finalRate.toFixed(4)
-totalCostEl.innerText = (totalCost*100).toFixed(2)+"%"
-brlResult.innerText = brl.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})
-revenueEl.innerText = revenue.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})
-
+// ===== Count-up =====
+function animateValue(el, start, end, dur) {
+  const st = performance.now();
+  function upd(t) {
+    const p = Math.min((t - st) / dur, 1);
+    const ep = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.floor(start + (end - start) * ep).toLocaleString('pt-BR') + '+';
+    if (p < 1) requestAnimationFrame(upd);
+  }
+  requestAnimationFrame(upd);
+}
+function initCountUp() {
+  const stats = document.querySelectorAll('[data-count-to]');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { animateValue(e.target, 0, parseInt(e.target.dataset.countTo), 2000); obs.unobserve(e.target); } });
+  }, { threshold: 0.5 });
+  stats.forEach(s => obs.observe(s));
 }
 
-usdInput.addEventListener("input", calc)
-usdInput.addEventListener("change", calc)
-usdInput.addEventListener("keyup", calc)
+// ===== FX Simulator Logic =====
+let SPOT_RATE = 5.1398; // fallback — will be overwritten by live API
+const FX_FEE_PCT = 1.00; // Fixed at 1%
+let settlementPremiumPct = 0; // D+0=0, D+1=0.055, D+2=0.1103, D+3=0.1655
+let rateCountdown = 10;
+let countdownInterval = null;
+let lastRateUpdate = null;
 
-spreadInput.addEventListener("input", calc)
-spreadInput.addEventListener("change", calc)
-spreadInput.addEventListener("keyup", calc)
-
-document.querySelectorAll(".settle").forEach(btn=>{
-btn.onclick=()=>{
-document.querySelectorAll(".settle").forEach(b=>b.classList.remove("active"))
-btn.classList.add("active")
-settlementAdj=parseFloat(btn.getAttribute("data"))
-calc()
+async function fetchLiveRate() {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 4000);
+    const res = await fetch('https://economia.awesomeapi.com.br/json/last/USD-BRL', { signal: controller.signal });
+    clearTimeout(timeout);
+    const data = await res.json();
+    if (data && data.USDBRL && data.USDBRL.bid) {
+      const newRate = parseFloat(data.USDBRL.bid);
+      if (!isNaN(newRate) && newRate > 0) {
+        SPOT_RATE = newRate;
+        lastRateUpdate = new Date();
+        recalculate();
+        setRateStatus('live');
+        // Flash the spot rate green
+        const spotEl = document.getElementById('spotRate');
+        spotEl.style.transition = 'color 0.2s';
+        spotEl.style.color = 'var(--success)';
+        setTimeout(() => { spotEl.style.color = ''; }, 800);
+        return;
+      }
+    }
+    setRateStatus('offline');
+  } catch (e) {
+    // API unreachable — use fallback silently
+    setRateStatus('offline');
+  }
 }
-})
 
-calc()
+function setRateStatus(status) {
+  const dot = document.getElementById('liveDot');
+  const label = document.getElementById('liveLabel');
+  const footer = document.getElementById('rateFooter');
+  if (status === 'live') {
+    dot.style.background = 'var(--success)';
+    label.textContent = 'Cotação ao vivo';
+    label.style.color = 'var(--success)';
+    footer.innerHTML = 'Cotação ao vivo · Próxima atualização em <strong id="rateCountdown">10</strong>s · Travar é definitivo';
+  } else {
+    dot.style.background = 'var(--warning)';
+    label.textContent = 'Cotação referência';
+    label.style.color = 'var(--warning)';
+    footer.innerHTML = 'Próxima cotação aproximada — atualização em <strong id="rateCountdown">10</strong>s.';
+  }
+}
 
+function startRatePolling() {
+  // Fetch immediately
+  fetchLiveRate();
+  // Then every 10 seconds
+  setInterval(fetchLiveRate, 10000);
+
+  // Countdown timer
+  rateCountdown = 10;
+  if (countdownInterval) clearInterval(countdownInterval);
+  countdownInterval = setInterval(() => {
+    rateCountdown--;
+    if (rateCountdown <= 0) rateCountdown = 10;
+    const countdownEl = document.getElementById('rateCountdown');
+    if (countdownEl) countdownEl.textContent = rateCountdown;
+  }, 1000);
+}
+
+function parseBrNumber(str) {
+  // "428.653,00" -> 428653.00
+  if (!str || typeof str !== 'string') return 0;
+  let clean = str.replace(/\./g, '').replace(',', '.');
+  let val = parseFloat(clean);
+  return isNaN(val) ? 0 : val;
+}
+
+function formatBr(num, decimals) {
+  if (decimals === undefined) decimals = 2;
+  return num.toLocaleString('pt-BR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+}
+
+function recalculate() {
+  const usdInput = document.getElementById('usdAmount');
+  const spreadInput = document.getElementById('spreadPct');
+
+  const usdVal = parseBrNumber(usdInput.value);
+  const spreadPct = parseBrNumber(spreadInput.value);
+
+  const fxFeeAbs = SPOT_RATE * (FX_FEE_PCT / 100);
+  const spreadAbs = SPOT_RATE * (spreadPct / 100);
+  const settlementAbs = SPOT_RATE * (settlementPremiumPct / 100);
+  const totalCostPct = FX_FEE_PCT + spreadPct + settlementPremiumPct;
+  const finalRate = SPOT_RATE + fxFeeAbs + spreadAbs + settlementAbs;
+  const brlVal = usdVal * finalRate;
+
+  // Update DOM
+  document.getElementById('spotRate').textContent = 'BRL ' + formatBr(SPOT_RATE, 4);
+  document.getElementById('fxFeeAbsBrl').textContent = '(BRL ' + formatBr(fxFeeAbs, 4) + ')';
+  document.getElementById('spreadAbsBrl').textContent = '(BRL ' + formatBr(spreadAbs, 4) + ')';
+  document.getElementById('totalCostPct').textContent = formatBr(totalCostPct, 4) + '%';
+  document.getElementById('finalRate').textContent = 'BRL ' + formatBr(finalRate, 4);
+  document.getElementById('brlAmount').textContent = formatBr(brlVal, 2);
+
+  // Revenue (BRL) = valor USD × Spread(%) × Taxa FX Spot × 65%
+  const revenue = usdVal * (spreadPct / 100) * SPOT_RATE * 0.65;
+  document.getElementById('revenueVal').textContent = formatBr(revenue, 2);
+}
+
+function initSimulator() {
+  const usdInput = document.getElementById('usdAmount');
+  const spreadInput = document.getElementById('spreadPct');
+
+  usdInput.addEventListener('input', recalculate);
+  spreadInput.addEventListener('input', recalculate);
+
+  // Format on blur
+  usdInput.addEventListener('blur', function() {
+    const val = parseBrNumber(this.value);
+    if (val > 0) this.value = formatBr(val, 2);
+  });
+  spreadInput.addEventListener('blur', function() {
+    const val = parseBrNumber(this.value);
+    if (val >= 0) this.value = formatBr(val, 2);
+  });
+
+  // Settlement option toggle — updates premium and recalculates
+  document.querySelectorAll('.sim-settlement-option').forEach(opt => {
+    opt.addEventListener('click', function() {
+      document.querySelectorAll('.sim-settlement-option').forEach(o => o.classList.remove('active'));
+      this.classList.add('active');
+      settlementPremiumPct = parseFloat(this.dataset.settlement) || 0;
+      recalculate();
+    });
+  });
+
+  // Tab toggle
+  document.querySelectorAll('.sim-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.sim-tab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  // Initial calculation
+  recalculate();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initScrollReveal();
+  initCountUp();
+  initSimulator();
+  startRatePolling();
+});
 </script>
-
 </body>
 </html>
