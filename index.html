@@ -128,13 +128,16 @@ p { font-size: 18px; line-height: 1.6; }
 .sim-row-value { font-weight: 600; }
 .sim-row-value.highlight { color: var(--primary-blue); }
 
-.sim-tabs { display: flex; gap: var(--spacing-sm); margin-bottom: var(--spacing-md); }
-.sim-tab { flex: 1; text-align: center; padding: 10px 8px; border-radius: var(--border-radius-pill); border: 2px solid var(--light-grey); cursor: pointer; font-size: 14px; font-weight: 600; transition: all var(--timing-fast); color: var(--muted-purple-grey); }
-.sim-tab.active { border-color: var(--primary-blue); color: var(--primary-blue); background: rgba(20,53,195,0.06); }
+.sim-tabs { display: flex; position: relative; background: #EEF0F6; border-radius: var(--border-radius-pill); padding: 4px; margin-bottom: var(--spacing-md); }
+.sim-tab { flex: 1; text-align: center; padding: 10px 8px; border-radius: var(--border-radius-pill); border: none; cursor: pointer; font-size: 14px; font-weight: 600; transition: color var(--timing-base); color: var(--muted-purple-grey); position: relative; z-index: 1; background: transparent; }
+.sim-tab.active { color: var(--primary-blue); }
+.sim-tabs-slider { position: absolute; top: 4px; left: 4px; width: calc(50% - 4px); height: calc(100% - 8px); background: var(--white); border-radius: var(--border-radius-pill); box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform var(--timing-base) var(--easing-standard); z-index: 0; }
+.sim-tabs-slider.right { transform: translateX(100%); }
 
 .sim-settlement { display: flex; gap: var(--spacing-sm); margin-bottom: var(--spacing-md); }
-.sim-settlement-option { flex: 1; text-align: center; padding: 10px 4px; border-radius: 12px; border: 2px solid var(--light-grey); font-size: 13px; font-weight: 600; cursor: pointer; transition: all var(--timing-fast); }
-.sim-settlement-option.active { border-color: var(--primary-blue); color: var(--primary-blue); background: rgba(20,53,195,0.06); }
+.sim-settlement-option { flex: 1; text-align: center; padding: 10px 4px; border-radius: var(--border-radius-pill); border: 2px solid #EEF0F6; font-size: 13px; font-weight: 600; cursor: pointer; transition: all var(--timing-fast); background: var(--white); }
+.sim-settlement-option.active { border-color: var(--primary-blue); color: var(--primary-blue); background: rgba(20,53,195,0.04); }
+.sim-settlement-option:hover:not(.active) { border-color: var(--gradient-start); }
 .sim-settlement-option small { display: block; font-weight: 400; color: var(--muted-purple-grey); font-size: 11px; }
 .sim-settlement-option .settle-rate { display: block; font-weight: 600; font-size: 10px; color: var(--primary-blue); margin-top: 2px; white-space: nowrap; }
 .sim-settlement-option.active .settle-rate { color: var(--primary-blue); }
@@ -244,40 +247,49 @@ footer { background: var(--almost-black); padding: var(--spacing-lg) 0; text-ali
         <p style="font-size:11px; color:var(--muted-purple-grey); margin-top:-12px; margin-bottom:var(--spacing-md); line-height:1.4;">Simulação com dados aproximados em tempo real das taxas spot de câmbio. Não deve ser usada para transações reais.</p>
 
         <!-- TABS -->
-        <div class="sim-tabs">
+        <div class="sim-tabs" id="simTabs">
+          <div class="sim-tabs-slider" id="tabSlider"></div>
           <div class="sim-tab active">↗ Enviar</div>
           <div class="sim-tab">↙ Receber</div>
         </div>
 
-        <!-- AMOUNT USD (EDITABLE) -->
-        <div class="sim-section" style="background:var(--white); border:1px solid #E8E6EB;">
-          <div class="sim-section-label" id="usdLabel">Valor a enviar (USD)</div>
-          <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
-            <div class="editable-wrap" style="flex:1; display:flex; align-items:center;">
-              <span style="font-family:var(--font-heading); font-weight:700; font-size:clamp(20px, 2.5vw, 26px); color:var(--muted-purple-grey); margin-right:8px; pointer-events:none;">USD</span>
-              <input type="text" id="usdAmount" class="sim-input" value="100.000,00" inputmode="decimal" autocomplete="off" style="flex:1;">
-              <span class="edit-icon">✏️</span>
-            </div>
-            <span style="font-size:15px; font-weight:600; white-space:nowrap;">🇺🇸</span>
-          </div>
-          <div class="sim-amount-sub" id="usdSub">Para Estados Unidos</div>
-        </div>
+        <!-- AMOUNT BOX: USD + BRL -->
+        <div style="background:var(--white); border:1px solid #E8E6EB; border-radius:12px; padding:var(--spacing-md); margin-bottom:var(--spacing-md);">
 
-        <!-- CLIENTE BRL (READ-ONLY, CALCULATED) -->
-        <div class="sim-section">
-          <div class="sim-section-label" id="brlLabel">Cliente deposita (BRL)</div>
-          <div style="display:flex; justify-content:space-between; align-items:baseline;">
-            <div style="display:flex; align-items:baseline; gap:8px;">
-              <span style="font-family:var(--font-heading); font-weight:700; font-size:16px; color:var(--muted-purple-grey);">BRL</span>
-              <div class="sim-amount" id="brlAmount" style="font-size:22px; color:var(--muted-purple-grey);">0,00</div>
+          <!-- AMOUNT USD (EDITABLE) -->
+          <div>
+            <div class="sim-section-label" id="usdLabel" style="font-weight:700;">Valor a enviar (USD)</div>
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+              <div class="editable-wrap" style="flex:1; display:flex; align-items:center;">
+                <span style="font-family:var(--font-heading); font-weight:700; font-size:clamp(20px, 2.5vw, 26px); color:var(--muted-purple-grey); margin-right:8px; pointer-events:none;">USD</span>
+                <input type="text" id="usdAmount" class="sim-input" value="100.000,00" inputmode="decimal" autocomplete="off" style="flex:1;">
+                <span class="edit-icon">✏️</span>
+              </div>
+              <span style="font-size:15px; font-weight:600; white-space:nowrap;">🇺🇸</span>
             </div>
-            <span style="font-size:15px; font-weight:600;">🇧🇷</span>
+            <div class="sim-amount-sub" id="usdSub">Para Estados Unidos</div>
           </div>
-          <div class="sim-amount-sub" id="brlSub">Do Brasil · Valor em USD × Taxa de Câmbio Final</div>
+
+          <!-- Divider -->
+          <div style="border-top:1px solid #E8E6EB; margin:12px 0;"></div>
+
+          <!-- CLIENTE BRL (READ-ONLY, CALCULATED) -->
+          <div>
+            <div class="sim-section-label" id="brlLabel">Cliente deposita (BRL)</div>
+            <div style="display:flex; justify-content:space-between; align-items:baseline;">
+              <div style="display:flex; align-items:baseline; gap:8px;">
+                <span style="font-family:var(--font-heading); font-weight:700; font-size:16px; color:var(--muted-purple-grey);">BRL</span>
+                <div class="sim-amount" id="brlAmount" style="font-size:22px; color:var(--muted-purple-grey);">0,00</div>
+              </div>
+              <span style="font-size:15px; font-weight:600;">🇧🇷</span>
+            </div>
+            <div class="sim-amount-sub" id="brlSub">No Brasil · Valor em USD × Taxa de Câmbio Final</div>
+          </div>
+
         </div>
 
         <!-- RATE BREAKDOWN -->
-        <div class="sim-section" style="background: transparent; padding:0; border-top: 1px solid #eee; padding-top: var(--spacing-md);">
+        <div style="background:#F7F8FA; border:1px solid #E8E6EB; border-radius:12px; padding:var(--spacing-md); margin-bottom:var(--spacing-md);">
           <div style="margin-bottom:8px;">
             <span style="font-weight:600; font-size:15px;">Composição da Taxa de Câmbio</span>
           </div>
@@ -324,7 +336,10 @@ footer { background: var(--almost-black); padding: var(--spacing-lg) 0; text-ali
 
         <!-- SETTLEMENT -->
         <div style="margin-top:var(--spacing-md);">
-          <div class="sim-section-label" style="margin-bottom:8px;">Data de liquidação — Clique nas opções abaixo para efetivar a moeda futura</div>
+          <div style="margin-bottom:8px;">
+            <div class="sim-section-label" style="font-weight:700; margin-bottom:2px;">Data de liquidação</div>
+            <div style="font-size:11px; color:var(--muted-purple-grey); font-weight:400;">Clique nas opções para colocar a liquidação para uma data futura</div>
+          </div>
           <div class="sim-settlement">
             <div class="sim-settlement-option active" data-settlement="0">D+0<small>Hoje</small><span class="settle-rate" id="rateD0">—</span></div>
             <div class="sim-settlement-option" data-settlement="0.055">D+1<small>Amanhã</small><span class="settle-rate" id="rateD1">—</span></div>
@@ -335,12 +350,12 @@ footer { background: var(--almost-black); padding: var(--spacing-lg) 0; text-ali
 
         <!-- REVENUE CARD -->
         <div style="margin-top:var(--spacing-md); background:#F7F8FA; border:1px solid #E8E6EB; border-radius:8px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center;">
-          <div style="font-size:13px; color:var(--muted-purple-grey);">Sua receita <span style="font-size:11px; font-weight:400;">(isenta de PIS, COFINS e ISS):</span></div>
+          <div style="font-size:13px; color:var(--muted-purple-grey); font-weight:700;">Sua receita <span style="font-size:11px; font-weight:700;">(isenta de PIS, COFINS e ISS):</span></div>
           <span style="font-family:var(--font-heading); font-weight:700; font-size:16px; color:var(--success);" id="revenueVal">BRL 0,00</span>
         </div>
 
         <!-- CTA -->
-        <button class="sim-lock-btn">Converse com um Especialista</button>
+        <button class="sim-lock-btn" style="margin-top:var(--spacing-md);">Converse com um Especialista</button>
         <p class="sim-footer" id="rateFooter">Próxima cotação aproximada — atualização em <strong id="rateCountdown">10</strong>s.</p>
       </div>
     </div>
@@ -641,17 +656,20 @@ function initSimulator() {
     });
   });
 
-  // Tab toggle — switches between Enviar and Receber modes
+  // Tab toggle — switches between Enviar and Receber modes with sliding animation
+  const slider = document.getElementById('tabSlider');
   document.querySelectorAll('.sim-tab').forEach(tab => {
     tab.addEventListener('click', function() {
       document.querySelectorAll('.sim-tab').forEach(t => t.classList.remove('active'));
       this.classList.add('active');
       const isEnviar = this.textContent.includes('Enviar');
       currentMode = isEnviar ? 'enviar' : 'receber';
+      // Slide animation
+      if (isEnviar) { slider.classList.remove('right'); } else { slider.classList.add('right'); }
       document.getElementById('usdLabel').textContent = isEnviar ? 'Valor a enviar (USD)' : 'Valor a receber (USD)';
       document.getElementById('usdSub').textContent = isEnviar ? 'Para Estados Unidos' : 'Dos Estados Unidos';
       document.getElementById('brlLabel').textContent = isEnviar ? 'Cliente deposita (BRL)' : 'Cliente receberá (BRL)';
-      document.getElementById('brlSub').textContent = isEnviar ? 'Do Brasil · Valor em USD × Taxa de Câmbio Final' : 'No Brasil · Valor em USD × Taxa de Câmbio Final';
+      document.getElementById('brlSub').textContent = isEnviar ? 'No Brasil · Valor em USD × Taxa de Câmbio Final' : 'No Brasil · Valor em USD × Taxa de Câmbio Final';
       recalculate();
     });
   });
