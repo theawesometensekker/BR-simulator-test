@@ -253,11 +253,12 @@ footer { background: var(--almost-black); padding: var(--spacing-lg) 0; text-ali
         <div class="sim-section" style="background:var(--white); border:1px solid #E8E6EB;">
           <div class="sim-section-label" id="usdLabel">Valor a enviar (USD)</div>
           <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
-            <div class="editable-wrap" style="flex:1;">
-              <input type="text" id="usdAmount" class="sim-input" value="100.000,00" inputmode="decimal" autocomplete="off">
+            <div class="editable-wrap" style="flex:1; display:flex; align-items:center;">
+              <span style="font-family:var(--font-heading); font-weight:700; font-size:clamp(20px, 2.5vw, 26px); color:var(--muted-purple-grey); margin-right:8px; pointer-events:none;">USD</span>
+              <input type="text" id="usdAmount" class="sim-input" value="100.000,00" inputmode="decimal" autocomplete="off" style="flex:1;">
               <span class="edit-icon">✏️</span>
             </div>
-            <span style="font-size:15px; font-weight:600; white-space:nowrap;">🇺🇸 USD</span>
+            <span style="font-size:15px; font-weight:600; white-space:nowrap;">🇺🇸</span>
           </div>
           <div class="sim-amount-sub" id="usdSub">Para Estados Unidos</div>
         </div>
@@ -266,8 +267,11 @@ footer { background: var(--almost-black); padding: var(--spacing-lg) 0; text-ali
         <div class="sim-section">
           <div class="sim-section-label" id="brlLabel">Cliente deposita (BRL)</div>
           <div style="display:flex; justify-content:space-between; align-items:baseline;">
-            <div class="sim-amount" id="brlAmount" style="font-size:22px; color:var(--muted-purple-grey);">0,00</div>
-            <span style="font-size:15px; font-weight:600;">🇧🇷 BRL</span>
+            <div style="display:flex; align-items:baseline; gap:8px;">
+              <span style="font-family:var(--font-heading); font-weight:700; font-size:16px; color:var(--muted-purple-grey);">BRL</span>
+              <div class="sim-amount" id="brlAmount" style="font-size:22px; color:var(--muted-purple-grey);">0,00</div>
+            </div>
+            <span style="font-size:15px; font-weight:600;">🇧🇷</span>
           </div>
           <div class="sim-amount-sub" id="brlSub">Do Brasil · Valor em USD × Taxa de Câmbio Final</div>
         </div>
@@ -277,38 +281,44 @@ footer { background: var(--almost-black); padding: var(--spacing-lg) 0; text-ali
           <div style="margin-bottom:8px;">
             <span style="font-weight:600; font-size:15px;">Composição da Taxa de Câmbio</span>
           </div>
-          <div class="sim-row">
-            <span class="sim-row-label">Taxa de Câmbio Spot</span>
-            <span class="sim-row-value" id="spotRate">BRL 5,1398</span>
+
+          <!-- Spot row -->
+          <div style="display:flex; align-items:center; padding:6px 0; font-size:15px;">
+            <span class="sim-row-label" style="flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Taxa de Câmbio Spot</span>
+            <span style="width:80px;"></span>
+            <span class="sim-row-value" id="spotRate" style="width:100px; text-align:right; white-space:nowrap;">BRL 5,1398</span>
           </div>
-          <div class="sim-row">
-            <span class="sim-row-label">FXFee (mark-up spot)</span>
-            <span class="sim-row-value" style="display:flex; align-items:center; width:200px; justify-content:space-between;">
-              <span style="text-align:left;" class="sim-readonly">1,00%</span>
-              <span id="fxFeeAbsBrl" style="color:var(--muted-purple-grey); font-weight:400; font-size:13px;">BRL 0,0514</span>
+
+          <!-- FXFee row -->
+          <div style="display:flex; align-items:center; padding:6px 0; font-size:15px;">
+            <span class="sim-row-label" style="flex:1;">FXFee:<br><span style="font-size:12px;">(mark-up spot)</span></span>
+            <span class="sim-readonly" style="width:80px; text-align:left; white-space:nowrap;">1,00%</span>
+            <span id="fxFeeAbsBrl" style="width:100px; text-align:right; color:var(--muted-purple-grey); font-weight:400; font-size:13px; white-space:nowrap;">BRL 0,0514</span>
+          </div>
+
+          <!-- Spread row -->
+          <div style="display:flex; align-items:center; padding:6px 0; font-size:15px;">
+            <span class="sim-row-label" style="flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Spread 🔗</span>
+            <span style="width:80px; text-align:left; display:inline-flex; align-items:center; white-space:nowrap;">
+              <div class="editable-wrap">
+                <input type="text" id="spreadPct" class="sim-input-sm" value="2,50" inputmode="decimal" autocomplete="off">
+                <span class="edit-icon" style="right:6px; font-size:11px;">✏️</span>
+              </div><span>%</span>
             </span>
+            <span id="spreadAbsBrl" style="width:100px; text-align:right; color:var(--muted-purple-grey); font-weight:400; font-size:13px; white-space:nowrap;">BRL 0,0000</span>
           </div>
-          <div class="sim-row">
-            <span class="sim-row-label">Spread 🔗</span>
-            <span class="sim-row-value" style="display:flex; align-items:center; width:200px; justify-content:space-between;">
-              <span style="text-align:left; display:inline-flex; align-items:center;">
-                <div class="editable-wrap">
-                  <input type="text" id="spreadPct" class="sim-input-sm" value="2,50" inputmode="decimal" autocomplete="off">
-                  <span class="edit-icon" style="right:6px; font-size:11px;">✏️</span>
-                </div><span>%</span>
-              </span>
-              <span id="spreadAbsBrl" style="color:var(--muted-purple-grey); font-weight:400; font-size:13px;">BRL 0,0000</span>
-            </span>
+
+          <!-- Custo Total row -->
+          <div style="display:flex; align-items:center; padding:12px 0 6px; font-size:15px; border-top:1px solid #eee; margin-top:4px;">
+            <span style="flex:1; font-weight:600; color:var(--muted-purple-grey);">Custo Total:<br><span style="font-size:12px; font-weight:400;">(já contempla IOF)</span></span>
+            <span id="totalCostPct" style="width:80px; text-align:left; font-weight:600; white-space:nowrap;">3,50%</span>
+            <span style="width:100px;"></span>
           </div>
-          <div class="sim-row" style="border-top:1px solid #eee; padding-top:12px; margin-top:4px;">
-            <span style="font-weight:600; color:var(--muted-purple-grey);">Custo Total (IOF Incluso)</span>
-            <span class="sim-row-value" style="display:flex; align-items:center; width:200px; justify-content:flex-start;">
-              <span id="totalCostPct" style="text-align:left;">3,50%</span>
-            </span>
-          </div>
-          <div class="sim-row" style="border-top:1px solid #eee; padding-top:12px; margin-top:4px;">
-            <span style="font-weight:700;">Taxa de Câmbio Final (IOF incluso)</span>
-            <span class="sim-row-value highlight" id="finalRate" style="font-size:18px;">BRL 5,1912</span>
+
+          <!-- Taxa Final row -->
+          <div style="display:flex; align-items:center; padding:12px 0 6px; font-size:15px; border-top:1px solid #eee; margin-top:4px;">
+            <span style="flex:1; font-weight:700;">Taxa de Câmbio Final:<br><span style="font-size:12px; font-weight:400;">(já contempla IOF)</span></span>
+            <span class="sim-row-value highlight" id="finalRate" style="font-size:18px; white-space:nowrap;">BRL 5,1912</span>
           </div>
         </div>
 
@@ -323,10 +333,10 @@ footer { background: var(--almost-black); padding: var(--spacing-lg) 0; text-ali
           </div>
         </div>
 
-        <!-- SUMMARY -->
-        <div class="sim-summary">
-          <div>Liquidar até<br><strong>Hoje, 16:30</strong></div>
-          <div style="text-align:right;">Sua receita <span style="font-size:11px; font-weight:400;">(isenta de PIS, COFINS e ISS)</span><br><span class="revenue" id="revenueVal">0,00</span></div>
+        <!-- REVENUE CARD -->
+        <div style="margin-top:var(--spacing-md); background:#F7F8FA; border:1px solid #E8E6EB; border-radius:8px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center;">
+          <div style="font-size:13px; color:var(--muted-purple-grey);">Sua receita <span style="font-size:11px; font-weight:400;">(isenta de PIS, COFINS e ISS):</span></div>
+          <span style="font-family:var(--font-heading); font-weight:700; font-size:16px; color:var(--success);" id="revenueVal">BRL 0,00</span>
         </div>
 
         <!-- CTA -->
@@ -588,7 +598,7 @@ function recalculate() {
 
   // Revenue (BRL) = valor USD × Spread(%) × Taxa FX Spot × 65%
   const revenue = usdVal * (spreadPct / 100) * SPOT_RATE * 0.65;
-  document.getElementById('revenueVal').textContent = formatBr(revenue, 2);
+  document.getElementById('revenueVal').textContent = 'BRL ' + formatBr(revenue, 2);
 
   // Update settlement rate previews for all D+ options
   const settlementPremiums = [0, 0.055, 0.1103, 0.1655];
