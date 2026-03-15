@@ -214,7 +214,7 @@ footer { background: var(--almost-black); padding: var(--spacing-lg) 0; text-ali
       <li><a class="nav-link" href="#vantagens">Vantagens</a></li>
       <li><a class="nav-link" href="#contato">Contato</a></li>
     </ul>
-    <a href="#contato" class="btn-primary" style="font-size:14px; padding:10px 24px;">Agendar Demo</a>
+    <a href="#contato" class="btn-primary" style="font-size:14px; padding:10px 24px;">Falar com um Especialista</a>
   </div>
 </nav>
 
@@ -246,9 +246,9 @@ footer { background: var(--almost-black); padding: var(--spacing-lg) 0; text-ali
           <div class="sim-tab">↙ Receber</div>
         </div>
 
-        <!-- AMOUNT TO SEND (EDITABLE) -->
+        <!-- AMOUNT USD (EDITABLE) -->
         <div class="sim-section" style="background:var(--white); border:1px solid #E8E6EB;">
-          <div class="sim-section-label">Valor a enviar (USD)</div>
+          <div class="sim-section-label" id="usdLabel">Valor a enviar (USD)</div>
           <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
             <div class="editable-wrap" style="flex:1;">
               <input type="text" id="usdAmount" class="sim-input" value="100.000,00" inputmode="decimal" autocomplete="off">
@@ -256,17 +256,17 @@ footer { background: var(--almost-black); padding: var(--spacing-lg) 0; text-ali
             </div>
             <span style="font-size:15px; font-weight:600; white-space:nowrap;">🇺🇸 USD</span>
           </div>
-          <div class="sim-amount-sub">Para Estados Unidos</div>
+          <div class="sim-amount-sub" id="usdSub">Para Estados Unidos</div>
         </div>
 
-        <!-- CLIENTE DEPOSITA (READ-ONLY, CALCULATED) -->
+        <!-- CLIENTE BRL (READ-ONLY, CALCULATED) -->
         <div class="sim-section">
-          <div class="sim-section-label">Cliente deposita (BRL)</div>
+          <div class="sim-section-label" id="brlLabel">Cliente deposita (BRL)</div>
           <div style="display:flex; justify-content:space-between; align-items:baseline;">
             <div class="sim-amount" id="brlAmount" style="font-size:22px; color:var(--muted-purple-grey);">0,00</div>
             <span style="font-size:15px; font-weight:600;">🇧🇷 BRL</span>
           </div>
-          <div class="sim-amount-sub">Do Brasil · Valor em USD × Taxa de Câmbio Final</div>
+          <div class="sim-amount-sub" id="brlSub">Do Brasil · Valor em USD × Taxa de Câmbio Final</div>
         </div>
 
         <!-- RATE BREAKDOWN -->
@@ -323,7 +323,7 @@ footer { background: var(--almost-black); padding: var(--spacing-lg) 0; text-ali
         </div>
 
         <!-- CTA -->
-        <button class="sim-lock-btn">Travar FX e iniciar transação</button>
+        <button class="sim-lock-btn">Converse com um Especialista</button>
         <p class="sim-footer" id="rateFooter">Próxima cotação aproximada — atualização em <strong id="rateCountdown">10</strong>s.</p>
       </div>
     </div>
@@ -344,7 +344,7 @@ footer { background: var(--almost-black); padding: var(--spacing-lg) 0; text-ali
       <div class="feature-card scroll-reveal">
         <div class="feature-icon">🤖</div>
         <div class="feature-title">Compliance com IA</div>
-        <div class="feature-desc">Gestão de risco e compliance potencializada por inteligência artificial, reduzindo custo e esforço.</div>
+        <div class="feature-desc">Gestão de risco e compliance potencializada por inteligência artificial — rapidez nas análises com compliance rigoroso nunca andaram tão juntas!</div>
       </div>
       <div class="feature-card scroll-reveal">
         <div class="feature-icon">🔗</div>
@@ -354,11 +354,11 @@ footer { background: var(--almost-black); padding: var(--spacing-lg) 0; text-ali
       <div class="feature-card scroll-reveal">
         <div class="feature-icon">📊</div>
         <div class="feature-title">Taxas transparentes</div>
-        <div class="feature-desc">Visualize o breakdown completo da taxa FX antes de travar. Sem custos ocultos, sem surpresas.</div>
+        <div class="feature-desc">Visualize a composição completa da taxa de câmbio praticada antes de boletar sua operação. Sem taxas ou tarifas ocultas. Sem surpresas.</div>
       </div>
       <div class="feature-card scroll-reveal">
         <div class="feature-icon">🔒</div>
-        <div class="feature-title">Segurança enterprise</div>
+        <div class="feature-title">O mais alto padrão de Segurança</div>
         <div class="feature-desc">Infraestrutura robusta com criptografia de ponta a ponta e conformidade regulatória global.</div>
       </div>
     </div>
@@ -368,8 +368,8 @@ footer { background: var(--almost-black); padding: var(--spacing-lg) 0; text-ali
 <!-- CTA -->
 <section class="cta-section" id="contato">
   <div class="container">
-    <h2>Pronto para reimaginar seus pagamentos?</h2>
-    <p>Agende uma demonstração e descubra como a Tensec pode desbloquear novas receitas para o seu negócio global.</p>
+    <h2>Pronto para reimaginar seus pagamentos cross-border?</h2>
+    <p>Agende uma reunião agora com nossos especialistas e descubra como a Tensec pode revolucionar o seu negócio global.</p>
     <a href="#" onclick="window.location='mai'+'lto:contato'+'@tensec.io'; return false;" class="btn-primary" style="font-size:18px; padding:16px 40px;">Falar com especialista →</a>
   </div>
 </section>
@@ -414,6 +414,7 @@ function initCountUp() {
 let SPOT_RATE = 5.1398; // fallback — will be overwritten by live API
 const FX_FEE_PCT = 1.00; // Fixed at 1%
 let settlementPremiumPct = 0; // D+0=0, D+1=0.055, D+2=0.1103, D+3=0.1655
+let currentMode = 'enviar'; // 'enviar' or 'receber'
 let rateCountdown = 10;
 let countdownInterval = null;
 let lastRateUpdate = null;
@@ -447,20 +448,74 @@ async function fetchLiveRate() {
   }
 }
 
+function isMarketClosed() {
+  // Get current time in Brasília (UTC-3)
+  const now = new Date();
+  const brTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+  const day = brTime.getDay(); // 0=Sun, 6=Sat
+  const hours = brTime.getHours();
+  const minutes = brTime.getMinutes();
+  const timeDecimal = hours + minutes / 60;
+
+  // Weekend
+  if (day === 0 || day === 6) return true;
+
+  // Outside 9:00–16:30
+  if (timeDecimal < 9 || timeDecimal >= 16.5) return true;
+
+  // Brazilian national holidays (MM-DD format)
+  const month = String(brTime.getMonth() + 1).padStart(2, '0');
+  const dayOfMonth = String(brTime.getDate()).padStart(2, '0');
+  const mmdd = month + '-' + dayOfMonth;
+  const year = brTime.getFullYear();
+
+  // Fixed holidays
+  const fixedHolidays = [
+    '01-01', // Confraternização Universal
+    '04-21', // Tiradentes
+    '05-01', // Dia do Trabalho
+    '09-07', // Independência
+    '10-12', // Nossa Senhora Aparecida
+    '11-02', // Finados
+    '11-15', // Proclamação da República
+    '12-25', // Natal
+  ];
+  if (fixedHolidays.includes(mmdd)) return true;
+
+  // Variable holidays 2025
+  const variableHolidays2025 = ['03-03', '03-04', '04-18']; // Carnaval seg/ter, Sexta-feira Santa
+  // Variable holidays 2026
+  const variableHolidays2026 = ['02-16', '02-17', '04-03', '06-04']; // Carnaval seg/ter, Sexta-feira Santa, Corpus Christi
+
+  if (year === 2025 && variableHolidays2025.includes(mmdd)) return true;
+  if (year === 2026 && variableHolidays2026.includes(mmdd)) return true;
+
+  return false;
+}
+
 function setRateStatus(status) {
   const dot = document.getElementById('liveDot');
   const label = document.getElementById('liveLabel');
   const footer = document.getElementById('rateFooter');
+
+  if (isMarketClosed()) {
+    dot.style.background = 'var(--error)';
+    label.textContent = 'Mercado Fechado';
+    label.style.color = 'var(--error)';
+    footer.innerHTML = 'Mercado Fechado. Cotação offline.';
+    return;
+  }
+
   if (status === 'live') {
     dot.style.background = 'var(--success)';
-    label.textContent = 'Cotação ao vivo';
+    label.textContent = 'Simulação da Cotação em Tempo Real Online';
     label.style.color = 'var(--success)';
-    footer.innerHTML = 'Cotação ao vivo · Próxima atualização em <strong id="rateCountdown">10</strong>s · Travar é definitivo';
+    footer.innerHTML = 'Simulação em tempo real online — Próxima atualização em <strong id="rateCountdown">10</strong>s.';
   } else {
     dot.style.background = 'var(--warning)';
     label.textContent = 'Cotação referência';
     label.style.color = 'var(--warning)';
-    footer.innerHTML = 'Próxima cotação aproximada — atualização em <strong id="rateCountdown">10</strong>s.';
+    footer.innerHTML = 'Simulação em tempo real offline';
   }
 }
 
@@ -505,8 +560,16 @@ function recalculate() {
   const spreadAbs = SPOT_RATE * (spreadPct / 100);
   const settlementAbs = SPOT_RATE * (settlementPremiumPct / 100);
   const totalCostPct = FX_FEE_PCT + spreadPct + settlementPremiumPct;
-  const finalRate = SPOT_RATE + fxFeeAbs + spreadAbs + settlementAbs;
-  const brlVal = usdVal * finalRate;
+
+  let finalRate, brlVal;
+  if (currentMode === 'enviar') {
+    // Enviar: Taxa Final = Spot + FXFee + Spread + Settlement
+    finalRate = SPOT_RATE + fxFeeAbs + spreadAbs + settlementAbs;
+  } else {
+    // Receber: Taxa Final = Spot * (1 - (FXFee% + Spread% + Settlement%))
+    finalRate = SPOT_RATE * (1 - (FX_FEE_PCT + spreadPct + settlementPremiumPct) / 100);
+  }
+  brlVal = usdVal * finalRate;
 
   // Update DOM
   document.getElementById('spotRate').textContent = 'BRL ' + formatBr(SPOT_RATE, 4);
@@ -548,11 +611,18 @@ function initSimulator() {
     });
   });
 
-  // Tab toggle
+  // Tab toggle — switches between Enviar and Receber modes
   document.querySelectorAll('.sim-tab').forEach(tab => {
     tab.addEventListener('click', function() {
       document.querySelectorAll('.sim-tab').forEach(t => t.classList.remove('active'));
       this.classList.add('active');
+      const isEnviar = this.textContent.includes('Enviar');
+      currentMode = isEnviar ? 'enviar' : 'receber';
+      document.getElementById('usdLabel').textContent = isEnviar ? 'Valor a enviar (USD)' : 'Valor a receber (USD)';
+      document.getElementById('usdSub').textContent = isEnviar ? 'Para Estados Unidos' : 'Dos Estados Unidos';
+      document.getElementById('brlLabel').textContent = isEnviar ? 'Cliente deposita (BRL)' : 'Cliente receberá (BRL)';
+      document.getElementById('brlSub').textContent = isEnviar ? 'Do Brasil · Valor em USD × Taxa de Câmbio Final' : 'No Brasil · Valor em USD × Taxa de Câmbio Final';
+      recalculate();
     });
   });
 
