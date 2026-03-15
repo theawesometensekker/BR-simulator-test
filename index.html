@@ -134,10 +134,14 @@ p { font-size: 18px; line-height: 1.6; }
 .sim-tabs-slider { position: absolute; top: 4px; left: 4px; width: calc(50% - 4px); height: calc(100% - 8px); background: var(--white); border-radius: var(--border-radius-pill); box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform var(--timing-base) var(--easing-standard); z-index: 0; }
 .sim-tabs-slider.right { transform: translateX(100%); }
 
-.sim-settlement { display: flex; gap: var(--spacing-sm); margin-bottom: var(--spacing-md); }
-.sim-settlement-option { flex: 1; text-align: center; padding: 10px 4px; border-radius: var(--border-radius-pill); border: 2px solid #EEF0F6; font-size: 13px; font-weight: 600; cursor: pointer; transition: all var(--timing-fast); background: var(--white); }
-.sim-settlement-option.active { border-color: var(--primary-blue); color: var(--primary-blue); background: rgba(20,53,195,0.04); }
-.sim-settlement-option:hover:not(.active) { border-color: var(--gradient-start); }
+.sim-settlement { display: flex; position: relative; background: #EEF0F6; border-radius: 12px; padding: 4px; margin-bottom: var(--spacing-md); }
+.sim-settlement-option { flex: 1; text-align: center; padding: 10px 4px; border-radius: 10px; border: none; font-size: 13px; font-weight: 600; cursor: pointer; transition: color var(--timing-base); color: var(--muted-purple-grey); position: relative; z-index: 1; background: transparent; }
+.sim-settlement-option.active { color: var(--primary-blue); }
+.sim-settlement-option:hover:not(.active) { color: var(--almost-black); }
+.settle-slider { position: absolute; top: 4px; left: 4px; width: calc(25% - 4px); height: calc(100% - 8px); background: var(--white); border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform var(--timing-base) var(--easing-standard); z-index: 0; }
+.settle-slider.pos1 { transform: translateX(100%); }
+.settle-slider.pos2 { transform: translateX(200%); }
+.settle-slider.pos3 { transform: translateX(300%); }
 .sim-settlement-option small { display: block; font-weight: 400; color: var(--muted-purple-grey); font-size: 11px; }
 .sim-settlement-option .settle-rate { display: block; font-weight: 600; font-size: 10px; color: var(--primary-blue); margin-top: 2px; white-space: nowrap; }
 .sim-settlement-option.active .settle-rate { color: var(--primary-blue); }
@@ -340,11 +344,12 @@ footer { background: var(--almost-black); padding: var(--spacing-lg) 0; text-ali
             <div class="sim-section-label" style="font-weight:700; margin-bottom:2px;">Data de liquidação</div>
             <div style="font-size:11px; color:var(--muted-purple-grey); font-weight:400;">Clique nas opções para colocar a liquidação para uma data futura</div>
           </div>
-          <div class="sim-settlement">
-            <div class="sim-settlement-option active" data-settlement="0">D+0<small>Hoje</small><span class="settle-rate" id="rateD0">—</span></div>
-            <div class="sim-settlement-option" data-settlement="0.055">D+1<small>Amanhã</small><span class="settle-rate" id="rateD1">—</span></div>
-            <div class="sim-settlement-option" data-settlement="0.1103">D+2<small>7 Mar</small><span class="settle-rate" id="rateD2">—</span></div>
-            <div class="sim-settlement-option" data-settlement="0.1655">D+3<small>8 Mar</small><span class="settle-rate" id="rateD3">—</span></div>
+          <div class="sim-settlement" id="settleContainer">
+            <div class="settle-slider" id="settleSlider"></div>
+            <div class="sim-settlement-option active" data-settlement="0" data-pos="0">D+0<small>Hoje</small><span class="settle-rate" id="rateD0">—</span></div>
+            <div class="sim-settlement-option" data-settlement="0.055" data-pos="1">D+1<small>Amanhã</small><span class="settle-rate" id="rateD1">—</span></div>
+            <div class="sim-settlement-option" data-settlement="0.1103" data-pos="2">D+2<small>7 Mar</small><span class="settle-rate" id="rateD2">—</span></div>
+            <div class="sim-settlement-option" data-settlement="0.1655" data-pos="3">D+3<small>8 Mar</small><span class="settle-rate" id="rateD3">—</span></div>
           </div>
         </div>
 
@@ -646,11 +651,15 @@ function initSimulator() {
     if (val >= 0) this.value = formatBr(val, 2);
   });
 
-  // Settlement option toggle — updates premium and recalculates
+  // Settlement option toggle — updates premium and recalculates with sliding animation
+  const settleSlider = document.getElementById('settleSlider');
   document.querySelectorAll('.sim-settlement-option').forEach(opt => {
     opt.addEventListener('click', function() {
       document.querySelectorAll('.sim-settlement-option').forEach(o => o.classList.remove('active'));
       this.classList.add('active');
+      // Slide to position
+      const pos = parseInt(this.dataset.pos) || 0;
+      settleSlider.className = 'settle-slider' + (pos > 0 ? ' pos' + pos : '');
       settlementPremiumPct = parseFloat(this.dataset.settlement) || 0;
       recalculate();
     });
