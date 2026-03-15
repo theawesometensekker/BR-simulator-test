@@ -236,7 +236,7 @@ footer { background: var(--almost-black); padding: var(--spacing-lg) 0; text-ali
       <div class="simulator-card">
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <h3>Simular uma transação</h3>
-          <span style="font-size:13px; color:var(--success);"><span class="live-dot" id="liveDot"></span><span id="liveLabel">Taxas ao vivo</span></span>
+          <span style="font-size:13px; color:var(--warning);"><span class="live-dot" id="liveDot" style="background:var(--warning);"></span><span id="liveLabel">Cotação referência</span></span>
         </div>
         <p class="subtitle">Natureza de câmbio com 3,5% de IOF</p>
 
@@ -324,7 +324,7 @@ footer { background: var(--almost-black); padding: var(--spacing-lg) 0; text-ali
 
         <!-- CTA -->
         <button class="sim-lock-btn">Travar FX e iniciar transação</button>
-        <p class="sim-footer" id="rateFooter">Cotação ao vivo · Próxima atualização em <strong id="rateCountdown">10</strong>s · Travar é definitivo</p>
+        <p class="sim-footer" id="rateFooter">Próxima cotação aproximada — atualização em <strong id="rateCountdown">10</strong>s.</p>
       </div>
     </div>
   </div>
@@ -370,7 +370,7 @@ footer { background: var(--almost-black); padding: var(--spacing-lg) 0; text-ali
   <div class="container">
     <h2>Pronto para reimaginar seus pagamentos?</h2>
     <p>Agende uma demonstração e descubra como a Tensec pode desbloquear novas receitas para o seu negócio global.</p>
-    <a href="mailto:contato@tensec.io" class="btn-primary" style="font-size:18px; padding:16px 40px;">Falar com especialista →</a>
+    <a href="#" onclick="window.location='mai'+'lto:contato'+'@tensec.io'; return false;" class="btn-primary" style="font-size:18px; padding:16px 40px;">Falar com especialista →</a>
   </div>
 </section>
 
