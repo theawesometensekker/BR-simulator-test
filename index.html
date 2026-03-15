@@ -136,6 +136,8 @@ p { font-size: 18px; line-height: 1.6; }
 .sim-settlement-option { flex: 1; text-align: center; padding: 10px 4px; border-radius: 12px; border: 2px solid var(--light-grey); font-size: 13px; font-weight: 600; cursor: pointer; transition: all var(--timing-fast); }
 .sim-settlement-option.active { border-color: var(--primary-blue); color: var(--primary-blue); background: rgba(20,53,195,0.06); }
 .sim-settlement-option small { display: block; font-weight: 400; color: var(--muted-purple-grey); font-size: 11px; }
+.sim-settlement-option .settle-rate { display: block; font-weight: 600; font-size: 10px; color: var(--primary-blue); margin-top: 2px; white-space: nowrap; }
+.sim-settlement-option.active .settle-rate { color: var(--primary-blue); }
 
 .sim-summary { display: flex; justify-content: space-between; padding: var(--spacing-sm) 0 var(--spacing-md); font-size: 13px; color: var(--muted-purple-grey); }
 .sim-summary .revenue { color: var(--success); font-weight: 700; font-size: 16px; }
@@ -235,10 +237,11 @@ footer { background: var(--almost-black); padding: var(--spacing-lg) 0; text-ali
     <div class="simulator-wrap">
       <div class="simulator-card">
         <div style="display:flex; justify-content:space-between; align-items:center;">
-          <h3>Simular uma transação</h3>
+          <h3 style="font-weight:700;">Simule uma transação</h3>
           <span style="font-size:13px; color:var(--warning);"><span class="live-dot" id="liveDot" style="background:var(--warning);"></span><span id="liveLabel">Cotação referência</span></span>
         </div>
         <p class="subtitle">Natureza de câmbio com 3,5% de IOF</p>
+        <p style="font-size:11px; color:var(--muted-purple-grey); margin-top:-12px; margin-bottom:var(--spacing-md); line-height:1.4;">Simulação com dados aproximados em tempo real das taxas spot de câmbio. Não deve ser usada para transações reais.</p>
 
         <!-- TABS -->
         <div class="sim-tabs">
@@ -280,24 +283,28 @@ footer { background: var(--almost-black); padding: var(--spacing-lg) 0; text-ali
           </div>
           <div class="sim-row">
             <span class="sim-row-label">FXFee (mark-up spot)</span>
-            <span class="sim-row-value">
-              <span class="sim-readonly">1,00%</span>
-              <span id="fxFeeAbsBrl" style="color:var(--muted-purple-grey); font-weight:400; font-size:13px; margin-left:4px;">(BRL 0,0514)</span>
+            <span class="sim-row-value" style="display:flex; align-items:center; width:200px; justify-content:space-between;">
+              <span style="text-align:left;" class="sim-readonly">1,00%</span>
+              <span id="fxFeeAbsBrl" style="color:var(--muted-purple-grey); font-weight:400; font-size:13px;">BRL 0,0514</span>
             </span>
           </div>
           <div class="sim-row">
             <span class="sim-row-label">Spread 🔗</span>
-            <span class="sim-row-value" style="display:flex; align-items:center; gap:4px;">
-              <div class="editable-wrap">
-                <input type="text" id="spreadPct" class="sim-input-sm" value="2,50" inputmode="decimal" autocomplete="off">
-                <span class="edit-icon" style="right:6px; font-size:11px;">✏️</span>
-              </div><span>%</span>
-              <span id="spreadAbsBrl" style="color:var(--muted-purple-grey); font-weight:400; font-size:13px; margin-left:4px;">(BRL 0,0000)</span>
+            <span class="sim-row-value" style="display:flex; align-items:center; width:200px; justify-content:space-between;">
+              <span style="text-align:left; display:inline-flex; align-items:center;">
+                <div class="editable-wrap">
+                  <input type="text" id="spreadPct" class="sim-input-sm" value="2,50" inputmode="decimal" autocomplete="off">
+                  <span class="edit-icon" style="right:6px; font-size:11px;">✏️</span>
+                </div><span>%</span>
+              </span>
+              <span id="spreadAbsBrl" style="color:var(--muted-purple-grey); font-weight:400; font-size:13px;">BRL 0,0000</span>
             </span>
           </div>
           <div class="sim-row" style="border-top:1px solid #eee; padding-top:12px; margin-top:4px;">
             <span style="font-weight:600; color:var(--muted-purple-grey);">Custo Total (IOF Incluso)</span>
-            <span class="sim-row-value" id="totalCostPct">1,0000%</span>
+            <span class="sim-row-value" style="display:flex; align-items:center; width:200px; justify-content:flex-start;">
+              <span id="totalCostPct" style="text-align:left;">3,50%</span>
+            </span>
           </div>
           <div class="sim-row" style="border-top:1px solid #eee; padding-top:12px; margin-top:4px;">
             <span style="font-weight:700;">Taxa de Câmbio Final (IOF incluso)</span>
@@ -307,12 +314,12 @@ footer { background: var(--almost-black); padding: var(--spacing-lg) 0; text-ali
 
         <!-- SETTLEMENT -->
         <div style="margin-top:var(--spacing-md);">
-          <div class="sim-section-label" style="margin-bottom:8px;">Data de liquidação</div>
+          <div class="sim-section-label" style="margin-bottom:8px;">Data de liquidação — Clique nas opções abaixo para efetivar a moeda futura</div>
           <div class="sim-settlement">
-            <div class="sim-settlement-option active" data-settlement="0">D+0<small>Hoje</small></div>
-            <div class="sim-settlement-option" data-settlement="0.055">D+1<small>Amanhã</small></div>
-            <div class="sim-settlement-option" data-settlement="0.1103">D+2<small>7 Mar</small></div>
-            <div class="sim-settlement-option" data-settlement="0.1655">D+3<small>8 Mar</small></div>
+            <div class="sim-settlement-option active" data-settlement="0">D+0<small>Hoje</small><span class="settle-rate" id="rateD0">—</span></div>
+            <div class="sim-settlement-option" data-settlement="0.055">D+1<small>Amanhã</small><span class="settle-rate" id="rateD1">—</span></div>
+            <div class="sim-settlement-option" data-settlement="0.1103">D+2<small>7 Mar</small><span class="settle-rate" id="rateD2">—</span></div>
+            <div class="sim-settlement-option" data-settlement="0.1655">D+3<small>8 Mar</small><span class="settle-rate" id="rateD3">—</span></div>
           </div>
         </div>
 
@@ -573,15 +580,28 @@ function recalculate() {
 
   // Update DOM
   document.getElementById('spotRate').textContent = 'BRL ' + formatBr(SPOT_RATE, 4);
-  document.getElementById('fxFeeAbsBrl').textContent = '(BRL ' + formatBr(fxFeeAbs, 4) + ')';
-  document.getElementById('spreadAbsBrl').textContent = '(BRL ' + formatBr(spreadAbs, 4) + ')';
-  document.getElementById('totalCostPct').textContent = formatBr(totalCostPct, 4) + '%';
+  document.getElementById('fxFeeAbsBrl').textContent = 'BRL ' + formatBr(fxFeeAbs, 4);
+  document.getElementById('spreadAbsBrl').textContent = 'BRL ' + formatBr(spreadAbs, 4);
+  document.getElementById('totalCostPct').textContent = formatBr(totalCostPct, 2) + '%';
   document.getElementById('finalRate').textContent = 'BRL ' + formatBr(finalRate, 4);
   document.getElementById('brlAmount').textContent = formatBr(brlVal, 2);
 
   // Revenue (BRL) = valor USD × Spread(%) × Taxa FX Spot × 65%
   const revenue = usdVal * (spreadPct / 100) * SPOT_RATE * 0.65;
   document.getElementById('revenueVal').textContent = formatBr(revenue, 2);
+
+  // Update settlement rate previews for all D+ options
+  const settlementPremiums = [0, 0.055, 0.1103, 0.1655];
+  const rateIds = ['rateD0', 'rateD1', 'rateD2', 'rateD3'];
+  for (let i = 0; i < 4; i++) {
+    let previewRate;
+    if (currentMode === 'enviar') {
+      previewRate = SPOT_RATE + fxFeeAbs + spreadAbs + SPOT_RATE * (settlementPremiums[i] / 100);
+    } else {
+      previewRate = SPOT_RATE * (1 - (FX_FEE_PCT + spreadPct + settlementPremiums[i]) / 100);
+    }
+    document.getElementById(rateIds[i]).textContent = formatBr(previewRate, 4);
+  }
 }
 
 function initSimulator() {
