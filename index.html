@@ -801,10 +801,10 @@ let chartCanvas, chartCtx;
 
 async function fetchIntradayRates() {
   try {
-    // AwesomeAPI: last N data points for USD-BRL
+    // AwesomeAPI: sequential quotes (intraday) — /json/USD-BRL/N returns last N quotes
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 5000);
-    const res = await fetch('https://economia.awesomeapi.com.br/json/daily/USD-BRL/120', { signal: controller.signal });
+    const res = await fetch('https://economia.awesomeapi.com.br/json/USD-BRL/100', { signal: controller.signal });
     clearTimeout(timeout);
     const data = await res.json();
     if (!data || !Array.isArray(data) || data.length === 0) { drawFallbackChart(); return; }
@@ -812,10 +812,11 @@ async function fetchIntradayRates() {
     // Data comes newest first — reverse for chronological order
     const sorted = data.reverse();
 
-    // Filter to today's data (or last business day if market closed)
+    // Get current date in Brasília
     const now = new Date();
     const brStr = now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' });
     const brNow = new Date(brStr);
+    const todayKey = brNow.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
 
     // Group by date
     const byDate = {};
@@ -827,15 +828,19 @@ async function fetchIntradayRates() {
     });
 
     const dateKeys = Object.keys(byDate);
-    // Use last available date's data
-    const lastDateKey = dateKeys[dateKeys.length - 1];
-    chartData = byDate[lastDateKey] || [];
+
+    // Try today first, then fallback to last available date
+    let useKey = todayKey;
+    if (!byDate[useKey] || byDate[useKey].length < 2) {
+      useKey = dateKeys[dateKeys.length - 1];
+    }
+    chartData = byDate[useKey] || [];
 
     if (chartData.length < 2) { drawFallbackChart(); return; }
 
     // Update chart meta
-    const isToday = lastDateKey === brNow.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
-    document.getElementById('chartMeta').textContent = isToday ? 'Hoje' : lastDateKey;
+    const isToday = useKey === todayKey;
+    document.getElementById('chartMeta').textContent = isToday ? 'Hoje' : useKey;
 
     // Update time labels
     const first = chartData[0].time;
@@ -852,8 +857,8 @@ async function fetchIntradayRates() {
 function drawChart() {
   if (!chartCanvas || chartData.length < 2) return;
   const ctx = chartCtx;
-  const w = chartCanvas.width;
-  const h = chartCanvas.height;
+  const w = chartCanvas._cssW;
+  const h = chartCanvas._cssH;
   ctx.clearRect(0, 0, w, h);
 
   const bids = chartData.map(d => d.bid);
@@ -916,8 +921,8 @@ function drawChart() {
 function drawFallbackChart() {
   if (!chartCanvas) return;
   const ctx = chartCtx;
-  const w = chartCanvas.width;
-  const h = chartCanvas.height;
+  const w = chartCanvas._cssW;
+  const h = chartCanvas._cssH;
   ctx.clearRect(0, 0, w, h);
 
   // Draw a flat line at center
@@ -940,20 +945,17 @@ function drawFallbackChart() {
 
 function initSpotChart() {
   chartCanvas = document.getElementById('spotChart');
-  // Set canvas resolution for sharp rendering
   const rect = chartCanvas.parentElement.getBoundingClientRect();
   const dpr = window.devicePixelRatio || 1;
   chartCanvas.width = rect.width * dpr;
   chartCanvas.height = rect.height * dpr;
-  chartCtx = chartCanvas.getContext('2d');
-  chartCtx.scale(dpr, dpr);
-  // Adjust for CSS size
   chartCanvas.style.width = rect.width + 'px';
   chartCanvas.style.height = rect.height + 'px';
-  // Override internal drawing dimensions
-  chartCanvas.width = rect.width * dpr;
-  chartCanvas.height = rect.height * dpr;
+  chartCtx = chartCanvas.getContext('2d');
   chartCtx.scale(dpr, dpr);
+  // Store CSS dimensions for drawing
+  chartCanvas._cssW = rect.width;
+  chartCanvas._cssH = rect.height;
 
   fetchIntradayRates();
   // Refresh chart every 60 seconds
