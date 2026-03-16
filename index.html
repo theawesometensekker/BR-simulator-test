@@ -488,6 +488,9 @@ function fetchLiveRate() {
         if (!isNaN(newRate) && newRate > 0) {
           SPOT_RATE = newRate;
           lastRateUpdate = new Date();
+          // Force update spotRate element directly
+          var el = document.getElementById('spotRate');
+          if (el) el.innerText = 'BRL ' + newRate.toLocaleString('pt-BR', {minimumFractionDigits:4, maximumFractionDigits:4});
           recalculate();
           setRateStatus('live');
           return;
