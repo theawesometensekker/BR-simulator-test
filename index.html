@@ -156,8 +156,8 @@ p { font-size: 18px; line-height: 1.6; }
 .live-dot { display: inline-block; width: 8px; height: 8px; background: var(--success); border-radius: 50%; margin-right: 6px; animation: pulse-dot 1.5s infinite; }
 @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 @keyframes pulse-text { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-.spot-rate-live { color: var(--success); animation: pulse-text 1.5s infinite; }
-.spot-rate-offline { color: var(--almost-black); animation: none; }
+.spot-rate-live { color: var(--success); font-weight: 600; }
+.spot-rate-offline { color: var(--almost-black); font-weight: 600; }
 
 .currency-flag { font-size: 18px; margin-right: 4px; }
 
@@ -488,6 +488,16 @@ async function fetchLiveRate() {
         lastRateUpdate = new Date();
         recalculate();
         setRateStatus('live');
+        // Flash the spot rate to signal update
+        const spotEl = document.getElementById('spotRate');
+        spotEl.style.transition = 'none';
+        spotEl.style.color = '#fff';
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            spotEl.style.transition = 'color 0.8s';
+            spotEl.style.color = 'var(--success)';
+          });
+        });
         return;
       }
     }
@@ -576,7 +586,6 @@ function setRateStatus(status) {
     spotStatus.style.color = 'var(--success)';
     spotStatus.lastChild.textContent = 'ONLINE';
     spotRateEl.className = 'sim-row-value spot-rate-live';
-    spotRateEl.style.color = '';
   } else {
     if (statusChanged) footer.innerHTML = 'Simulação em tempo real offline';
     spotDot.style.background = 'var(--error)';
