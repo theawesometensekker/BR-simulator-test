@@ -376,12 +376,12 @@ footer { background: var(--almost-black); padding: var(--spacing-lg) 0; text-ali
       <div class="feature-card scroll-reveal">
         <div class="feature-icon">⚡</div>
         <div class="feature-title">Onboarding instantâneo</div>
-        <div class="feature-desc">Aprove o onboarding em minutos, não dias! Nossa IA tira a fricção do onboarding de seu cliente. Uma experiência jamais vista, agora à sua disposição.</div>
+        <div class="feature-desc">Aprove o onboarding de seus clientes em minutos, não dias! Nossa IA tira a fricção do onboarding de seu cliente. Uma experiência jamais vista, agora à sua disposição.</div>
       </div>
       <div class="feature-card scroll-reveal">
         <div class="feature-icon">🤖</div>
         <div class="feature-title">Compliance com IA</div>
-        <div class="feature-desc">Gestão de risco e compliance potencializada por inteligência artificial — rapidez nas análises com compliance rigoroso nunca andaram tão juntas!</div>
+        <div class="feature-desc">Gestão de risco e compliance potencializada por inteligência artificial — não perca mais negócios com processos lentos ou inseguros - a tecnologia possibilita oferecer rapidez nas análises sem pular etapas ou enfraquecer rigor no compliance.</div>
       </div>
       <div class="feature-card scroll-reveal">
         <div class="feature-icon">🔗</div>
@@ -395,8 +395,8 @@ footer { background: var(--almost-black); padding: var(--spacing-lg) 0; text-ali
       </div>
       <div class="feature-card scroll-reveal">
         <div class="feature-icon">🔒</div>
-        <div class="feature-title">O mais alto padrão de Segurança</div>
-        <div class="feature-desc">Infraestrutura robusta com criptografia de ponta a ponta e conformidade regulatória global.</div>
+        <div class="feature-title">Segurança no mais alto padrão da indústria</div>
+        <div class="feature-desc">Infraestrutura projetada para proteger cada transação com criptografia de ponta a ponta e conformidade com os mais rigorosos padrões regulatórios globais.</div>
       </div>
     </div>
   </div>
@@ -634,7 +634,80 @@ function recalculate() {
   }
 }
 
+function getNextBusinessDays() {
+  const brHolidays2025 = ['01-01','03-03','03-04','04-18','04-21','05-01','06-19','09-07','10-12','11-02','11-15','12-25'];
+  const brHolidays2026 = ['01-01','02-16','02-17','04-03','04-21','05-01','06-04','09-07','10-12','11-02','11-15','12-25'];
+
+  function isHoliday(date) {
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    const mmdd = mm + '-' + dd;
+    const year = date.getFullYear();
+    if (year === 2025) return brHolidays2025.includes(mmdd);
+    if (year === 2026) return brHolidays2026.includes(mmdd);
+    return false;
+  }
+
+  function isBusinessDay(date) {
+    const day = date.getDay();
+    if (day === 0 || day === 6) return false;
+    if (isHoliday(date)) return false;
+    return true;
+  }
+
+  function nextBusinessDay(from) {
+    const d = new Date(from);
+    d.setDate(d.getDate() + 1);
+    while (!isBusinessDay(d)) { d.setDate(d.getDate() + 1); }
+    return d;
+  }
+
+  // Start from today in Brasília timezone
+  const now = new Date();
+  const brStr = now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' });
+  let today = new Date(brStr);
+
+  // If today is not a business day, D+0 = next business day
+  if (!isBusinessDay(today)) {
+    while (!isBusinessDay(today)) { today.setDate(today.getDate() + 1); }
+  }
+
+  const days = [today];
+  for (let i = 1; i < 4; i++) {
+    days.push(nextBusinessDay(days[i - 1]));
+  }
+  return days;
+}
+
+function formatSettlementLabel(date, index) {
+  const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  if (index === 0) return 'Hoje, ' + date.getDate() + ' ' + months[date.getMonth()];
+  // Check if it's tomorrow relative to now
+  const now = new Date();
+  const brStr = now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' });
+  const brToday = new Date(brStr);
+  const tomorrow = new Date(brToday);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  if (date.getDate() === tomorrow.getDate() && date.getMonth() === tomorrow.getMonth()) {
+    return 'Amanhã, ' + date.getDate() + ' ' + months[date.getMonth()];
+  }
+  return date.getDate() + ' ' + months[date.getMonth()];
+}
+
+function updateSettlementDates() {
+  const days = getNextBusinessDays();
+  const options = document.querySelectorAll('.sim-settlement-option');
+  options.forEach((opt, i) => {
+    const small = opt.querySelector('small');
+    if (small && days[i]) {
+      small.textContent = formatSettlementLabel(days[i], i);
+    }
+  });
+}
+
 function initSimulator() {
+  // Update settlement dates
+  updateSettlementDates();
   const usdInput = document.getElementById('usdAmount');
   const spreadInput = document.getElementById('spreadPct');
 
