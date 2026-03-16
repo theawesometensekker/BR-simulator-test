@@ -843,7 +843,14 @@ async function fetchIntradayRates() {
 
     // Update chart meta
     const isToday = useKey === todayKey;
-    document.getElementById('chartMeta').textContent = isToday ? 'Hoje' : useKey;
+    const metaEl = document.getElementById('chartMeta');
+    if (isToday) {
+      const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+      const d = chartData[0].time;
+      metaEl.innerHTML = 'Hoje<br>' + d.getDate() + '-' + months[d.getMonth()];
+    } else {
+      metaEl.textContent = useKey;
+    }
 
     // Update time labels
     const first = chartData[0].time;
