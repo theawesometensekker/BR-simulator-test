@@ -680,11 +680,23 @@ function getNextBusinessDays() {
 
 function formatSettlementLabel(date, index) {
   const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-  if (index === 0) return 'Hoje, ' + date.getDate() + ' ' + months[date.getMonth()];
-  // Check if it's tomorrow relative to now
+  const weekdays = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+
+  // Check if the date is actually today in Brasília
   const now = new Date();
   const brStr = now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' });
   const brToday = new Date(brStr);
+  const isToday = date.getDate() === brToday.getDate() && date.getMonth() === brToday.getMonth() && date.getFullYear() === brToday.getFullYear();
+
+  if (index === 0) {
+    if (isToday) {
+      return 'Hoje, ' + date.getDate() + ' ' + months[date.getMonth()];
+    } else {
+      return weekdays[date.getDay()] + ', ' + date.getDate() + ' ' + months[date.getMonth()];
+    }
+  }
+
+  // Check if it's tomorrow relative to now
   const tomorrow = new Date(brToday);
   tomorrow.setDate(tomorrow.getDate() + 1);
   if (date.getDate() === tomorrow.getDate() && date.getMonth() === tomorrow.getMonth()) {
