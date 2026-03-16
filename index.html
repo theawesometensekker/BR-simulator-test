@@ -474,37 +474,29 @@ let rateCountdown = 10;
 let countdownInterval = null;
 let lastRateUpdate = null;
 
-async function fetchLiveRate() {
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 4000);
-    const res = await fetch('https://economia.awesomeapi.com.br/json/last/USD-BRL', { signal: controller.signal });
-    clearTimeout(timeout);
-    const data = await res.json();
-    if (data && data.USDBRL && data.USDBRL.bid) {
-      const newRate = parseFloat(data.USDBRL.bid);
-      if (!isNaN(newRate) && newRate > 0) {
-        SPOT_RATE = newRate;
-        lastRateUpdate = new Date();
-        recalculate();
-        setRateStatus('live');
-        // Flash the spot rate to signal update
-        const spotEl = document.getElementById('spotRate');
-        spotEl.style.transition = 'none';
-        spotEl.style.color = '#fff';
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            spotEl.style.transition = 'color 0.8s';
-            spotEl.style.color = 'var(--success)';
-          });
-        });
-        return;
+function fetchLiveRate() {
+  fetch('https://economia.awesomeapi.com.br/json/last/USD-BRL')
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data && data.USDBRL && data.USDBRL.bid) {
+        var newRate = parseFloat(data.USDBRL.bid);
+        if (!isNaN(newRate) && newRate > 0) {
+          SPOT_RATE = newRate;
+          lastRateUpdate = new Date();
+          recalculate();
+          setRateStatus('live');
+          // Flash spot rate green
+          var spotEl = document.getElementById('spotRate');
+          spotEl.style.color = '#22C55E';
+          setTimeout(function() { spotEl.style.color = ''; }, 1500);
+          return;
+        }
       }
-    }
-    setRateStatus('offline');
-  } catch (e) {
-    setRateStatus('offline');
-  }
+      setRateStatus('offline');
+    })
+    .catch(function() {
+      setRateStatus('offline');
+    });
 }
 
 function isMarketClosed() {
@@ -552,64 +544,55 @@ function isMarketClosed() {
   return false;
 }
 
-let currentRateStatus = null;
+var currentRateStatus = null;
 
 function setRateStatus(status) {
-  const footer = document.getElementById('rateFooter');
-  const spotStatus = document.getElementById('spotStatus');
-  const spotDot = document.getElementById('spotDot');
-  const spotRateEl = document.getElementById('spotRate');
+  var footer = document.getElementById('rateFooter');
+  var spotStatus = document.getElementById('spotStatus');
+  var spotDot = document.getElementById('spotDot');
+  var spotRateEl = document.getElementById('spotRate');
 
-  let newStatus = status;
+  var newStatus = status;
   if (isMarketClosed()) newStatus = 'closed';
-
-  // Track if this is a status change (for footer update)
-  const statusChanged = (newStatus !== currentRateStatus);
   currentRateStatus = newStatus;
 
   if (newStatus === 'closed') {
-    if (statusChanged) footer.innerHTML = 'Mercado Fechado. Cotação offline.';
-    spotDot.style.background = 'var(--error)';
-    spotStatus.style.color = 'var(--error)';
+    footer.textContent = 'Mercado Fechado. Cotação offline.';
+    spotDot.style.background = '#EF4444';
+    spotStatus.style.color = '#EF4444';
     spotStatus.lastChild.textContent = 'OFFLINE';
-    spotRateEl.className = 'sim-row-value spot-rate-offline';
-    spotRateEl.style.color = '';
+    spotRateEl.style.color = '#151720';
     return;
   }
 
   if (newStatus === 'live') {
-    if (statusChanged) {
-      const updateTime = lastRateUpdate ? lastRateUpdate.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit', second:'2-digit', timeZone:'America/Sao_Paulo' }) : '';
-      footer.innerHTML = 'Simulação FX Spot online — Próxima atualização em <strong id="rateCountdown">' + rateCountdown + '</strong>s. <span style="opacity:0.6;">Última: ' + updateTime + '</span>';
-    }
-    spotDot.style.background = 'var(--success)';
-    spotStatus.style.color = 'var(--success)';
+    var updateTime = lastRateUpdate ? lastRateUpdate.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit', second:'2-digit' }) : '';
+    footer.innerHTML = 'Simulação FX Spot online — Próxima atualização em <strong id="rateCountdown">' + rateCountdown + '</strong>s. <span style="opacity:0.6;">Última: ' + updateTime + '</span>';
+    spotDot.style.background = '#22C55E';
+    spotStatus.style.color = '#22C55E';
     spotStatus.lastChild.textContent = 'ONLINE';
-    spotRateEl.className = 'sim-row-value spot-rate-live';
   } else {
-    if (statusChanged) footer.innerHTML = 'Simulação em tempo real offline';
-    spotDot.style.background = 'var(--error)';
-    spotStatus.style.color = 'var(--error)';
+    footer.textContent = 'Simulação em tempo real offline';
+    spotDot.style.background = '#EF4444';
+    spotStatus.style.color = '#EF4444';
     spotStatus.lastChild.textContent = 'OFFLINE';
-    spotRateEl.className = 'sim-row-value spot-rate-offline';
-    spotRateEl.style.color = '';
+    spotRateEl.style.color = '#151720';
   }
 }
 
 function startRatePolling() {
-  // Fetch immediately
   fetchLiveRate();
-  // Then every 10 seconds
-  setInterval(fetchLiveRate, 10000);
 
-  // Countdown timer
   rateCountdown = 10;
   if (countdownInterval) clearInterval(countdownInterval);
-  countdownInterval = setInterval(() => {
+  countdownInterval = setInterval(function() {
     rateCountdown--;
-    if (rateCountdown <= 0) rateCountdown = 10;
-    const countdownEl = document.getElementById('rateCountdown');
+    var countdownEl = document.getElementById('rateCountdown');
     if (countdownEl) countdownEl.textContent = rateCountdown;
+    if (rateCountdown <= 0) {
+      rateCountdown = 10;
+      fetchLiveRate();
+    }
   }, 1000);
 }
 
