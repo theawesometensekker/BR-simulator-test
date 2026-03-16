@@ -474,7 +474,12 @@ let rateCountdown = 10;
 let countdownInterval = null;
 let lastRateUpdate = null;
 
+var fetchCount = 0;
+var tickCount = 0;
+
 function fetchLiveRate() {
+  fetchCount++;
+  var fc = fetchCount;
   fetch('https://economia.awesomeapi.com.br/json/last/USD-BRL')
     .then(function(res) { return res.json(); })
     .then(function(data) {
@@ -485,16 +490,12 @@ function fetchLiveRate() {
           lastRateUpdate = new Date();
           recalculate();
           setRateStatus('live');
-          // Flash spot rate green
-          var spotEl = document.getElementById('spotRate');
-          spotEl.style.color = '#22C55E';
-          setTimeout(function() { spotEl.style.color = ''; }, 1500);
           return;
         }
       }
       setRateStatus('offline');
     })
-    .catch(function() {
+    .catch(function(err) {
       setRateStatus('offline');
     });
 }
@@ -567,7 +568,7 @@ function setRateStatus(status) {
 
   if (newStatus === 'live') {
     var updateTime = lastRateUpdate ? lastRateUpdate.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit', second:'2-digit' }) : '';
-    footer.innerHTML = 'Simulação FX Spot online — Próxima atualização em <strong id="rateCountdown">' + rateCountdown + '</strong>s. <span style="opacity:0.6;">Última: ' + updateTime + '</span>';
+    footer.innerHTML = 'FX Spot online — <strong id="rateCountdown">' + rateCountdown + '</strong>s. Última: ' + updateTime + ' | ticks:' + tickCount + ' fetches:' + fetchCount;
     spotDot.style.background = '#22C55E';
     spotStatus.style.color = '#22C55E';
     spotStatus.lastChild.textContent = 'ONLINE';
@@ -586,6 +587,7 @@ function startRatePolling() {
   rateCountdown = 10;
   if (countdownInterval) clearInterval(countdownInterval);
   countdownInterval = setInterval(function() {
+    tickCount++;
     rateCountdown--;
     var countdownEl = document.getElementById('rateCountdown');
     if (countdownEl) countdownEl.textContent = rateCountdown;
