@@ -479,8 +479,8 @@ var tickCount = 0;
 
 function fetchLiveRate() {
   fetchCount++;
-  var fc = fetchCount;
-  fetch('https://economia.awesomeapi.com.br/json/last/USD-BRL')
+  var url = 'https://economia.awesomeapi.com.br/json/last/USD-BRL?_t=' + Date.now();
+  fetch(url)
     .then(function(res) { return res.json(); })
     .then(function(data) {
       if (data && data.USDBRL && data.USDBRL.bid) {
