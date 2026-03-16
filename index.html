@@ -488,9 +488,13 @@ function fetchLiveRate() {
         if (!isNaN(newRate) && newRate > 0) {
           SPOT_RATE = newRate;
           lastRateUpdate = new Date();
-          // Force update spotRate element directly
+          // Force update spotRate - clear any inline styles, set text directly
           var el = document.getElementById('spotRate');
-          if (el) el.innerText = 'BRL ' + newRate.toLocaleString('pt-BR', {minimumFractionDigits:4, maximumFractionDigits:4});
+          if (el) {
+            el.style.color = '';
+            el.style.background = '';
+            el.textContent = 'BRL ' + newRate.toLocaleString('pt-BR', {minimumFractionDigits:4, maximumFractionDigits:4});
+          }
           recalculate();
           setRateStatus('live');
           return;
@@ -554,7 +558,6 @@ function setRateStatus(status) {
   var footer = document.getElementById('rateFooter');
   var spotStatus = document.getElementById('spotStatus');
   var spotDot = document.getElementById('spotDot');
-  var spotRateEl = document.getElementById('spotRate');
 
   var newStatus = status;
   if (isMarketClosed()) newStatus = 'closed';
@@ -565,7 +568,6 @@ function setRateStatus(status) {
     spotDot.style.background = '#EF4444';
     spotStatus.style.color = '#EF4444';
     spotStatus.lastChild.textContent = 'OFFLINE';
-    spotRateEl.style.color = '#151720';
     return;
   }
 
@@ -580,7 +582,6 @@ function setRateStatus(status) {
     spotDot.style.background = '#EF4444';
     spotStatus.style.color = '#EF4444';
     spotStatus.lastChild.textContent = 'OFFLINE';
-    spotRateEl.style.color = '#151720';
   }
 }
 
