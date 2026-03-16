@@ -155,6 +155,9 @@ p { font-size: 18px; line-height: 1.6; }
 
 .live-dot { display: inline-block; width: 8px; height: 8px; background: var(--success); border-radius: 50%; margin-right: 6px; animation: pulse-dot 1.5s infinite; }
 @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+@keyframes pulse-text { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+.spot-rate-live { color: var(--success); animation: pulse-text 1.5s infinite; }
+.spot-rate-offline { color: var(--almost-black); animation: none; }
 
 .currency-flag { font-size: 18px; margin-right: 4px; }
 
@@ -242,9 +245,8 @@ footer { background: var(--almost-black); padding: var(--spacing-lg) 0; text-ali
 
     <div class="simulator-wrap">
       <div class="simulator-card">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
           <h3 style="font-weight:700;">Simule uma transação</h3>
-          <span style="font-size:13px; color:var(--warning);"><span class="live-dot" id="liveDot" style="background:var(--warning);"></span><span id="liveLabel">Cotação referência</span></span>
         </div>
         <p class="subtitle" style="text-decoration:underline;">Natureza de câmbio com 3,5% de IOF</p>
         <p style="font-size:11px; color:var(--muted-purple-grey); margin-top:-12px; margin-bottom:var(--spacing-md); line-height:1.4;">Simulação com dados aproximados em tempo real das taxas spot de câmbio. Não deve ser usada para transações reais.</p>
@@ -304,9 +306,7 @@ footer { background: var(--almost-black); padding: var(--spacing-lg) 0; text-ali
             <canvas id="spotChart" style="width:100%; height:100%;"></canvas>
             <div id="chartTooltip" style="display:none; position:absolute; background:var(--almost-black); color:var(--white); padding:4px 8px; border-radius:6px; font-size:11px; font-family:var(--font-body); pointer-events:none; white-space:nowrap; z-index:10;"></div>
           </div>
-          <div style="display:flex; justify-content:space-between; margin-top:4px;">
-            <span id="chartTimeStart" style="font-size:10px; color:var(--muted-purple-grey);">09:00</span>
-            <span id="chartTimeEnd" style="font-size:10px; color:var(--muted-purple-grey);">16:30</span>
+          <div id="chartTimeAxis" style="display:flex; justify-content:space-between; margin-top:4px; padding:0 2px;">
           </div>
         </div>
 
@@ -318,7 +318,7 @@ footer { background: var(--almost-black); padding: var(--spacing-lg) 0; text-ali
 
           <!-- Spot row -->
           <div style="display:flex; align-items:center; padding:6px 0; font-size:15px;">
-            <span class="sim-row-label" style="flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Taxa de Câmbio Spot</span>
+            <span class="sim-row-label" style="flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Taxa Spot <span id="spotStatus" style="font-size:11px; font-weight:600; margin-left:8px;"><span id="spotDot" style="display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--error); animation:pulse-dot 1.5s infinite; vertical-align:middle; margin-right:3px;"></span>OFFLINE</span></span>
             <span style="width:80px;"></span>
             <span class="sim-row-value" id="spotRate" style="width:100px; text-align:right; white-space:nowrap;">BRL 5,1398</span>
           </div>
@@ -552,25 +552,37 @@ function setRateStatus(status) {
   const dot = document.getElementById('liveDot');
   const label = document.getElementById('liveLabel');
   const footer = document.getElementById('rateFooter');
+  const spotStatus = document.getElementById('spotStatus');
+  const spotDot = document.getElementById('spotDot');
+  const spotRateEl = document.getElementById('spotRate');
 
   if (isMarketClosed()) {
-    dot.style.background = 'var(--error)';
-    label.textContent = 'Mercado Fechado';
-    label.style.color = 'var(--error)';
+    if (dot) dot.style.background = 'var(--error)';
+    if (label) { label.textContent = 'Mercado Fechado'; label.style.color = 'var(--error)'; }
     footer.innerHTML = 'Mercado Fechado. Cotação offline.';
+    spotDot.style.background = 'var(--error)';
+    spotStatus.style.color = 'var(--error)';
+    spotStatus.lastChild.textContent = 'OFFLINE';
+    spotRateEl.className = 'sim-row-value spot-rate-offline';
     return;
   }
 
   if (status === 'live') {
-    dot.style.background = 'var(--success)';
-    label.textContent = 'Simulação da Cotação em Tempo Real Online';
-    label.style.color = 'var(--success)';
+    if (dot) dot.style.background = 'var(--success)';
+    if (label) { label.textContent = 'Simulação da Cotação em Tempo Real Online'; label.style.color = 'var(--success)'; }
     footer.innerHTML = 'Simulação FX Spot online — Próxima atualização em <strong id="rateCountdown">10</strong>s.';
+    spotDot.style.background = 'var(--success)';
+    spotStatus.style.color = 'var(--success)';
+    spotStatus.lastChild.textContent = 'ONLINE';
+    spotRateEl.className = 'sim-row-value spot-rate-live';
   } else {
-    dot.style.background = 'var(--warning)';
-    label.textContent = 'Cotação referência';
-    label.style.color = 'var(--warning)';
+    if (dot) dot.style.background = 'var(--warning)';
+    if (label) { label.textContent = 'Cotação referência'; label.style.color = 'var(--warning)'; }
     footer.innerHTML = 'Simulação em tempo real offline';
+    spotDot.style.background = 'var(--error)';
+    spotStatus.style.color = 'var(--error)';
+    spotStatus.lastChild.textContent = 'OFFLINE';
+    spotRateEl.className = 'sim-row-value spot-rate-offline';
   }
 }
 
@@ -852,12 +864,6 @@ async function fetchIntradayRates() {
       metaEl.textContent = useKey;
     }
 
-    // Update time labels
-    const first = chartData[0].time;
-    const last = chartData[chartData.length - 1].time;
-    document.getElementById('chartTimeStart').textContent = first.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo' });
-    document.getElementById('chartTimeEnd').textContent = last.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo' });
-
     drawChart();
   } catch (e) {
     drawFallbackChart();
@@ -876,13 +882,67 @@ function drawChart() {
   const max = Math.max(...bids) + 0.002;
   const range = max - min || 0.01;
 
-  // Draw grid lines
+  // Time range
+  const firstTime = chartData[0].time.getTime();
+  const lastTime = chartData[chartData.length - 1].time.getTime();
+  const timeRange = lastTime - firstTime || 1;
+
+  // Draw horizontal grid lines
   ctx.strokeStyle = '#E8E6EB';
   ctx.lineWidth = 0.5;
   for (let i = 0; i <= 4; i++) {
     const y = (h * i) / 4;
     ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
   }
+
+  // Draw vertical grid lines at full hours and populate time axis
+  const firstHour = chartData[0].time.getHours();
+  const lastHour = chartData[chartData.length - 1].time.getHours();
+  const axisEl = document.getElementById('chartTimeAxis');
+  axisEl.innerHTML = '';
+
+  // Calculate full hours within the data range
+  const fullHours = [];
+  for (let hr = firstHour; hr <= lastHour + 1; hr++) {
+    const hourDate = new Date(chartData[0].time);
+    hourDate.setHours(hr, 0, 0, 0);
+    const t = hourDate.getTime();
+    if (t >= firstTime && t <= lastTime) {
+      fullHours.push({ hour: hr, x: ((t - firstTime) / timeRange) * w });
+    }
+  }
+
+  // Draw vertical dashed lines
+  ctx.strokeStyle = '#E8E6EB';
+  ctx.lineWidth = 0.5;
+  ctx.setLineDash([3, 3]);
+  fullHours.forEach(fh => {
+    ctx.beginPath(); ctx.moveTo(fh.x, 0); ctx.lineTo(fh.x, h); ctx.stroke();
+  });
+  ctx.setLineDash([]);
+
+  // Populate the time axis labels
+  // Add start time
+  const startLabel = document.createElement('span');
+  startLabel.style.cssText = 'font-size:10px; color:var(--muted-purple-grey); position:absolute; left:0;';
+  startLabel.textContent = chartData[0].time.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit', timeZone:'America/Sao_Paulo' });
+  axisEl.style.position = 'relative';
+  axisEl.style.height = '14px';
+  axisEl.appendChild(startLabel);
+
+  fullHours.forEach(fh => {
+    const lbl = document.createElement('span');
+    lbl.style.cssText = 'font-size:10px; color:var(--muted-purple-grey); position:absolute; transform:translateX(-50%);';
+    lbl.style.left = fh.x + 'px';
+    lbl.textContent = String(fh.hour).padStart(2, '0') + ':00';
+    axisEl.appendChild(lbl);
+  });
+
+  // Add end time
+  const endLabel = document.createElement('span');
+  endLabel.style.cssText = 'font-size:10px; color:var(--muted-purple-grey); position:absolute; right:0;';
+  endLabel.textContent = chartData[chartData.length - 1].time.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit', timeZone:'America/Sao_Paulo' });
+  axisEl.appendChild(endLabel);
 
   // Draw gradient fill
   const gradient = ctx.createLinearGradient(0, 0, 0, h);
@@ -891,9 +951,9 @@ function drawChart() {
   ctx.beginPath();
   ctx.moveTo(0, h);
   chartData.forEach((d, i) => {
-    const x = (i / (chartData.length - 1)) * w;
+    const x = ((d.time.getTime() - firstTime) / timeRange) * w;
     const y = h - ((d.bid - min) / range) * h;
-    if (i === 0) ctx.lineTo(x, y); else ctx.lineTo(x, y);
+    ctx.lineTo(x, y);
   });
   ctx.lineTo(w, h);
   ctx.closePath();
@@ -903,7 +963,7 @@ function drawChart() {
   // Draw line
   ctx.beginPath();
   chartData.forEach((d, i) => {
-    const x = (i / (chartData.length - 1)) * w;
+    const x = ((d.time.getTime() - firstTime) / timeRange) * w;
     const y = h - ((d.bid - min) / range) * h;
     if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
   });
@@ -913,10 +973,9 @@ function drawChart() {
 
   // Draw current price dot at the end
   const lastBid = bids[bids.length - 1];
-  const lastX = w;
   const lastY = h - ((lastBid - min) / range) * h;
   ctx.beginPath();
-  ctx.arc(lastX - 2, lastY, 4, 0, Math.PI * 2);
+  ctx.arc(w - 2, lastY, 4, 0, Math.PI * 2);
   ctx.fillStyle = '#214CE4';
   ctx.fill();
 
