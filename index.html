@@ -488,7 +488,6 @@ function fetchLiveRate() {
         if (!isNaN(newRate) && newRate > 0) {
           SPOT_RATE = newRate;
           lastRateUpdate = new Date();
-          // Force update spotRate - clear any inline styles, set text directly
           var el = document.getElementById('spotRate');
           if (el) {
             el.style.color = '';
@@ -573,7 +572,7 @@ function setRateStatus(status) {
 
   if (newStatus === 'live') {
     var updateTime = lastRateUpdate ? lastRateUpdate.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit', second:'2-digit' }) : '';
-    footer.innerHTML = 'FX Spot online — <strong id="rateCountdown">' + rateCountdown + '</strong>s. Última: ' + updateTime + ' | spot:' + SPOT_RATE.toFixed(4) + ' | ticks:' + tickCount + ' fetches:' + fetchCount;
+    footer.innerHTML = 'Simulação FX Spot online — Próxima atualização em <strong id="rateCountdown">' + rateCountdown + '</strong>s.';
     spotDot.style.background = '#22C55E';
     spotStatus.style.color = '#22C55E';
     spotStatus.lastChild.textContent = 'ONLINE';
