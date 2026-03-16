@@ -488,11 +488,11 @@ async function fetchLiveRate() {
         lastRateUpdate = new Date();
         recalculate();
         setRateStatus('live');
-        // Flash the spot rate green
+        // Flash the spot rate — briefly brighten then let CSS class take over
         const spotEl = document.getElementById('spotRate');
-        spotEl.style.transition = 'color 0.2s';
-        spotEl.style.color = 'var(--success)';
-        setTimeout(() => { spotEl.style.color = ''; }, 800);
+        spotEl.style.transition = 'opacity 0.3s';
+        spotEl.style.opacity = '0.5';
+        setTimeout(() => { spotEl.style.opacity = '1'; }, 300);
         return;
       }
     }
@@ -548,6 +548,8 @@ function isMarketClosed() {
   return false;
 }
 
+let currentRateStatus = null; // track status to avoid unnecessary DOM updates
+
 function setRateStatus(status) {
   const dot = document.getElementById('liveDot');
   const label = document.getElementById('liveLabel');
@@ -556,7 +558,14 @@ function setRateStatus(status) {
   const spotDot = document.getElementById('spotDot');
   const spotRateEl = document.getElementById('spotRate');
 
-  if (isMarketClosed()) {
+  let newStatus = status;
+  if (isMarketClosed()) newStatus = 'closed';
+
+  // Only update DOM if status actually changed
+  if (newStatus === currentRateStatus) return;
+  currentRateStatus = newStatus;
+
+  if (newStatus === 'closed') {
     if (dot) dot.style.background = 'var(--error)';
     if (label) { label.textContent = 'Mercado Fechado'; label.style.color = 'var(--error)'; }
     footer.innerHTML = 'Mercado Fechado. Cotação offline.';
@@ -564,17 +573,19 @@ function setRateStatus(status) {
     spotStatus.style.color = 'var(--error)';
     spotStatus.lastChild.textContent = 'OFFLINE';
     spotRateEl.className = 'sim-row-value spot-rate-offline';
+    spotRateEl.style.color = '';
     return;
   }
 
-  if (status === 'live') {
+  if (newStatus === 'live') {
     if (dot) dot.style.background = 'var(--success)';
     if (label) { label.textContent = 'Simulação da Cotação em Tempo Real Online'; label.style.color = 'var(--success)'; }
-    footer.innerHTML = 'Simulação FX Spot online — Próxima atualização em <strong id="rateCountdown">10</strong>s.';
+    footer.innerHTML = 'Simulação FX Spot online — Próxima atualização em <strong id="rateCountdown">' + rateCountdown + '</strong>s.';
     spotDot.style.background = 'var(--success)';
     spotStatus.style.color = 'var(--success)';
     spotStatus.lastChild.textContent = 'ONLINE';
     spotRateEl.className = 'sim-row-value spot-rate-live';
+    spotRateEl.style.color = '';
   } else {
     if (dot) dot.style.background = 'var(--warning)';
     if (label) { label.textContent = 'Cotação referência'; label.style.color = 'var(--warning)'; }
@@ -583,6 +594,7 @@ function setRateStatus(status) {
     spotStatus.style.color = 'var(--error)';
     spotStatus.lastChild.textContent = 'OFFLINE';
     spotRateEl.className = 'sim-row-value spot-rate-offline';
+    spotRateEl.style.color = '';
   }
 }
 
