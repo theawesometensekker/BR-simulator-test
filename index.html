@@ -814,10 +814,9 @@ let chartCanvas, chartCtx;
 
 async function fetchIntradayRates() {
   try {
-    // AwesomeAPI: sequential quotes (intraday) — /json/USD-BRL/N returns last N quotes
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 5000);
-    const res = await fetch('https://economia.awesomeapi.com.br/json/USD-BRL/300', { signal: controller.signal });
+    const res = await fetch('https://economia.awesomeapi.com.br/json/USD-BRL/300?_t=' + Date.now(), { signal: controller.signal });
     clearTimeout(timeout);
     const data = await res.json();
     if (!data || !Array.isArray(data) || data.length === 0) { drawFallbackChart(); return; }
@@ -825,28 +824,48 @@ async function fetchIntradayRates() {
     // Data comes newest first — reverse for chronological order
     const sorted = data.reverse();
 
-    // Get current date in Brasília
+    // Get current time in Brasília
     const now = new Date();
     const brStr = now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' });
     const brNow = new Date(brStr);
+    const brHour = brNow.getHours();
     const todayKey = brNow.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
 
-    // Group by date
+    // Group by date and filter: only include quotes up to 17:00 Brasília
     const byDate = {};
-    sorted.forEach(p => {
+    sorted.forEach(function(p) {
       const ts = new Date(parseInt(p.timestamp) * 1000);
-      const dateKey = ts.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+      const brTs = new Date(ts.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+      const dateKey = brTs.toLocaleDateString('pt-BR');
+      const hour = brTs.getHours();
+      // Only include quotes before 17:00
+      if (hour >= 17) return;
       if (!byDate[dateKey]) byDate[dateKey] = [];
       byDate[dateKey].push({ time: ts, bid: parseFloat(p.bid) });
     });
 
     const dateKeys = Object.keys(byDate);
 
-    // Try today first, then fallback to last available date
-    let useKey = todayKey;
-    if (!byDate[useKey] || byDate[useKey].length < 2) {
+    // Determine which day to show:
+    // Before 9:00 → show last business day (previous day's data up to 17:00)
+    // 9:00-17:00 → show today's data (accumulating)
+    // After 17:00 → show today's data frozen at 17:00
+    var useKey;
+    if (brHour < 9) {
+      // Before market open: show last available day
       useKey = dateKeys[dateKeys.length - 1];
+      // Make sure it's not today (which would have no data before 9)
+      if (useKey === todayKey && dateKeys.length > 1) {
+        useKey = dateKeys[dateKeys.length - 2];
+      }
+    } else {
+      // During or after market hours: show today
+      useKey = todayKey;
+      if (!byDate[useKey] || byDate[useKey].length < 2) {
+        useKey = dateKeys[dateKeys.length - 1];
+      }
     }
+
     chartData = byDate[useKey] || [];
 
     if (chartData.length < 2) { drawFallbackChart(); return; }
@@ -854,12 +873,15 @@ async function fetchIntradayRates() {
     // Update chart meta
     const isToday = useKey === todayKey;
     const metaEl = document.getElementById('chartMeta');
+    const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
     if (isToday) {
-      const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
       const d = chartData[0].time;
-      metaEl.innerHTML = 'Hoje<br>' + d.getDate() + '-' + months[d.getMonth()];
+      var dBr = new Date(d.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+      metaEl.innerHTML = 'Hoje<br>' + dBr.getDate() + '-' + months[dBr.getMonth()];
     } else {
-      metaEl.textContent = useKey;
+      // Show the date of the data being displayed
+      var dBr = new Date(chartData[0].time.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+      metaEl.innerHTML = dBr.getDate() + '-' + months[dBr.getMonth()] + '<br><span style="font-size:10px;">Último dia útil</span>';
     }
 
     drawChart();
