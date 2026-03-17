@@ -566,7 +566,7 @@ function setRateStatus(status) {
     footer.textContent = 'Mercado Fechado. Cotação offline.';
     spotDot.style.background = '#EF4444';
     spotStatus.style.color = '#EF4444';
-    spotStatus.lastChild.textContent = 'Mercado Fechado. Offline.';
+    spotStatus.lastChild.textContent = 'OFFLINE';
     return;
   }
 
@@ -576,7 +576,7 @@ function setRateStatus(status) {
     spotStatus.style.color = '#22C55E';
     spotStatus.lastChild.textContent = 'ONLINE';
   } else {
-    footer.textContent = 'Cotação indisponível no momento.';
+    footer.textContent = 'Simulação em tempo real offline';
     spotDot.style.background = '#EF4444';
     spotStatus.style.color = '#EF4444';
     spotStatus.lastChild.textContent = 'OFFLINE';
