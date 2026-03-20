@@ -342,16 +342,23 @@ footer { background: var(--almost-black); padding: var(--spacing-lg) 0; text-ali
             <span id="spreadAbsBrl" style="width:100px; text-align:right; color:var(--muted-purple-grey); font-weight:400; font-size:13px; white-space:nowrap;">BRL 0,0000</span>
           </div>
 
+          <!-- IOF row -->
+          <div style="display:flex; align-items:center; padding:6px 0; font-size:15px;">
+            <span class="sim-row-label" style="flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">IOF:</span>
+            <span class="sim-readonly" style="width:80px; text-align:left; white-space:nowrap;">0,00%</span>
+            <span style="width:100px;"></span>
+          </div>
+
           <!-- Custo Total row -->
           <div style="display:flex; align-items:center; padding:12px 0 6px; font-size:15px; border-top:1px solid #eee; margin-top:4px;">
-            <span style="flex:1; font-weight:600; color:var(--muted-purple-grey);">Custo Total:<br><span style="font-size:12px; font-weight:400;">(já contempla IOF)</span></span>
+            <span style="flex:1; font-weight:600; color:var(--muted-purple-grey);">Custo Total:</span>
             <span id="totalCostPct" style="width:80px; text-align:left; font-weight:600; white-space:nowrap;">3,50%</span>
             <span style="width:100px;"></span>
           </div>
 
           <!-- Taxa Final row -->
           <div style="display:flex; align-items:center; padding:12px 0 6px; font-size:15px; border-top:1px solid #eee; margin-top:4px;">
-            <span style="flex:1; font-weight:700;">Taxa de Câmbio Final:<br><span style="font-size:12px; font-weight:400;">(já contempla IOF.<br>Sem nenhuma taxa adicional)</span></span>
+            <span style="flex:1; font-weight:700;">Taxa de Câmbio Final:</span>
             <span class="sim-row-value highlight" id="finalRate" style="font-size:18px; white-space:nowrap;">BRL 5,1912</span>
           </div>
         </div>
