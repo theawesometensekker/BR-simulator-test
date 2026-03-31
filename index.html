@@ -1014,6 +1014,85 @@ footer {
 #spotChart{display:block;}
 #chartTimeAxis{position:relative;height:14px;}
 
+
+/* Badge menor no desktop */
+.cmp-live-badge{
+  padding: 4px 10px !important;
+  font-size: 11px !important;
+  line-height: 1.1 !important;
+}
+.cmp-live-badge .cmp-live-dot{
+  width: 6px !important;
+  height: 6px !important;
+  margin-right: 4px !important;
+}
+@media (max-width: 640px){
+  .cmp-live-badge{
+    padding: 3px 10px !important;
+    font-size: 11px !important;
+  }
+}
+
+
+/* Badge moved to freight header */
+.cmp-amount-top .cmp-live-badge{
+  position: static !important;
+  margin: 0 !important;
+  flex-shrink: 0;
+}
+
+
+/* Badge moved to freight title row */
+.cmp-amount-top .cmp-live-badge{
+  position: static !important;
+  margin: 0 !important;
+  flex-shrink: 0;
+}
+
+
+/* Freight label row with live badge */
+.cmp-input-label-row{
+  display:flex !important;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+}
+.cmp-input-label-row .cmp-live-badge{
+  position: static !important;
+  margin: 0 !important;
+  flex-shrink: 0;
+}
+
+
+/* Ensure live badge is visible in freight row */
+.cmp-input-label-row{
+  display:flex !important;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+}
+.cmp-input-label-row .cmp-live-badge{
+  display:inline-flex !important;
+  align-items:center !important;
+  position:static !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  margin:0 !important;
+  flex-shrink:0;
+}
+
+
+/* Spot update highlight */
+@keyframes spotFlashGreen {
+  0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.00); background: transparent; }
+  25% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.10); background: rgba(34, 197, 94, 0.10); }
+  100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.00); background: transparent; }
+}
+.spot-flash-green{
+  animation: spotFlashGreen 0.9s var(--easing-decelerate);
+  border-radius: 8px;
+}
+
 </style>
 </head>
 <body>
@@ -1036,7 +1115,7 @@ footer {
   <div class="container">
     <div class="hero-content">
       <div class="hero-kicker">ESPECIAL INTERMODAL 2026 - EDIÇÃO BRASIL</div>
-      <h1 class="hero-title">40% menos custos ao processar seus pagamentos de frete internacionais.</h1>
+      <h1 class="hero-title">Até 50% menos custos ao processar seus pagamentos de frete internacionais.</h1>
       <p class="hero-subtitle">
         A Tensec ajuda operadores logísticos e freight forwarders a reduzir os custos de processamento em pagamentos internacionais para armadores, agentes de carga, NVOCCs e todos os outros integrantes do ecossistema de logística internacional.
       </p>
@@ -1051,20 +1130,16 @@ footer {
         <div class="cmp-sim-header">
           <h2 class="cmp-sim-title">Simule uma transação</h2>
           <p class="cmp-sim-subtitle">Compare o custo total da operação entre seu banco e a Tensec.</p>
-          <div class="cmp-live-badge" id="cmpLiveBadge">
-            <span class="cmp-live-dot"></span>
-            <span id="cmpLiveText">Cotações ao vivo</span>
-          </div>
         </div>
 
         <div class="cmp-sim-input-section">
           <div class="cmp-input-label-row">
-            <span class="cmp-input-label">Valor de frete a pagar</span>
-            <div class="cmp-currency-select" aria-hidden="true">
-              USD
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            <span class="cmp-input-label">VALOR DE FRETE A PAGAR (USD)</span>
+            <div class="cmp-live-badge" id="cmpLiveBadge">
+              <span class="cmp-live-dot"></span>
+              <span id="cmpLiveText">Cotações ao vivo</span>
             </div>
-          </div>
+</div>
 
           <div class="cmp-amount-input-wrapper" id="cmpUsdAmountWrap">
             <input type="text" id="cmpUsdAmount" class="cmp-amount-input" value="50.000,00" placeholder="0,00" inputmode="decimal" autocomplete="off" aria-label="Valor da transação">
@@ -1117,7 +1192,7 @@ footer {
                   <input type="text" id="cmpBankSpreadPct" class="cmp-spread-input" value="1,00%" inputmode="decimal" autocomplete="off" aria-label="Editar spread do banco">
                 </div>
               </div>
-              <div class="cmp-row-value-tensec" id="cmpTensecSpreadPct">2,47%</div>
+              <div class="cmp-row-value-tensec" id="cmpTensecSpreadPct">1,00%</div>
             </div>
 
             <div class="cmp-table-row">
@@ -1275,7 +1350,7 @@ footer {
       </form>
 
       <div class="crm-divider">OU</div>
-      <p class="crm-direct"><span>Envie um e-mail diretamente:</span> <a href="#" onclick="window.location='mai'+'lto:hello'+'@tensec.io'; return false;">hello@tensec.io</a></p>
+      <p class="crm-direct"><span>Envie um e-mail diretamente:</span> <a href="#" onclick="window.location='mai'+'lto:hello'+'@tensec.io'; return false;"><span class="__cf_email__" data-cfemail="a1c9c4cdcdcee1d5c4cfd2c4c28fc8ce">[email&#160;protected]</span></a></p>
     </div>
   </div>
 </section>
@@ -1298,7 +1373,7 @@ footer {
 
       <div class="footer-col">
         <h3 class="footer-col-title">Contato</h3>
-        <a class="footer-link" href="#" onclick="window.location='mai'+'lto:hello'+'@tensec.io'; return false;">hello@tensec.io</a>
+        <a class="footer-link" href="#" onclick="window.location='mai'+'lto:hello'+'@tensec.io'; return false;"><span class="__cf_email__" data-cfemail="076f626b6b6847736269746264296e68">[email&#160;protected]</span></a>
       </div>
     </div>
 
@@ -1309,7 +1384,7 @@ footer {
   </div>
 </footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ===== Scroll Reveal =====
 function initScrollReveal() {
   const els = document.querySelectorAll('.scroll-reveal');
@@ -1350,33 +1425,142 @@ let lastRateUpdate = null;
 var fetchCount = 0;
 var tickCount = 0;
 
+// ====================================================================
+// TwelveData API Key
+// ====================================================================
+const TWELVE_DATA_KEY = '62436f7e1fda46ae8973c7ea5606f226';
+
+// ====================================================================
+// Multi-source USD/BRL spot fetcher (shared by both simulators)
+// Priority: TwelveData → BCB PTAX → AwesomeAPI → Open ER-API
+// ====================================================================
+async function _fetchTD() {
+  var c = new AbortController(), t = setTimeout(function(){c.abort();},5000);
+  var r = await fetch('https://api.twelvedata.com/exchange_rate?symbol=USD/BRL&apikey='+TWELVE_DATA_KEY,{signal:c.signal});
+  clearTimeout(t); if(!r.ok) throw new Error('HTTP '+r.status);
+  var d = await r.json(), v = parseFloat(d&&d.rate);
+  if(!isFinite(v)||v<=0) throw new Error('bad'); return {rate:v,source:'TwelveData'};
+}
+async function _fetchBCB() {
+  var c = new AbortController(), t = setTimeout(function(){c.abort();},5000);
+  var now = new Date();
+  var fmt = now.toLocaleDateString('en-US',{timeZone:'America/Sao_Paulo',month:'2-digit',day:'2-digit',year:'numeric'}).replace(/\//g,'-');
+  var url = "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarDia(dataCotacao=@d)?@d='"+fmt+"'&$top=1&$orderby=dataHoraCotacao%20desc&$format=json";
+  var r = await fetch(url,{signal:c.signal}); clearTimeout(t);
+  if(r.ok){var d=await r.json(); if(d&&d.value&&d.value.length>0){var v=parseFloat(d.value[0].cotacaoVenda); if(isFinite(v)&&v>0) return {rate:v,source:'BCB PTAX'};}}
+  // fallback: last 5 days
+  var d2=new Date(now.toLocaleString('en-US',{timeZone:'America/Sao_Paulo'})); d2.setDate(d2.getDate()-5);
+  var sf=d2.toLocaleDateString('en-US',{month:'2-digit',day:'2-digit',year:'numeric'}).replace(/\//g,'-');
+  var u2="https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarPeriodo(dataInicial=@di,dataFinalCotacao=@df)?@di='"+sf+"'&@df='"+fmt+"'&$orderby=dataHoraCotacao%20desc&$top=1&$format=json";
+  var r2=await fetch(u2); if(r2.ok){var d3=await r2.json(); if(d3&&d3.value&&d3.value.length>0){var v2=parseFloat(d3.value[0].cotacaoVenda); if(isFinite(v2)&&v2>0) return {rate:v2,source:'BCB PTAX'};}}
+  throw new Error('No BCB data');
+}
+async function _fetchAwesome() {
+  var c=new AbortController(),t=setTimeout(function(){c.abort();},4000);
+  var r=await fetch('https://economia.awesomeapi.com.br/json/last/USD-BRL?_t='+Date.now(),{signal:c.signal,cache:'no-store'});
+  clearTimeout(t); if(!r.ok) throw new Error('HTTP '+r.status);
+  var d=await r.json(),v=parseFloat(d&&d.USDBRL&&d.USDBRL.bid);
+  if(!isFinite(v)||v<=0) throw new Error('bad'); return {rate:v,source:'AwesomeAPI'};
+}
+async function _fetchOpenER() {
+  var c=new AbortController(),t=setTimeout(function(){c.abort();},5000);
+  var r=await fetch('https://open.er-api.com/v6/latest/USD',{signal:c.signal});
+  clearTimeout(t); if(!r.ok) throw new Error('HTTP '+r.status);
+  var d=await r.json(),v=parseFloat(d&&d.rates&&d.rates.BRL);
+  if(!isFinite(v)||v<=0) throw new Error('bad'); return {rate:v,source:'Open ER-API'};
+}
+async function fetchSpotMultiSource() {
+  var fns=[_fetchTD,_fetchBCB,_fetchAwesome,_fetchOpenER];
+  for(var i=0;i<fns.length;i++){try{return await fns[i]();}catch(_){continue;}}
+  return null;
+}
+
+// ====================================================================
+// Shared TwelveData chart cache (fetched once, used by both charts)
+// ====================================================================
+var _tdChartCache = null, _tdChartDone = false;
+async function fetchTwelveDataChartOnce() {
+  if (_tdChartDone) return _tdChartCache;
+  _tdChartDone = true;
+  try {
+    var c=new AbortController(),t=setTimeout(function(){c.abort();},8000);
+    var r=await fetch('https://api.twelvedata.com/time_series?symbol=USD/BRL&interval=5min&outputsize=300&timezone=America/Sao_Paulo&apikey='+TWELVE_DATA_KEY,{signal:c.signal});
+    clearTimeout(t); if(!r.ok) return null;
+    var d=await r.json();
+    if(d&&d.values&&d.values.length>=2){
+      var rev=d.values.slice().reverse();
+      _tdChartCache=rev.map(function(p){return {time:new Date(p.datetime.replace(' ','T')),bid:parseFloat(p.close)};});
+      console.log('[Tensec] TwelveData chart: '+_tdChartCache.length+' points');
+      return _tdChartCache;
+    }
+  } catch(e){console.warn('[Tensec] TD chart error:',e);}
+  return null;
+}
+
+
+
+function updateRateCountdownUI() {
+  var countdownEl = document.getElementById('rateCountdown');
+  if (countdownEl) countdownEl.textContent = String(rateCountdown);
+}
+
+function updateRateFooterText(text) {
+  var el = document.getElementById('rateFooterText');
+  if (el) el.textContent = text;
+}
+
+function updateSpotLastUpdate(dateObj) {
+  var el = document.getElementById('spotLastUpdate');
+  if (!el) return;
+  if (!dateObj) {
+    el.textContent = 'Última atualização: —';
+    return;
+  }
+  el.textContent = 'Última atualização: ' + dateObj.toLocaleTimeString('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  });
+}
+
+function flashSpotRateUpdate() {
+  var el = document.getElementById('spotRate');
+  if (!el) return;
+  el.classList.remove('spot-flash-green');
+  void el.offsetWidth;
+  el.classList.add('spot-flash-green');
+}
+
+
 function fetchLiveRate() {
   fetchCount++;
-  var url = 'https://economia.awesomeapi.com.br/json/last/USD-BRL?_t=' + Date.now();
-  fetch(url)
-    .then(function(res) { return res.json(); })
-    .then(function(data) {
-      if (data && data.USDBRL && data.USDBRL.bid) {
-        var newRate = parseFloat(data.USDBRL.bid);
-        if (!isNaN(newRate) && newRate > 0) {
-          SPOT_RATE = newRate;
-          lastRateUpdate = new Date();
-          var el = document.getElementById('spotRate');
-          if (el) {
-            el.style.color = '';
-            el.style.background = '';
-            el.textContent = 'BRL ' + newRate.toLocaleString('pt-BR', {minimumFractionDigits:4, maximumFractionDigits:4});
-          }
-          recalculate();
-          setRateStatus('live');
-          return;
-        }
+  fetchSpotMultiSource().then(function(result) {
+    if (result && result.rate) {
+      SPOT_RATE = result.rate;
+      lastRateUpdate = new Date();
+      var el = document.getElementById('spotRate');
+      if (el) {
+        el.style.color = '';
+        el.style.background = '';
+        el.textContent = 'BRL ' + result.rate.toLocaleString('pt-BR', {minimumFractionDigits:4, maximumFractionDigits:4});
       }
-      setRateStatus('offline');
-    })
-    .catch(function(err) {
-      setRateStatus('offline');
-    });
+      updateSpotLastUpdate(lastRateUpdate);
+      recalculate();
+      flashSpotRateUpdate();
+      rateCountdown = 10;
+      updateRateCountdownUI();
+      setRateStatus('live');
+      // Also update comparative simulator
+      CMP_SPOT_RATE = result.rate;
+      cmpRecalculate();
+      return;
+    }
+    updateSpotLastUpdate(null);
+    setRateStatus('offline');
+  }).catch(function() {
+    updateSpotLastUpdate(null);
+    setRateStatus('offline');
+  });
 }
 
 function isMarketClosed() {
@@ -1427,7 +1611,6 @@ function isMarketClosed() {
 var currentRateStatus = null;
 
 function setRateStatus(status) {
-  var footer = document.getElementById('rateFooter');
   var spotStatus = document.getElementById('spotStatus');
   var spotDot = document.getElementById('spotDot');
 
@@ -1436,38 +1619,39 @@ function setRateStatus(status) {
   currentRateStatus = newStatus;
 
   if (newStatus === 'closed') {
-    footer.textContent = 'Mercado Fechado. Cotação offline.';
-    spotDot.style.background = '#EF4444';
-    spotStatus.style.color = '#EF4444';
-    spotStatus.lastChild.textContent = 'OFFLINE';
+    updateRateFooterText('Mercado fechado');
+    if (spotDot) spotDot.style.background = '#EF4444';
+    if (spotStatus) { spotStatus.style.color = '#EF4444'; spotStatus.lastChild.textContent = 'OFFLINE'; }
     return;
   }
 
   if (newStatus === 'live') {
-    footer.innerHTML = 'Simulação FX Spot online — Próxima atualização em <strong id="rateCountdown">' + rateCountdown + '</strong>s.';
-    spotDot.style.background = '#22C55E';
-    spotStatus.style.color = '#22C55E';
-    spotStatus.lastChild.textContent = 'ONLINE';
+    updateRateFooterText('Simulação FX Spot online');
+    if (spotDot) spotDot.style.background = '#22C55E';
+    if (spotStatus) { spotStatus.style.color = '#22C55E'; spotStatus.lastChild.textContent = 'ONLINE'; }
   } else {
-    footer.textContent = 'Simulação em tempo real offline';
-    spotDot.style.background = '#EF4444';
-    spotStatus.style.color = '#EF4444';
-    spotStatus.lastChild.textContent = 'OFFLINE';
+    updateRateFooterText('Simulação em tempo real offline');
+    if (spotDot) spotDot.style.background = '#EF4444';
+    if (spotStatus) { spotStatus.style.color = '#EF4444'; spotStatus.lastChild.textContent = 'OFFLINE'; }
   }
 }
 
 function startRatePolling() {
+  rateCountdown = 10;
+  updateRateCountdownUI();
+  updateRateFooterText('Próxima cotação aproximada');
   fetchLiveRate();
 
-  rateCountdown = 10;
   if (countdownInterval) clearInterval(countdownInterval);
   countdownInterval = setInterval(function() {
     tickCount++;
     rateCountdown--;
-    var countdownEl = document.getElementById('rateCountdown');
-    if (countdownEl) countdownEl.textContent = rateCountdown;
+    if (rateCountdown < 0) rateCountdown = 0;
+    updateRateCountdownUI();
+
     if (rateCountdown <= 0) {
       rateCountdown = 10;
+      updateRateCountdownUI();
       fetchLiveRate();
     }
   }, 1000);
@@ -1489,6 +1673,7 @@ function formatBr(num, decimals) {
 function recalculate() {
   const usdInput = document.getElementById('usdAmount');
   const spreadInput = document.getElementById('spreadPct');
+  if (!usdInput || !spreadInput) return; // hero simulator not in this version
 
   const usdVal = parseBrNumber(usdInput.value);
   const spreadPct = parseBrNumber(spreadInput.value);
@@ -1527,6 +1712,7 @@ function recalculate() {
 function initSimulator() {
   const usdInput = document.getElementById('usdAmount');
   const spreadInput = document.getElementById('spreadPct');
+  if (!usdInput || !spreadInput) return; // hero simulator not present in this version
 
   usdInput.addEventListener('input', recalculate);
   spreadInput.addEventListener('input', recalculate);
@@ -1545,12 +1731,107 @@ function initSimulator() {
   recalculate();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async function() {
+  console.log('[Tensec] Init start');
   initScrollReveal();
   initCountUp();
   initComparativeSimulator();
   initHeaderAnchorScroll();
-  initSpotChart();
+  initSimulator();
+  initHubspotLeadForm();
+
+  // Wait for hero-reveal CSS animation (delay 0.4s) so canvas parent has dimensions
+  await new Promise(function(r){ setTimeout(r, 600); });
+
+  // Setup hero chart canvas
+  chartCanvas = document.getElementById('spotChart');
+  if (chartCanvas) {
+    var rect = chartCanvas.parentElement.getBoundingClientRect();
+    var dpr = window.devicePixelRatio || 1;
+    console.log('[Tensec] Canvas rect:', Math.round(rect.width), 'x', Math.round(rect.height));
+    chartCanvas.width = rect.width * dpr;
+    chartCanvas.height = rect.height * dpr;
+    chartCanvas.style.width = rect.width + 'px';
+    chartCanvas.style.height = rect.height + 'px';
+    chartCtx = chartCanvas.getContext('2d');
+    chartCtx.scale(dpr, dpr);
+    chartCanvas._cssW = rect.width;
+    chartCanvas._cssH = rect.height;
+  }
+
+  // Fetch spot rate (shared)
+  try {
+    var spotResult = await fetchSpotMultiSource();
+    if (spotResult && spotResult.rate) {
+      SPOT_RATE = spotResult.rate;
+      CMP_SPOT_RATE = spotResult.rate;
+      lastRateUpdate = new Date();
+      var spotEl = document.getElementById('spotRate');
+      if (spotEl) spotEl.textContent = 'BRL ' + spotResult.rate.toLocaleString('pt-BR',{minimumFractionDigits:4,maximumFractionDigits:4});
+      updateSpotLastUpdate(lastRateUpdate);
+      recalculate();
+      flashSpotRateUpdate();
+      setRateStatus('live');
+      cmpSetRateStatus('live');
+      cmpRecalculate();
+      console.log('[Tensec] Spot via ' + spotResult.source + ': ' + spotResult.rate);
+    } else {
+      setRateStatus('offline');
+      cmpSetRateStatus('offline');
+    }
+  } catch(e) {
+    console.error('[Tensec] Spot error:', e);
+    setRateStatus('offline');
+    cmpSetRateStatus('offline');
+  }
+
+  // Fetch chart data (shared — single TwelveData call)
+  var tdChart = null;
+  try {
+    tdChart = await fetchTwelveDataChartOnce();
+  } catch(e) {
+    console.warn('[Tensec] Chart fetch error:', e);
+  }
+
+  // Draw hero chart
+  if (tdChart && tdChart.length >= 2) {
+    chartData = tdChart;
+    drawChart();
+    console.log('[Tensec] Hero chart drawn: ' + chartData.length + ' pts');
+  } else {
+    // Fallback: AwesomeAPI / BCB for hero chart
+    await fetchIntradayRates();
+  }
+
+  // Update hero chart meta label
+  if (chartData.length >= 2) {
+    var metaEl = document.getElementById('chartMeta');
+    var months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    if (metaEl) {
+      var last = chartData[chartData.length-1].time;
+      var brL = new Date(last.toLocaleString('en-US',{timeZone:'America/Sao_Paulo'}));
+      var brT = new Date(new Date().toLocaleString('en-US',{timeZone:'America/Sao_Paulo'}));
+      var isToday = brL.getDate()===brT.getDate() && brL.getMonth()===brT.getMonth();
+      metaEl.innerHTML = isToday ? 'Hoje<br>'+brL.getDate()+'-'+months[brL.getMonth()] : brL.getDate()+'-'+months[brL.getMonth()]+'<br><span style="font-size:10px;">Último dia útil</span>';
+    }
+  }
+
+  // Start polling
+  startRatePolling();
+  cmpStartCountdown();
+  cmpFetchSpotAndChart();
+
+  // Refresh chart every 60s
+  setInterval(async function() {
+    _tdChartDone = false;
+    var fresh = await fetchTwelveDataChartOnce();
+    if (fresh && fresh.length >= 2) {
+      chartData = fresh;
+      drawChart();
+    }
+  }, 60000);
+
+  console.log('[Tensec] Init complete');
 });
 
 // ===== Spot Rate Intraday Chart =====
@@ -1800,21 +2081,22 @@ async function cmpFetchSpotAndChart() {
   let validSpot = false;
   let validChart = false;
 
+  // Spot: use shared multi-source
   try {
-    const spotResp = await fetch('https://economia.awesomeapi.com.br/json/last/USD-BRL?_t=' + Date.now(), { cache: 'no-store' });
-    if (spotResp.ok) {
-      const spotData = await spotResp.json();
-      const bid = parseFloat(spotData?.USDBRL?.bid);
-      if (isFinite(bid) && bid > 0) {
-        CMP_SPOT_RATE = bid;
-        validSpot = true;
-      }
-    }
-  } catch (e) {
-    console.error('Comparative simulator spot fetch error:', e);
+    var sr = await fetchSpotMultiSource();
+    if (sr && sr.rate) { CMP_SPOT_RATE = sr.rate; validSpot = true; }
+  } catch(_) {}
+
+  // Chart: try TwelveData cache first
+  var cached = await fetchTwelveDataChartOnce();
+  if (cached && cached.length >= 2) {
+    cmpChartPoints = cached.map(function(p){ return {date:p.time, bid:p.bid}; });
+    validChart = true;
   }
 
-  try {
+  // Fallback: AwesomeAPI
+  if (!validChart) {
+    try {
     const chartResp = await fetch('https://economia.awesomeapi.com.br/json/USD-BRL/300?_t=' + Date.now(), { cache: 'no-store' });
     if (chartResp.ok) {
       const raw = await chartResp.json();
@@ -1892,6 +2174,7 @@ async function cmpFetchSpotAndChart() {
   } catch (e) {
     console.error('Comparative simulator chart fetch error:', e);
   }
+  } // close if(!validChart)
 
   if (!validChart) {
     cmpChartPoints = [
@@ -1987,6 +2270,15 @@ let chartData = [];
 let chartCanvas, chartCtx;
 
 async function fetchIntradayRates() {
+  // Try TwelveData cache first
+  var cached = await fetchTwelveDataChartOnce();
+  if (cached && cached.length >= 2) {
+    chartData = cached;
+    drawChart();
+    return;
+  }
+
+  // Fallback: AwesomeAPI
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 5000);
@@ -2330,11 +2622,8 @@ function initHeaderAnchorScroll() {
 
       const nav = document.querySelector('.nav');
       const navH = nav ? nav.offsetHeight : 0;
-      const extraOffset = 20;
-      const targetY = target.getBoundingClientRect().top + window.pageYOffset - navH - extraOffset;
-
-      smoothScrollToY(Math.max(targetY, 0), 3600);
-      history.replaceState(null, '', href);
+      const targetY = target.getBoundingClientRect().top + window.pageYOffset - navH - 16;
+      smoothScrollToY(targetY, 900);
     });
   });
 }
