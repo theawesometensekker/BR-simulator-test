@@ -1194,6 +1194,7 @@ footer {
           <div style="position:relative;width:100%;height:90px;">
             <canvas id="spotChart" style="width:100%;height:100%;display:block;"></canvas>
           </div>
+          <div id="chartTimeAxis" style="position:relative;height:14px;margin-top:4px;"></div>
         </div>
 
         <!-- COMPARISON TABLE -->
@@ -1273,9 +1274,9 @@ footer {
           <div class="comp-note">Custo médio por transação</div>
         </div>
         <div class="comp-card tensec">
-          <div class="comp-kicker">Com a Tensec</div>
+          <div class="comp-kicker">Com Tecnologia e Arquitetura Tensec</div>
           <div class="comp-value">2,5%</div>
-          <div class="comp-note">Com tecnologia e arquitetura Tensec</div>
+          <div class="comp-note">Custo médio por transação</div>
         </div>
       </div>
     </div>
@@ -1301,7 +1302,7 @@ footer {
       </div>
       <div class="benefit-light-card">
         <div class="benefit-light-icon">📊</div>
-        <h3 class="benefit-light-title">Painel simples</h3>
+        <h3 class="benefit-light-title">Plataforma Intuitiva</h3>
         <p class="benefit-light-desc">Um único portal para gerenciar todos os pagamentos cross-border — desenhado para times operacionais e financeiros.</p>
       </div>
       <div class="benefit-light-card">
@@ -1608,7 +1609,22 @@ async function fetchTwelveDataChartOnce() {
     var d=await r.json();
     if(d&&d.values&&d.values.length>=2){
       var rev=d.values.slice().reverse();
-      _tdChartCache=rev.map(function(p){return {time:new Date(p.datetime.replace(' ','T')),bid:parseFloat(p.close)};});
+      _tdChartCache=rev.map(function(p){
+        // TwelveData returns datetime in São Paulo timezone (as requested via API param).
+        // Parse as naive local time — display will always convert via toLocaleString('en-US', {timeZone:'America/Sao_Paulo'})
+        var parts = p.datetime.split(/[- :]/);
+        // parts = [year, month, day, hour, minute, second]
+        // Create a Date that represents this São Paulo time correctly:
+        // Use Date.UTC then adjust by +3h (BRT = UTC-3, so São Paulo 14:00 = UTC 17:00)
+        var utc = Date.UTC(+parts[0], +parts[1]-1, +parts[2], +parts[3]+3, +parts[4], +parts[5]||0);
+        return {time:new Date(utc), bid:parseFloat(p.close)};
+      });
+      // Filter to Brazilian market hours only (9:00-17:00 BRT)
+      _tdChartCache = _tdChartCache.filter(function(p) {
+        var brH = new Date(p.time.toLocaleString('en-US',{timeZone:'America/Sao_Paulo'}));
+        var h = brH.getHours();
+        return h >= 9 && h < 17;
+      });
       console.log('[Tensec] TwelveData chart: '+_tdChartCache.length+' points');
       return _tdChartCache;
     }
@@ -2534,22 +2550,31 @@ function drawChart() {
   }
 
   // Draw vertical grid lines at full hours and populate time axis
-  const firstHour = chartData[0].time.getHours();
-  const lastHour = chartData[chartData.length - 1].time.getHours();
   const axisEl = document.getElementById('chartTimeAxis');
 
-  // Calculate full hours within the data range
+  // Build list of full hours that fall within the data time range
+  // Work backwards from the last data point's hour to the first
+  const firstBr = new Date(chartData[0].time.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+  const lastBr = new Date(chartData[chartData.length - 1].time.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+  const firstHour = firstBr.getHours();
+  const lastHour = lastBr.getHours();
+
   const fullHours = [];
   for (let hr = firstHour; hr <= lastHour + 1; hr++) {
+    // Create a date at this full hour on the same day as the first data point
     const hourDate = new Date(chartData[0].time);
-    hourDate.setHours(hr, 0, 0, 0);
-    const t = hourDate.getTime();
+    const brFirst = new Date(hourDate.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+    brFirst.setHours(hr, 0, 0, 0);
+    // Convert back: find the actual UTC timestamp for this Brasília hour
+    // Approximate by using offset from first point
+    const offsetMs = chartData[0].time.getTime() - firstBr.getTime();
+    const t = brFirst.getTime() + offsetMs;
     if (t >= firstTime && t <= lastTime) {
-      fullHours.push({ hour: hr, x: ((t - firstTime) / timeRange) * w });
+      fullHours.push({ hour: hr, t: t, x: ((t - firstTime) / timeRange) * w });
     }
   }
 
-  // Draw vertical dashed lines
+  // Draw vertical dashed lines at full hours
   ctx.strokeStyle = '#E8E6EB';
   ctx.lineWidth = 0.5;
   ctx.setLineDash([3, 3]);
@@ -2558,17 +2583,21 @@ function drawChart() {
   });
   ctx.setLineDash([]);
 
-  // Populate the time axis labels (only if element exists)
+  // Populate the time axis labels
   if (axisEl) {
     axisEl.innerHTML = '';
-    const startLabel = document.createElement('span');
-    startLabel.style.cssText = 'font-size:10px; color:var(--muted-purple-grey); position:absolute; left:0;';
-    startLabel.textContent = chartData[0].time.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit', timeZone:'America/Sao_Paulo' });
-    axisEl.style.position = 'relative';
-    axisEl.style.height = '14px';
-    axisEl.appendChild(startLabel);
 
+    // Show the current/last time at the right edge
+    const endLbl = document.createElement('span');
+    endLbl.style.cssText = 'font-size:10px; color:var(--muted-purple-grey); position:absolute; right:0;';
+    endLbl.textContent = lastBr.getHours().toString().padStart(2,'0') + ':' + lastBr.getMinutes().toString().padStart(2,'0');
+    axisEl.appendChild(endLbl);
+
+    // Show full hours (skip if too close to edges — within 30px)
     fullHours.forEach(fh => {
+      var pctFromRight = (w - fh.x);
+      var pctFromLeft = fh.x;
+      if (pctFromRight < 30 || pctFromLeft < 24) return; // avoid overlap with edge labels
       const lbl = document.createElement('span');
       lbl.style.cssText = 'font-size:10px; color:var(--muted-purple-grey); position:absolute; transform:translateX(-50%);';
       lbl.style.left = fh.x + 'px';
@@ -2576,10 +2605,11 @@ function drawChart() {
       axisEl.appendChild(lbl);
     });
 
-    const endLabel = document.createElement('span');
-    endLabel.style.cssText = 'font-size:10px; color:var(--muted-purple-grey); position:absolute; right:0;';
-    endLabel.textContent = chartData[chartData.length - 1].time.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit', timeZone:'America/Sao_Paulo' });
-    axisEl.appendChild(endLabel);
+    // Show the earliest time at the left edge
+    const startLbl = document.createElement('span');
+    startLbl.style.cssText = 'font-size:10px; color:var(--muted-purple-grey); position:absolute; left:0;';
+    startLbl.textContent = firstBr.getHours().toString().padStart(2,'0') + ':' + firstBr.getMinutes().toString().padStart(2,'0');
+    axisEl.appendChild(startLbl);
   }
 
   // Draw gradient fill
