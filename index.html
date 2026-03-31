@@ -959,6 +959,33 @@ footer {
   .nav-links { display: none; }
   .sim-amount { font-size: 28px; }
 }
+
+.cta-form-actions{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px !important;
+}
+.cta-form-submit{
+  margin:0 0 8px 0 !important;
+}
+.cta-form-or{
+  margin:0 !important;
+  padding:0 !important;
+  text-align:center;
+  font-size:14px;
+  line-height:1.15;
+  color:rgba(255,255,255,0.68);
+}
+.cta-form-email{
+  margin:0 !important;
+  padding:0 !important;
+  text-align:center;
+  font-size:15px;
+  line-height:1.25;
+  color:rgba(255,255,255,0.88);
+}
+
 </style>
 </head>
 <body>
@@ -1220,7 +1247,7 @@ footer {
       </form>
 
       <div class="crm-divider">OU</div>
-      <p class="crm-direct">Envie um e-mail diretamente: <a href="#" onclick="window.location='mai'+'lto:hello'+'@tensec.io'; return false;">hello@tensec.io</a></p>
+      <p class="crm-direct"><span>Envie um e-mail diretamente:</span> <a href="#" onclick="window.location='mai'+'lto:hello'+'@tensec.io'; return false;">hello@tensec.io</a></p>
     </div>
   </div>
 </section>
@@ -2036,10 +2063,16 @@ async function cmpFetchSpotAndChart() {
           return new Date(ya, ma - 1, da) - new Date(yb, mb - 1, db);
         });
 
+        function brKeyToDate(key) {
+          const [d, m, y] = key.split('/').map(Number);
+          return new Date(y, m - 1, d);
+        }
+
         let useKey;
         if (brHour < 9) {
-          useKey = dateKeys[dateKeys.length - 1];
-          if (useKey === todayKey && dateKeys.length > 1) useKey = dateKeys[dateKeys.length - 2];
+          // Before market open: always use the latest day strictly BEFORE today.
+          const previousKeys = dateKeys.filter(key => brKeyToDate(key) < brKeyToDate(todayKey));
+          useKey = previousKeys.length ? previousKeys[previousKeys.length - 1] : dateKeys[dateKeys.length - 1];
         } else {
           useKey = todayKey;
           if (!byDate[useKey] || byDate[useKey].length < 2) useKey = dateKeys[dateKeys.length - 1];
@@ -2057,7 +2090,7 @@ async function cmpFetchSpotAndChart() {
             const dNum = Number(dd);
             const mNum = Number(mm) - 1;
 
-            // Before 9:00, never show "Hoje". Show the last available business day.
+            // Before 9:00, never show "Hoje". Show the latest selected day strictly before today.
             if (brHour < 9) {
               metaEl.innerHTML = dNum + '-' + months[mNum] + '<br><span style="font-size:10px;">Último dia útil</span>';
             } else {
