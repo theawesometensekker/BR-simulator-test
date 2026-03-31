@@ -479,6 +479,29 @@ p { font-size: 18px; line-height: 1.6; }
   color:var(--muted-purple-grey);
   margin:8px 24px 20px;
 }
+
+@media (max-width: 640px){
+  .cmp-sim-header{
+    padding-top: 24px;
+    padding-right: 20px;
+    padding-bottom: 18px;
+  }
+  .cmp-live-badge{
+    top: 18px;
+    right: 16px;
+    padding: 3px 10px;
+    font-size: 11px;
+    max-width: fit-content;
+    white-space: nowrap;
+  }
+  .cmp-sim-title{
+    padding-right: 128px;
+  }
+  .cmp-live-badge .cmp-live-dot{
+    margin-right: 2px;
+  }
+}
+
 @media (max-width:520px){
   .cmp-sim-header{padding:24px 20px 20px;}
   .cmp-sim-title{font-size:22px;}
@@ -1958,6 +1981,7 @@ function cmpSetRateStatus(status) {
   const badge = document.getElementById('cmpLiveBadge');
   const text = document.getElementById('cmpLiveText');
   const inline = document.getElementById('cmpSpotStatusInline');
+  const isMobile = window.matchMedia('(max-width: 640px)').matches;
 
   let newStatus = status;
   if (cmpIsMarketClosed()) newStatus = 'closed';
@@ -1965,7 +1989,7 @@ function cmpSetRateStatus(status) {
 
   if (newStatus === 'closed') {
     if (badge) badge.classList.add('offline');
-    if (text) text.textContent = 'Mercado fechado';
+    if (text) text.textContent = isMobile ? 'Offline' : 'Mercado fechado';
     if (inline) {
       inline.classList.add('offline');
       inline.innerHTML = '<span id="cmpSpotDotInline" class="cmp-spot-dot-inline"></span>OFFLINE';
@@ -1977,7 +2001,7 @@ function cmpSetRateStatus(status) {
 
   if (newStatus === 'live') {
     if (badge) badge.classList.remove('offline');
-    if (text) text.textContent = 'Cotações ao vivo';
+    if (text) text.textContent = isMobile ? 'Online' : 'Cotações ao vivo';
     if (inline) {
       inline.classList.remove('offline');
       inline.innerHTML = '<span id="cmpSpotDotInline" class="cmp-spot-dot-inline"></span>ONLINE';
@@ -1986,7 +2010,7 @@ function cmpSetRateStatus(status) {
     if (footer) footer.parentElement.innerHTML = 'Próxima cotação aproximada — atualização em <strong id="cmpRateCountdown">' + cmpCountdownValue + '</strong>s.';
   } else {
     if (badge) badge.classList.add('offline');
-    if (text) text.textContent = 'Usando fallback';
+    if (text) text.textContent = isMobile ? 'Offline' : 'Usando fallback';
     if (inline) {
       inline.classList.add('offline');
       inline.innerHTML = '<span id="cmpSpotDotInline" class="cmp-spot-dot-inline"></span>OFFLINE';
