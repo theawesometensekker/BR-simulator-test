@@ -161,6 +161,322 @@ p { font-size: 18px; line-height: 1.6; }
 
 .currency-flag { font-size: 18px; margin-right: 4px; }
 
+
+/* COMPARATIVE SIMULATOR WITH CHART */
+.cmp-sim-card{
+  position:relative;
+  width:100%;
+  max-width:480px;
+  background:var(--white);
+  border-radius:16px;
+  box-shadow:var(--shadow-xl);
+  overflow:hidden;
+}
+.cmp-sim-header{
+  background:var(--bg-gradient-dark);
+  padding:28px 24px 24px;
+  color:var(--white);
+  position:relative;
+  overflow:hidden;
+}
+.cmp-sim-header::after{
+  content:'';
+  position:absolute;
+  bottom:-34px;
+  right:-34px;
+  width:110px;
+  height:110px;
+  border-radius:50%;
+  background:rgba(78,166,215,0.12);
+  pointer-events:none;
+}
+.cmp-sim-header::before{
+  content:'';
+  position:absolute;
+  top:-18px;
+  left:-18px;
+  width:74px;
+  height:74px;
+  border-radius:50%;
+  background:rgba(33,76,228,0.10);
+  pointer-events:none;
+}
+.cmp-sim-title{
+  font-family:var(--font-heading);
+  font-weight:800;
+  font-size:26px;
+  line-height:1.15;
+  letter-spacing:-0.02em;
+  margin-bottom:4px;
+}
+.cmp-sim-subtitle{
+  font-size:13px;
+  color:rgba(255,255,255,0.70);
+  line-height:1.45;
+  max-width:250px;
+}
+.cmp-live-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  background:rgba(34,197,94,0.15);
+  border:1px solid rgba(34,197,94,0.3);
+  border-radius:9999px;
+  padding:4px 12px;
+  font-size:12px;
+  font-weight:500;
+  color:var(--success);
+  position:absolute;
+  top:28px;
+  right:24px;
+}
+.cmp-live-badge.offline{
+  color:var(--warning);
+  background:rgba(245,158,11,0.12);
+  border-color:rgba(245,158,11,0.28);
+}
+.cmp-live-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--success);
+  animation:pulse-dot 1.5s infinite;
+}
+.cmp-live-badge.offline .cmp-live-dot{background:var(--warning);}
+.cmp-sim-input-section{padding:22px 24px;border-bottom:1px solid #f0f0f5;}
+.cmp-input-label-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.cmp-input-label{
+  font-family:var(--font-body);
+  font-weight:500;
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:0.05em;
+  color:var(--muted-purple-grey);
+}
+.cmp-currency-select{
+  display:flex;align-items:center;gap:6px;
+  background:#f5f7ff;border:1px solid #e0e4f0;border-radius:8px;
+  padding:6px 12px;font-family:var(--font-body);font-weight:600;
+  font-size:14px;color:var(--primary-blue);
+}
+.cmp-currency-select svg{width:14px;height:14px;opacity:.6}
+.cmp-amount-input-wrapper{position:relative;}
+.cmp-amount-input-wrapper::before,
+.cmp-editable-wrap::before{
+  content:'✎';
+  position:absolute;
+  top:6px;
+  left:8px;
+  font-size:9px;
+  line-height:1;
+  color:rgba(20,53,195,0.52);
+  pointer-events:none;
+}
+.cmp-amount-input-wrapper::after{
+  content:'US$';
+  position:absolute;
+  left:18px;
+  top:50%;
+  transform:translateY(-40%);
+  font-family:var(--font-heading);
+  font-weight:700;
+  font-size:18px;
+  color:var(--primary-blue);
+  pointer-events:none;
+}
+.cmp-amount-input{
+  width:100%;
+  padding:18px 20px 14px 64px;
+  font-family:var(--font-heading);
+  font-weight:700;
+  font-size:32px;
+  color:var(--almost-black);
+  background:#eef3ff;
+  border:1px solid #d8e5ff;
+  border-radius:16px;
+  box-shadow:inset 0 0 0 1px rgba(78,166,215,0.12);
+  transition:all var(--timing-fast) var(--easing-standard);
+  text-align:right;
+  letter-spacing:-0.01em;
+}
+.cmp-amount-input:focus{
+  outline:none;
+  border-color:var(--primary-blue);
+  box-shadow:0 0 0 4px var(--focus-ring);
+  background:#f7faff;
+}
+.cmp-chart-block{
+  margin-top:16px;
+  background:#f7f9ff;
+  border:1px solid #e0e7f5;
+  border-radius:16px;
+  padding:14px 14px 10px;
+}
+.cmp-chart-head{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px;
+}
+.cmp-chart-title{font-size:13px;font-weight:600;color:var(--almost-black);}
+.cmp-chart-meta{font-size:11px;color:var(--muted-purple-grey);white-space:nowrap;}
+.cmp-chart-canvas-wrap{position:relative;width:100%;height:118px;}
+.cmp-chart-canvas{width:100%;height:100%;display:block;}
+.cmp-chart-axis{
+  display:flex;justify-content:space-between;gap:8px;
+  margin-top:6px;font-size:10px;color:var(--muted-purple-grey);
+}
+.cmp-sim-table{padding:0 24px 20px;}
+.cmp-table-inner{width:calc(100% - 8px);margin:0 auto;transform:translateX(4px);}
+.cmp-table-header{
+  display:grid;
+  grid-template-columns:1.08fr 0.96fr 0.96fr;
+  padding:16px 0 12px;
+  border-bottom:2px solid #f0f0f5;
+}
+.cmp-table-header span{
+  font-family:var(--font-body);
+  font-weight:500;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:0.06em;
+  color:var(--muted-purple-grey);
+}
+.cmp-table-header span:nth-child(2){text-align:center;}
+.cmp-table-header span:nth-child(3){text-align:center;color:var(--primary-blue);font-weight:600;}
+.cmp-table-row{
+  display:grid;
+  grid-template-columns:1.08fr 0.96fr 0.96fr;
+  padding:14px 0;
+  border-bottom:1px solid #f5f5fa;
+  align-items:center;
+  opacity:0;
+  transform:translateY(12px);
+  animation:cmp-row-enter .4s var(--easing-decelerate) forwards;
+}
+.cmp-table-row:nth-child(2){animation-delay:.05s}
+.cmp-table-row:nth-child(3){animation-delay:.10s}
+.cmp-table-row:nth-child(4){animation-delay:.15s}
+.cmp-table-row:nth-child(5){animation-delay:.20s}
+.cmp-table-row:nth-child(6){animation-delay:.25s}
+.cmp-table-row:nth-child(7){animation-delay:.30s}
+.cmp-table-row:nth-child(8){animation-delay:.35s}
+@keyframes cmp-row-enter{to{opacity:1;transform:translateY(0)}}
+.cmp-table-row.highlight{
+  background:#fafbff;border-radius:12px;margin:0 -12px;padding:14px 12px;border-bottom:none;
+}
+.cmp-table-row.total-row{border-bottom:none;padding-top:16px;}
+.cmp-row-label{font-size:13px;font-weight:500;color:var(--almost-black);line-height:1.35;}
+.cmp-row-label.bold{font-weight:700;font-size:14px;}
+.cmp-row-value,.cmp-row-value-tensec{
+  text-align:center;
+  font-family:var(--font-heading);
+}
+.cmp-row-value{
+  font-size:14px !important;
+  font-weight:500 !important;
+  color:var(--muted-purple-grey);
+}
+.cmp-row-value-tensec{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:100% !important;
+  font-size:18px !important;
+  font-weight:800 !important;
+  color:var(--primary-blue);
+  text-align:center !important;
+  letter-spacing:-0.01em !important;
+}
+.cmp-row-value-tensec.advantage{color:var(--success);}
+.cmp-editable-wrap{position:relative;display:flex;justify-content:center;}
+.cmp-spread-input{
+  width:92px;
+  text-align:center;
+  font-family:var(--font-heading);
+  font-size:14px;
+  font-weight:700;
+  color:var(--primary-blue);
+  background:#eef3ff;
+  border:1px solid #d8e5ff;
+  border-radius:10px;
+  padding:8px 10px;
+  transition:all var(--timing-fast) var(--easing-standard);
+}
+.cmp-spread-input:focus{
+  outline:none;
+  border-color:var(--primary-blue);
+  box-shadow:0 0 0 3px rgba(20,53,195,0.12);
+  background:#f7faff;
+}
+.cmp-spot-status-inline{
+  font-size:11px;
+  font-weight:700;
+  color:var(--success);
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+}
+.cmp-spot-status-inline.offline{color:var(--warning);}
+.cmp-spot-dot-inline{
+  display:inline-block;
+  width:7px;height:7px;border-radius:50%;
+  background:var(--success);
+  animation:pulse-dot 1.5s infinite;
+}
+.cmp-spot-status-inline.offline .cmp-spot-dot-inline{background:var(--warning);}
+.cmp-sim-savings{
+  margin:0 24px 18px;
+  background:linear-gradient(135deg,#f0fdf4 0%,#ecfdf5 100%);
+  border:1px solid rgba(34,197,94,0.2);
+  border-radius:16px;
+  padding:20px 24px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+.cmp-sim-savings::before{
+  content:'';
+  position:absolute;top:-30px;right:-30px;width:80px;height:80px;border-radius:50%;
+  background:rgba(34,197,94,0.08);
+}
+.cmp-savings-label{
+  font-family:var(--font-body);
+  font-weight:500;
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  color:#166534;
+  margin-bottom:4px;
+}
+.cmp-savings-amount{
+  font-family:var(--font-heading);
+  font-weight:800;
+  font-size:36px;
+  color:#15803d;
+  letter-spacing:-0.02em;
+  line-height:1.2;
+}
+.cmp-savings-percent{
+  font-size:13px;
+  color:#166534;
+  margin-top:4px;
+  font-weight:500;
+}
+.cmp-sim-cta{padding:0 24px 0;}
+.cmp-sim-footer{
+  text-align:center;
+  font-size:12px;
+  color:var(--muted-purple-grey);
+  margin:8px 24px 20px;
+}
+@media (max-width:520px){
+  .cmp-sim-header{padding:24px 20px 20px;}
+  .cmp-sim-title{font-size:22px;}
+  .cmp-sim-input-section,.cmp-sim-table,.cmp-sim-cta{padding-left:20px;padding-right:20px;}
+  .cmp-sim-savings{margin-left:20px;margin-right:20px;}
+  .cmp-sim-footer{margin-left:20px;margin-right:20px;}
+  .cmp-amount-input{font-size:26px;padding:14px 16px 14px 58px;}
+  .cmp-savings-amount{font-size:30px;}
+  .cmp-spread-input{width:82px;}
+}
+
+
 /* STATS */
 .stats-section { background: var(--almost-black); padding: var(--spacing-xl) 0; }
 .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-lg); }
@@ -602,152 +918,126 @@ footer {
       </div>
     </div>
 
+    
     <div class="simulator-wrap">
-      <div class="simulator-card">
-        <div>
-          <h2 style="font-weight:800; font-size:26px; color:var(--primary-blue);">Simule uma transação</h2>
-        </div>
-        <p class="subtitle" style="text-decoration:underline;">Natureza de câmbio com 3,5% de IOF</p>
-        <p style="font-size:11px; color:var(--muted-purple-grey); margin-top:-12px; margin-bottom:var(--spacing-md); line-height:1.4;">Simulação com dados aproximados em tempo real das taxas spot de câmbio. Não deve ser usada para transações reais.</p>
-
-        <!-- TABS -->
-        <div class="sim-tabs" id="simTabs">
-          <div class="sim-tabs-slider" id="tabSlider"></div>
-          <div class="sim-tab active">↗ Enviar</div>
-          <div class="sim-tab">↙ Receber</div>
+      <div class="cmp-sim-card">
+        <div class="cmp-sim-header">
+          <h2 class="cmp-sim-title">Simule uma transação</h2>
+          <p class="cmp-sim-subtitle">Compare o custo total da operação entre seu banco e a Tensec.</p>
+          <div class="cmp-live-badge" id="cmpLiveBadge">
+            <span class="cmp-live-dot"></span>
+            <span id="cmpLiveText">Cotações ao vivo</span>
+          </div>
         </div>
 
-        <!-- AMOUNT BOX: USD + BRL -->
-        <div style="background:var(--white); border:1px solid #E8E6EB; border-radius:12px; padding:var(--spacing-md); margin-bottom:var(--spacing-md);">
+        <div class="cmp-sim-input-section">
+          <div class="cmp-input-label-row">
+            <span class="cmp-input-label">Valor de frete a pagar</span>
+            <div class="cmp-currency-select" aria-hidden="true">
+              USD
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+          </div>
 
-          <!-- AMOUNT USD (EDITABLE) -->
-          <div>
-            <div class="sim-section-label" id="usdLabel" style="font-weight:700;">Valor a enviar (USD)</div>
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
-              <div class="editable-wrap" style="flex:1; display:flex; align-items:center;">
-                <span style="font-family:var(--font-heading); font-weight:700; font-size:clamp(20px, 2.5vw, 26px); color:var(--muted-purple-grey); margin-right:8px; pointer-events:none;">USD</span>
-                <input type="text" id="usdAmount" class="sim-input" value="100.000,00" inputmode="decimal" autocomplete="off" style="flex:1;">
-                <span class="edit-icon">✏️</span>
+          <div class="cmp-amount-input-wrapper">
+            <input type="text" id="cmpUsdAmount" class="cmp-amount-input" value="100.000,00" placeholder="0,00" inputmode="decimal" autocomplete="off" aria-label="Valor da transação">
+          </div>
+
+          <div class="cmp-chart-block">
+            <div class="cmp-chart-head">
+              <div class="cmp-chart-title">USD/BRL — Cotação Spot</div>
+              <div class="cmp-chart-meta" id="cmpChartMeta">Hoje</div>
+            </div>
+            <div class="cmp-chart-canvas-wrap">
+              <canvas id="cmpSpotChart" class="cmp-chart-canvas" width="420" height="118" aria-label="Gráfico de cotação spot"></canvas>
+            </div>
+            <div class="cmp-chart-axis" id="cmpChartAxis">
+              <span>09:00</span>
+              <span>11:00</span>
+              <span>13:00</span>
+              <span>15:00</span>
+              <span>17:00</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="cmp-sim-table">
+          <div class="cmp-table-inner">
+            <div class="cmp-table-header">
+              <span>Composição</span>
+              <span>Seu banco</span>
+              <span>Tensec</span>
+            </div>
+
+            <div class="cmp-table-row">
+              <div class="cmp-row-label">
+                <span style="display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                  <span>Taxa USD Spot</span>
+                  <span id="cmpSpotStatusInline" class="cmp-spot-status-inline">
+                    <span id="cmpSpotDotInline" class="cmp-spot-dot-inline"></span>
+                    ONLINE
+                  </span>
+                </span>
               </div>
-              <span style="font-size:15px; font-weight:600; white-space:nowrap;">🇺🇸</span>
+              <div class="cmp-row-value" id="cmpSpotRateBank">5,1398</div>
+              <div class="cmp-row-value-tensec" id="cmpSpotRateTensec">5,1398</div>
             </div>
-            <div class="sim-amount-sub" id="usdSub">Para Estados Unidos</div>
-          </div>
 
-          <!-- Divider -->
-          <div style="border-top:1px solid #E8E6EB; margin:12px 0;"></div>
-
-          <!-- CLIENTE BRL (READ-ONLY, CALCULATED) -->
-          <div>
-            <div class="sim-section-label" id="brlLabel">Cliente deposita (BRL)</div>
-            <div style="display:flex; justify-content:space-between; align-items:baseline;">
-              <div style="display:flex; align-items:baseline; gap:8px;">
-                <span style="font-family:var(--font-heading); font-weight:700; font-size:16px; color:var(--muted-purple-grey);">BRL</span>
-                <div class="sim-amount" id="brlAmount" style="font-size:22px; color:var(--muted-purple-grey);">0,00</div>
+            <div class="cmp-table-row highlight">
+              <div class="cmp-row-label">Spread</div>
+              <div class="cmp-row-value">
+                <div class="cmp-editable-wrap">
+                  <input type="text" id="cmpBankSpreadPct" class="cmp-spread-input" value="2,47%" inputmode="decimal" autocomplete="off" aria-label="Editar spread do banco">
+                </div>
               </div>
-              <span style="font-size:15px; font-weight:600;">🇧🇷</span>
+              <div class="cmp-row-value-tensec" id="cmpTensecSpreadPct">2,47%</div>
             </div>
-            <div class="sim-amount-sub" id="brlSub">No Brasil · Valor em USD × Taxa de Câmbio Final</div>
-          </div>
 
-        </div>
-
-        <!-- SPOT RATE CHART -->
-        <div style="background:#F7F8FA; border:1px solid #E8E6EB; border-radius:12px; padding:var(--spacing-md); margin-bottom:var(--spacing-md);">
-          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
-            <div>
-              <span style="font-weight:600; font-size:14px; color:var(--almost-black);">USD/BRL — Cotação Spot</span>
-              <div style="font-size:11px; font-style:italic; color:var(--muted-purple-grey); font-weight:400;">(atualizado a cada minuto)</div>
+            <div class="cmp-table-row">
+              <div class="cmp-row-label">Taxa de Pagamento Internacional</div>
+              <div class="cmp-row-value" id="cmpBankPaymentFeePct">0,00%</div>
+              <div class="cmp-row-value-tensec advantage" id="cmpTensecPaymentFeePct">0,90%</div>
             </div>
-            <div id="chartMeta" style="font-size:11px; color:var(--muted-purple-grey);"></div>
-          </div>
-          <div style="position:relative; width:100%; height:120px;">
-            <canvas id="spotChart" style="width:100%; height:100%;"></canvas>
-            <div id="chartTooltip" style="display:none; position:absolute; background:var(--almost-black); color:var(--white); padding:4px 8px; border-radius:6px; font-size:11px; font-family:var(--font-body); pointer-events:none; white-space:nowrap; z-index:10;"></div>
-          </div>
-          <div id="chartTimeAxis" style="display:flex; justify-content:space-between; margin-top:4px; padding:0 2px;">
+
+            <div class="cmp-table-row">
+              <div class="cmp-row-label">IOF</div>
+              <div class="cmp-row-value" id="cmpBankIofPct">3,50%</div>
+              <div class="cmp-row-value-tensec advantage" id="cmpTensecIofPct">0,00%</div>
+            </div>
+
+            <div class="cmp-table-row total-row">
+              <div class="cmp-row-label bold">Custo Total da Transação</div>
+              <div class="cmp-row-value" id="cmpBankTotalCostPct" style="font-weight:700;color:var(--almost-black);">5,97%</div>
+              <div class="cmp-row-value-tensec advantage" id="cmpTensecTotalCostPct" style="font-weight:800;">3,37%</div>
+            </div>
+
+            <div class="cmp-table-row">
+              <div class="cmp-row-label">Custo SWIFT (BRL)</div>
+              <div class="cmp-row-value" id="cmpBankSwiftCostBrl">R$ 160,00</div>
+              <div class="cmp-row-value-tensec advantage" id="cmpTensecSwiftCostBrl">R$ 0,00</div>
+            </div>
+
+            <div class="cmp-table-row" style="border-bottom:none;">
+              <div class="cmp-row-label bold">Custo Total em BRL</div>
+              <div class="cmp-row-value" id="cmpBankTotalCostBrl" style="font-weight:700;color:var(--almost-black);">R$ 30.833,01</div>
+              <div class="cmp-row-value-tensec" id="cmpTensecTotalCostBrl" style="font-weight:800;">R$ 17.321,13</div>
+            </div>
           </div>
         </div>
 
-        <!-- RATE BREAKDOWN -->
-        <div style="background:#F7F8FA; border:1px solid #E8E6EB; border-radius:12px; padding:var(--spacing-md); margin-bottom:var(--spacing-md);">
-          <div style="margin-bottom:8px;">
-            <span style="font-weight:600; font-size:15px;">Composição da Taxa de Câmbio</span>
-          </div>
-
-          <!-- Spot row -->
-          <div style="display:flex; align-items:center; padding:6px 0; font-size:15px;">
-            <span class="sim-row-label" style="flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Taxa Spot <span id="spotStatus" style="font-size:11px; font-weight:600; margin-left:8px;"><span id="spotDot" style="display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--error); animation:pulse-dot 1.5s infinite; vertical-align:middle; margin-right:3px;"></span>OFFLINE</span></span>
-            <span style="width:80px;"></span>
-            <span class="sim-row-value" id="spotRate" style="width:100px; text-align:right; white-space:nowrap;">BRL 5,1398</span>
-          </div>
-
-          <!-- FXFee row -->
-          <div style="display:flex; align-items:center; padding:6px 0; font-size:15px;">
-            <span class="sim-row-label" style="flex:1;">FXFee:<br><span style="font-size:12px;">(mark-up spot)</span></span>
-            <span class="sim-readonly" style="width:80px; text-align:left; white-space:nowrap;">1,00%</span>
-            <span id="fxFeeAbsBrl" style="width:100px; text-align:right; color:var(--muted-purple-grey); font-weight:400; font-size:13px; white-space:nowrap;">BRL 0,0514</span>
-          </div>
-
-          <!-- Spread row -->
-          <div style="display:flex; align-items:center; padding:6px 0; font-size:15px;">
-            <span class="sim-row-label" style="flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Spread 🔗</span>
-            <span style="width:80px; text-align:left; display:inline-flex; align-items:center; white-space:nowrap;">
-              <div class="editable-wrap">
-                <input type="text" id="spreadPct" class="sim-input-sm" value="2,47" inputmode="decimal" autocomplete="off">
-                <span class="edit-icon" style="right:6px; font-size:11px;">✏️</span>
-              </div><span>%</span>
-            </span>
-            <span id="spreadAbsBrl" style="width:100px; text-align:right; color:var(--muted-purple-grey); font-weight:400; font-size:13px; white-space:nowrap;">BRL 0,0000</span>
-          </div>
-
-          <!-- IOF row -->
-          <div style="display:flex; align-items:center; padding:6px 0; font-size:15px;">
-            <span class="sim-row-label" style="flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">IOF:</span>
-            <span class="sim-readonly" style="width:80px; text-align:left; white-space:nowrap;">0,00%</span>
-            <span style="width:100px;"></span>
-          </div>
-
-          <!-- Custo Total row -->
-          <div style="display:flex; align-items:center; padding:12px 0 6px; font-size:15px; border-top:1px solid #eee; margin-top:4px;">
-            <span style="flex:1; font-weight:600; color:var(--muted-purple-grey);">Custo Total:</span>
-            <span id="totalCostPct" style="width:80px; text-align:left; font-weight:600; white-space:nowrap;">3,50%</span>
-            <span style="width:100px;"></span>
-          </div>
-
-          <!-- Taxa Final row -->
-          <div style="display:flex; align-items:center; padding:12px 0 6px; font-size:15px; border-top:1px solid #eee; margin-top:4px;">
-            <span style="flex:1; font-weight:700;">Taxa de Câmbio Final:</span>
-            <span class="sim-row-value highlight" id="finalRate" style="font-size:18px; white-space:nowrap;">BRL 5,1912</span>
-          </div>
+        <div class="cmp-sim-savings">
+          <div class="cmp-savings-label">Economia Tensec</div>
+          <div class="cmp-savings-amount" id="cmpSavingsAmount">R$ 13.511,88</div>
+          <div class="cmp-savings-percent" id="cmpSavingsPercent">43,8% mais barato que seu banco</div>
         </div>
 
-        <!-- SETTLEMENT -->
-        <div style="margin-top:var(--spacing-md);">
-          <div style="margin-bottom:8px;">
-            <div class="sim-section-label" style="font-weight:700; margin-bottom:2px;">Data de liquidação</div>
-            <div style="font-size:11px; color:var(--muted-purple-grey); font-weight:400;">Clique nas opções para colocar a liquidação para uma data futura</div>
-          </div>
-          <div class="sim-settlement" id="settleContainer">
-            <div class="settle-slider" id="settleSlider"></div>
-            <div class="sim-settlement-option active" data-settlement="0" data-pos="0">D+0<small>Hoje</small><span class="settle-rate" id="rateD0">—</span></div>
-            <div class="sim-settlement-option" data-settlement="0.055" data-pos="1">D+1<small>Amanhã</small><span class="settle-rate" id="rateD1">—</span></div>
-            <div class="sim-settlement-option" data-settlement="0.1103" data-pos="2">D+2<small>7 Mar</small><span class="settle-rate" id="rateD2">—</span></div>
-            <div class="sim-settlement-option" data-settlement="0.1655" data-pos="3">D+3<small>8 Mar</small><span class="settle-rate" id="rateD3">—</span></div>
-          </div>
+        <div class="cmp-sim-cta">
+          <button class="sim-lock-btn" type="button">Converse com um Especialista</button>
         </div>
-
-        <!-- REVENUE CARD -->
-        <div style="margin-top:var(--spacing-md); background:#F7F8FA; border:1px solid #E8E6EB; border-radius:8px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center;">
-          <div style="font-size:13px; color:var(--muted-purple-grey); font-weight:700; text-transform:uppercase; letter-spacing:0.05em;">SUA RECEITA:<br><span style="font-size:11px; font-weight:400; text-transform:none; letter-spacing:0;">(isenta de PIS, COFINS e ISS)</span></div>
-          <span style="font-family:var(--font-heading); font-weight:700; font-size:16px; color:var(--success);" id="revenueVal">BRL 0,00</span>
-        </div>
-
-        <!-- CTA -->
-        <button class="sim-lock-btn" style="margin-top:var(--spacing-md);">Converse com um Especialista</button>
-        <p class="sim-footer" id="rateFooter">Próxima cotação aproximada — atualização em <strong id="rateCountdown">10</strong>s.</p>
+        <p class="cmp-sim-footer">Próxima cotação aproximada — atualização em <strong id="cmpRateCountdown">10</strong>s.</p>
       </div>
     </div>
+
   </div>
 </section>
 
@@ -947,8 +1237,8 @@ function initCountUp() {
 // ===== FX Simulator Logic =====
 let SPOT_RATE = 5.1398; // fallback — will be overwritten by live API
 const FX_FEE_PCT = 1.00; // Fixed at 1%
-let settlementPremiumPct = 0; // D+0=0, D+1=0.055, D+2=0.1103, D+3=0.1655
-let currentMode = 'enviar'; // 'enviar' or 'receber'
+let settlementPremiumPct = 0; // Fixo em D+0
+let currentMode = 'enviar'; // Fixo em enviar
 let rateCountdown = 10;
 let countdownInterval = null;
 let lastRateUpdate = null;
@@ -1125,102 +1415,12 @@ function recalculate() {
   // Revenue (BRL) = valor USD × Spread(%) × Taxa FX Spot × 65%
   const revenue = usdVal * (spreadPct / 100) * SPOT_RATE * 0.65;
   document.getElementById('revenueVal').textContent = 'BRL ' + formatBr(revenue, 2);
-
-  // Update settlement rate previews for all D+ options
-  const settlementPremiums = [0, 0.055, 0.1103, 0.1655];
-  const rateIds = ['rateD0', 'rateD1', 'rateD2', 'rateD3'];
-  for (let i = 0; i < 4; i++) {
-    let previewRate;
-    if (currentMode === 'enviar') {
-      previewRate = SPOT_RATE + fxFeeAbs + spreadAbs + SPOT_RATE * (settlementPremiums[i] / 100);
-    } else {
-      previewRate = SPOT_RATE * (1 - (FX_FEE_PCT + spreadPct + settlementPremiums[i]) / 100);
-    }
-    document.getElementById(rateIds[i]).textContent = formatBr(previewRate, 4);
-  }
 }
 
-function getNextBusinessDays() {
-  const brHolidays2025 = ['01-01','03-03','03-04','04-18','04-21','05-01','06-19','09-07','10-12','11-02','11-15','12-25'];
-  const brHolidays2026 = ['01-01','02-16','02-17','04-03','04-21','05-01','06-04','09-07','10-12','11-02','11-15','12-25'];
 
-  function isHoliday(date) {
-    const mm = String(date.getMonth() + 1).padStart(2, '0');
-    const dd = String(date.getDate()).padStart(2, '0');
-    const mmdd = mm + '-' + dd;
-    const year = date.getFullYear();
-    if (year === 2025) return brHolidays2025.includes(mmdd);
-    if (year === 2026) return brHolidays2026.includes(mmdd);
-    return false;
-  }
 
-  function isBusinessDay(date) {
-    const day = date.getDay();
-    if (day === 0 || day === 6) return false;
-    if (isHoliday(date)) return false;
-    return true;
-  }
-
-  function nextBusinessDay(from) {
-    const d = new Date(from);
-    d.setDate(d.getDate() + 1);
-    while (!isBusinessDay(d)) { d.setDate(d.getDate() + 1); }
-    return d;
-  }
-
-  // Start from today in Brasília timezone
-  const now = new Date();
-  const brStr = now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' });
-  let today = new Date(brStr);
-
-  // If today is not a business day, D+0 = next business day
-  if (!isBusinessDay(today)) {
-    while (!isBusinessDay(today)) { today.setDate(today.getDate() + 1); }
-  }
-
-  const days = [today];
-  for (let i = 1; i < 4; i++) {
-    days.push(nextBusinessDay(days[i - 1]));
-  }
-  return days;
-}
-
-function formatSettlementLabel(date, index) {
-  const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-  const weekdays = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
-
-  // Check if the date is actually today in Brasília
-  const now = new Date();
-  const brStr = now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' });
-  const brToday = new Date(brStr);
-  const isToday = date.getDate() === brToday.getDate() && date.getMonth() === brToday.getMonth() && date.getFullYear() === brToday.getFullYear();
-
-  if (index === 0) {
-    if (isToday) {
-      return 'Hoje, ' + date.getDate() + ' ' + months[date.getMonth()];
-    } else {
-      return weekdays[date.getDay()] + ', ' + date.getDate() + ' ' + months[date.getMonth()];
-    }
-  }
-
-  // All other days: just show date
-  return date.getDate() + ' ' + months[date.getMonth()];
-}
-
-function updateSettlementDates() {
-  const days = getNextBusinessDays();
-  const options = document.querySelectorAll('.sim-settlement-option');
-  options.forEach((opt, i) => {
-    const small = opt.querySelector('small');
-    if (small && days[i]) {
-      small.textContent = formatSettlementLabel(days[i], i);
-    }
-  });
-}
 
 function initSimulator() {
-  // Update settlement dates
-  updateSettlementDates();
   const usdInput = document.getElementById('usdAmount');
   const spreadInput = document.getElementById('spreadPct');
 
@@ -1237,45 +1437,18 @@ function initSimulator() {
     if (val >= 0) this.value = formatBr(val, 2);
   });
 
-  // Settlement option toggle — updates premium and recalculates with sliding animation
-  const settleSlider = document.getElementById('settleSlider');
-  document.querySelectorAll('.sim-settlement-option').forEach(opt => {
-    opt.addEventListener('click', function() {
-      document.querySelectorAll('.sim-settlement-option').forEach(o => o.classList.remove('active'));
-      this.classList.add('active');
-      // Slide to position
-      const pos = parseInt(this.dataset.pos) || 0;
-      settleSlider.className = 'settle-slider' + (pos > 0 ? ' pos' + pos : '');
-      settlementPremiumPct = parseFloat(this.dataset.settlement) || 0;
-      recalculate();
-    });
-  });
-
-  // Tab toggle — switches between Enviar and Receber modes with sliding animation
-  const slider = document.getElementById('tabSlider');
-  document.querySelectorAll('.sim-tab').forEach(tab => {
-    tab.addEventListener('click', function() {
-      document.querySelectorAll('.sim-tab').forEach(t => t.classList.remove('active'));
-      this.classList.add('active');
-      const isEnviar = this.textContent.includes('Enviar');
-      currentMode = isEnviar ? 'enviar' : 'receber';
-      // Slide animation
-      if (isEnviar) { slider.classList.remove('right'); } else { slider.classList.add('right'); }
-      document.getElementById('usdLabel').textContent = isEnviar ? 'Valor a enviar (USD)' : 'Valor a receber (USD)';
-      document.getElementById('usdSub').textContent = isEnviar ? 'Para Estados Unidos' : 'Dos Estados Unidos';
-      document.getElementById('brlLabel').textContent = isEnviar ? 'Cliente deposita (BRL)' : 'Cliente receberá (BRL)';
-      document.getElementById('brlSub').textContent = isEnviar ? 'No Brasil · Valor em USD × Taxa de Câmbio Final' : 'No Brasil · Valor em USD × Taxa de Câmbio Final';
-      recalculate();
-    });
-  });
-
   // Initial calculation
   recalculate();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   initScrollReveal();
   initCountUp();
+  initComparativeSimulator();
+  await cmpFetchSpotAndChart();
+  cmpDrawSpotChart();
+  cmpRecalculate();
+  cmpStartCountdown();
   initSimulator();
   startRatePolling();
   initSpotChart();
@@ -1588,6 +1761,270 @@ function initHubspotLeadForm() {
       console.error(err);
       status.textContent = 'Não foi possível enviar agora. Tente novamente ou escreva para hello@tensec.io.';
     }
+  });
+}
+
+
+// ===== Comparative simulator with chart =====
+const cmpBankPaymentFeePct = 0.00;
+const cmpTensecPaymentFeePctValue = 0.90;
+const cmpBankIofPctValue = 3.50;
+const cmpTensecIofPctValue = 0.00;
+const cmpBankSwiftCostBrlValue = 160.00;
+const cmpTensecSwiftCostBrlValue = 0.00;
+
+let CMP_SPOT_RATE = 5.1398;
+let cmpChartPoints = [];
+let cmpLastLive = false;
+let cmpCountdownTimer = null;
+let cmpCountdownValue = 10;
+
+function cmpParseBrNumber(value) {
+  if (typeof value !== 'string') return Number(value) || 0;
+  return Number(
+    value.replace(/\s/g, '')
+      .replace(/R\$\s?/g, '')
+      .replace(/US\$\s?/g, '')
+      .replace(/%/g, '')
+      .replace(/\./g, '')
+      .replace(',', '.')
+  ) || 0;
+}
+
+function cmpFormatBr(value, decimals = 2) {
+  return Number(value).toLocaleString('pt-BR', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals
+  });
+}
+
+function cmpFormatPct(value) {
+  return cmpFormatBr(value, 2) + '%';
+}
+
+function cmpFormatCurrencyBRL(value) {
+  return 'R$ ' + cmpFormatBr(value, 2);
+}
+
+function cmpUpdateLiveStatus(isLive) {
+  cmpLastLive = isLive;
+  const badge = document.getElementById('cmpLiveBadge');
+  const text = document.getElementById('cmpLiveText');
+  const inline = document.getElementById('cmpSpotStatusInline');
+  if (!badge || !text || !inline) return;
+
+  badge.classList.toggle('offline', !isLive);
+  inline.classList.toggle('offline', !isLive);
+  text.textContent = isLive ? 'Cotações ao vivo' : 'Usando fallback';
+  inline.lastChild.textContent = isLive ? 'ONLINE' : 'OFFLINE';
+}
+
+function cmpStartCountdown() {
+  const el = document.getElementById('cmpRateCountdown');
+  if (!el) return;
+  if (cmpCountdownTimer) clearInterval(cmpCountdownTimer);
+  cmpCountdownValue = 10;
+  el.textContent = String(cmpCountdownValue);
+  cmpCountdownTimer = setInterval(() => {
+    cmpCountdownValue -= 1;
+    if (cmpCountdownValue <= 0) cmpCountdownValue = 10;
+    el.textContent = String(cmpCountdownValue);
+  }, 1000);
+}
+
+async function cmpFetchSpotAndChart() {
+  try {
+    const [spotResp, chartResp] = await Promise.all([
+      fetch('https://economia.awesomeapi.com.br/json/last/USD-BRL', { cache: 'no-store' }),
+      fetch('https://economia.awesomeapi.com.br/json/USD-BRL/300', { cache: 'no-store' })
+    ]);
+
+    if (spotResp.ok) {
+      const spotData = await spotResp.json();
+      const bid = parseFloat(spotData?.USDBRL?.bid);
+      if (isFinite(bid)) CMP_SPOT_RATE = bid;
+    }
+
+    if (chartResp.ok) {
+      const raw = await chartResp.json();
+      if (Array.isArray(raw) && raw.length) {
+        const ordered = raw.slice().reverse().map(item => {
+          const ts = Number(item.timestamp || item.create_date || 0);
+          const bid = parseFloat(item.bid);
+          const d = ts ? new Date(ts * 1000) : new Date(item.create_date);
+          return { date: d, bid };
+        }).filter(p => p.date instanceof Date && !isNaN(p.date) && isFinite(p.bid));
+
+        const toBRParts = (d) => {
+          const parts = new Intl.DateTimeFormat('en-CA', {
+            timeZone: 'America/Sao_Paulo',
+            year: 'numeric', month: '2-digit', day: '2-digit',
+            hour: '2-digit', minute: '2-digit', hour12: false
+          }).formatToParts(d);
+          const get = type => parts.find(p => p.type === type)?.value || '';
+          return {
+            ymd: `${get('year')}-${get('month')}-${get('day')}`,
+            hh: Number(get('hour')),
+            mm: Number(get('minute'))
+          };
+        };
+
+        const filtered = ordered.filter(p => toBRParts(p.date).hh < 17);
+        const groups = {};
+        filtered.forEach(p => {
+          const key = toBRParts(p.date).ymd;
+          if (!groups[key]) groups[key] = [];
+          groups[key].push(p);
+        });
+        const keys = Object.keys(groups).sort();
+        if (keys.length) {
+          const nowParts = toBRParts(new Date());
+          let chosenKey = keys[keys.length - 1];
+          if (nowParts.hh < 9 && keys.length > 1 && chosenKey === nowParts.ymd) {
+            chosenKey = keys[keys.length - 2];
+          }
+          cmpChartPoints = groups[chosenKey] || [];
+        }
+      }
+    }
+
+    cmpUpdateLiveStatus(true);
+  } catch (e) {
+    console.error('Comparative simulator fetch error:', e);
+    cmpUpdateLiveStatus(false);
+  }
+
+  if (!cmpChartPoints.length) {
+    cmpChartPoints = [
+      { date: new Date(), bid: CMP_SPOT_RATE - 0.035 },
+      { date: new Date(), bid: CMP_SPOT_RATE - 0.028 },
+      { date: new Date(), bid: CMP_SPOT_RATE - 0.022 },
+      { date: new Date(), bid: CMP_SPOT_RATE - 0.015 },
+      { date: new Date(), bid: CMP_SPOT_RATE - 0.008 },
+      { date: new Date(), bid: CMP_SPOT_RATE }
+    ];
+  }
+}
+
+function cmpDrawSpotChart() {
+  const canvas = document.getElementById('cmpSpotChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width;
+  const h = canvas.height;
+  ctx.clearRect(0, 0, w, h);
+
+  const points = cmpChartPoints.map(p => p.bid);
+  const min = Math.min(...points) - 0.01;
+  const max = Math.max(...points) + 0.01;
+  const left = 8, right = w - 8, top = 10, bottom = h - 14;
+  const plotW = right - left, plotH = bottom - top;
+
+  ctx.strokeStyle = '#e6ebf7';
+  ctx.lineWidth = 1;
+  for (let i = 0; i < 4; i++) {
+    const y = top + (plotH / 3) * i;
+    ctx.beginPath();
+    ctx.moveTo(left, y);
+    ctx.lineTo(right, y);
+    ctx.stroke();
+  }
+
+  ctx.setLineDash([3, 4]);
+  ctx.strokeStyle = 'rgba(20,53,195,0.18)';
+  for (let i = 1; i < 4; i++) {
+    const x = left + (plotW / 4) * i;
+    ctx.beginPath();
+    ctx.moveTo(x, top);
+    ctx.lineTo(x, bottom);
+    ctx.stroke();
+  }
+  ctx.setLineDash([]);
+
+  const xy = points.map((p, i) => {
+    const x = left + (plotW * i) / Math.max(points.length - 1, 1);
+    const y = bottom - ((p - min) / Math.max(max - min, 0.0001)) * plotH;
+    return [x, y];
+  });
+
+  const grad = ctx.createLinearGradient(0, top, 0, bottom);
+  grad.addColorStop(0, 'rgba(78,166,215,0.22)');
+  grad.addColorStop(1, 'rgba(78,166,215,0.02)');
+
+  ctx.beginPath();
+  ctx.moveTo(xy[0][0], bottom);
+  xy.forEach(([x, y]) => ctx.lineTo(x, y));
+  ctx.lineTo(xy[xy.length - 1][0], bottom);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  ctx.beginPath();
+  xy.forEach(([x, y], i) => {
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+  ctx.strokeStyle = '#1435C3';
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+
+  const [lx, ly] = xy[xy.length - 1];
+  ctx.beginPath();
+  ctx.arc(lx, ly, 4.5, 0, Math.PI * 2);
+  ctx.fillStyle = '#1435C3';
+  ctx.fill();
+
+  const meta = document.getElementById('cmpChartMeta');
+  if (meta) meta.textContent = 'Hoje';
+}
+
+function cmpRecalculate() {
+  const usdVal = cmpParseBrNumber(document.getElementById('cmpUsdAmount').value);
+  const bankSpreadPct = cmpParseBrNumber(document.getElementById('cmpBankSpreadPct').value);
+
+  const bankTotalCostPct = bankSpreadPct + cmpBankPaymentFeePct + cmpBankIofPctValue;
+  const tensecTotalCostPct = bankSpreadPct + cmpTensecPaymentFeePctValue + cmpTensecIofPctValue;
+
+  const bankTotalCostBrl = usdVal * CMP_SPOT_RATE * (bankTotalCostPct / 100) + cmpBankSwiftCostBrlValue;
+  const tensecTotalCostBrl = usdVal * CMP_SPOT_RATE * (tensecTotalCostPct / 100) + cmpTensecSwiftCostBrlValue;
+  const savingsBrl = bankTotalCostBrl - tensecTotalCostBrl;
+  const savingsPct = bankTotalCostBrl > 0 ? (savingsBrl / bankTotalCostBrl) * 100 : 0;
+
+  document.getElementById('cmpSpotRateBank').textContent = cmpFormatBr(CMP_SPOT_RATE, 4);
+  document.getElementById('cmpSpotRateTensec').textContent = cmpFormatBr(CMP_SPOT_RATE, 4);
+  document.getElementById('cmpTensecSpreadPct').textContent = cmpFormatPct(bankSpreadPct);
+  document.getElementById('cmpBankPaymentFeePct').textContent = cmpFormatPct(cmpBankPaymentFeePct);
+  document.getElementById('cmpTensecPaymentFeePct').textContent = cmpFormatPct(cmpTensecPaymentFeePctValue);
+  document.getElementById('cmpBankIofPct').textContent = cmpFormatPct(cmpBankIofPctValue);
+  document.getElementById('cmpTensecIofPct').textContent = cmpFormatPct(cmpTensecIofPctValue);
+  document.getElementById('cmpBankTotalCostPct').textContent = cmpFormatPct(bankTotalCostPct);
+  document.getElementById('cmpTensecTotalCostPct').textContent = cmpFormatPct(tensecTotalCostPct);
+  document.getElementById('cmpBankSwiftCostBrl').textContent = cmpFormatCurrencyBRL(cmpBankSwiftCostBrlValue);
+  document.getElementById('cmpTensecSwiftCostBrl').textContent = cmpFormatCurrencyBRL(cmpTensecSwiftCostBrlValue);
+  document.getElementById('cmpBankTotalCostBrl').textContent = cmpFormatCurrencyBRL(bankTotalCostBrl);
+  document.getElementById('cmpTensecTotalCostBrl').textContent = cmpFormatCurrencyBRL(tensecTotalCostBrl);
+  document.getElementById('cmpSavingsAmount').textContent = cmpFormatCurrencyBRL(savingsBrl);
+  document.getElementById('cmpSavingsPercent').textContent = cmpFormatBr(savingsPct, 1) + '% mais barato que seu banco';
+}
+
+function initComparativeSimulator() {
+  const usdInput = document.getElementById('cmpUsdAmount');
+  const spreadInput = document.getElementById('cmpBankSpreadPct');
+  if (!usdInput || !spreadInput) return;
+
+  usdInput.addEventListener('input', cmpRecalculate);
+  spreadInput.addEventListener('input', cmpRecalculate);
+
+  usdInput.addEventListener('blur', function () {
+    const val = cmpParseBrNumber(this.value);
+    this.value = cmpFormatBr(val, 2);
+    cmpRecalculate();
+  });
+
+  spreadInput.addEventListener('blur', function () {
+    const val = cmpParseBrNumber(this.value);
+    this.value = cmpFormatPct(val);
+    cmpRecalculate();
   });
 }
 
