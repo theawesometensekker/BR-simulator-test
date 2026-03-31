@@ -1009,6 +1009,11 @@ footer {
   color:rgba(255,255,255,0.88);
 }
 
+
+/* Working chart transplanted */
+#spotChart{display:block;}
+#chartTimeAxis{position:relative;height:14px;}
+
 </style>
 </head>
 <body>
@@ -1064,22 +1069,22 @@ footer {
           <div class="cmp-amount-input-wrapper" id="cmpUsdAmountWrap">
             <input type="text" id="cmpUsdAmount" class="cmp-amount-input" value="50.000,00" placeholder="0,00" inputmode="decimal" autocomplete="off" aria-label="Valor da transação">
           </div>
+        </div>
 
-          <div class="cmp-chart-block">
-            <div class="cmp-chart-head">
-              <div class="cmp-chart-title">USD/BRL — Cotação Spot</div>
-              <div class="cmp-chart-meta" id="cmpChartMeta">Hoje</div>
+        <!-- SPOT RATE CHART -->
+        <div style="background:#F7F8FA; border:1px solid #E8E6EB; border-radius:12px; padding:var(--spacing-md); margin-bottom:var(--spacing-md);">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+            <div>
+              <span style="font-weight:600; font-size:14px; color:var(--almost-black);">USD/BRL — Cotação Spot</span>
+              <div style="font-size:11px; font-style:italic; color:var(--muted-purple-grey); font-weight:400;">(atualizado a cada minuto)</div>
             </div>
-            <div class="cmp-chart-canvas-wrap">
-              <canvas id="cmpSpotChart" class="cmp-chart-canvas" width="420" height="118" aria-label="Gráfico de cotação spot"></canvas>
-            </div>
-            <div class="cmp-chart-axis" id="cmpChartAxis">
-              <span>09:00</span>
-              <span>11:00</span>
-              <span>13:00</span>
-              <span>15:00</span>
-              <span>17:00</span>
-            </div>
+            <div id="chartMeta" style="font-size:11px; color:var(--muted-purple-grey);"></div>
+          </div>
+          <div style="position:relative; width:100%; height:120px;">
+            <canvas id="spotChart" style="width:100%; height:100%;"></canvas>
+            <div id="chartTooltip" style="display:none; position:absolute; background:var(--almost-black); color:var(--white); padding:4px 8px; border-radius:6px; font-size:11px; font-family:var(--font-body); pointer-events:none; white-space:nowrap; z-index:10;"></div>
+          </div>
+          <div id="chartTimeAxis" style="display:flex; justify-content:space-between; margin-top:4px; padding:0 2px;">
           </div>
         </div>
 
@@ -1540,261 +1545,16 @@ function initSimulator() {
   recalculate();
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
   initScrollReveal();
   initCountUp();
   initComparativeSimulator();
-  await cmpFetchSpotAndChart();
-  cmpStartCountdown();
   initHeaderAnchorScroll();
-  initSimulator();
-  startRatePolling();
   initSpotChart();
-  initHubspotLeadForm();
 });
 
 // ===== Spot Rate Intraday Chart =====
-let chartData = [];
-let chartCanvas, chartCtx;
 
-async function fetchIntradayRates() {
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
-    const res = await fetch('https://economia.awesomeapi.com.br/json/USD-BRL/300?_t=' + Date.now(), { signal: controller.signal });
-    clearTimeout(timeout);
-    const data = await res.json();
-    if (!data || !Array.isArray(data) || data.length === 0) { drawFallbackChart(); return; }
-
-    // Data comes newest first — reverse for chronological order
-    const sorted = data.reverse();
-
-    // Get current time in Brasília
-    const now = new Date();
-    const brStr = now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' });
-    const brNow = new Date(brStr);
-    const brHour = brNow.getHours();
-    const todayKey = brNow.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
-
-    // Group by date and filter: only include quotes up to 17:00 Brasília
-    const byDate = {};
-    sorted.forEach(function(p) {
-      const ts = new Date(parseInt(p.timestamp) * 1000);
-      const brTs = new Date(ts.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
-      const dateKey = brTs.toLocaleDateString('pt-BR');
-      const hour = brTs.getHours();
-      // Only include quotes before 17:00
-      if (hour >= 17) return;
-      if (!byDate[dateKey]) byDate[dateKey] = [];
-      byDate[dateKey].push({ time: ts, bid: parseFloat(p.bid) });
-    });
-
-    const dateKeys = Object.keys(byDate);
-
-    // Determine which day to show:
-    // Before 9:00 → show last business day (previous day's data up to 17:00)
-    // 9:00-17:00 → show today's data (accumulating)
-    // After 17:00 → show today's data frozen at 17:00
-    var useKey;
-    if (brHour < 9) {
-      // Before market open: show last available day
-      useKey = dateKeys[dateKeys.length - 1];
-      // Make sure it's not today (which would have no data before 9)
-      if (useKey === todayKey && dateKeys.length > 1) {
-        useKey = dateKeys[dateKeys.length - 2];
-      }
-    } else {
-      // During or after market hours: show today
-      useKey = todayKey;
-      if (!byDate[useKey] || byDate[useKey].length < 2) {
-        useKey = dateKeys[dateKeys.length - 1];
-      }
-    }
-
-    chartData = byDate[useKey] || [];
-
-    if (chartData.length < 2) { drawFallbackChart(); return; }
-
-    // Update chart meta
-    const isToday = useKey === todayKey;
-    const metaEl = document.getElementById('chartMeta');
-    const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-    if (isToday) {
-      const d = chartData[0].time;
-      var dBr = new Date(d.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
-      metaEl.innerHTML = 'Hoje<br>' + dBr.getDate() + '-' + months[dBr.getMonth()];
-    } else {
-      // Show the date of the data being displayed
-      var dBr = new Date(chartData[0].time.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
-      metaEl.innerHTML = dBr.getDate() + '-' + months[dBr.getMonth()] + '<br><span style="font-size:10px;">Último dia útil</span>';
-    }
-
-    drawChart();
-  } catch (e) {
-    drawFallbackChart();
-  }
-}
-
-function drawChart() {
-  if (!chartCanvas || chartData.length < 2) return;
-  const ctx = chartCtx;
-  const w = chartCanvas._cssW;
-  const h = chartCanvas._cssH;
-  ctx.clearRect(0, 0, w, h);
-
-  const bids = chartData.map(d => d.bid);
-  const min = Math.min(...bids) - 0.002;
-  const max = Math.max(...bids) + 0.002;
-  const range = max - min || 0.01;
-
-  // Time range
-  const firstTime = chartData[0].time.getTime();
-  const lastTime = chartData[chartData.length - 1].time.getTime();
-  const timeRange = lastTime - firstTime || 1;
-
-  // Draw horizontal grid lines
-  ctx.strokeStyle = '#E8E6EB';
-  ctx.lineWidth = 0.5;
-  for (let i = 0; i <= 4; i++) {
-    const y = (h * i) / 4;
-    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
-  }
-
-  // Draw vertical grid lines at full hours and populate time axis
-  const firstHour = chartData[0].time.getHours();
-  const lastHour = chartData[chartData.length - 1].time.getHours();
-  const axisEl = document.getElementById('chartTimeAxis');
-  axisEl.innerHTML = '';
-
-  // Calculate full hours within the data range
-  const fullHours = [];
-  for (let hr = firstHour; hr <= lastHour + 1; hr++) {
-    const hourDate = new Date(chartData[0].time);
-    hourDate.setHours(hr, 0, 0, 0);
-    const t = hourDate.getTime();
-    if (t >= firstTime && t <= lastTime) {
-      fullHours.push({ hour: hr, x: ((t - firstTime) / timeRange) * w });
-    }
-  }
-
-  // Draw vertical dashed lines
-  ctx.strokeStyle = '#E8E6EB';
-  ctx.lineWidth = 0.5;
-  ctx.setLineDash([3, 3]);
-  fullHours.forEach(fh => {
-    ctx.beginPath(); ctx.moveTo(fh.x, 0); ctx.lineTo(fh.x, h); ctx.stroke();
-  });
-  ctx.setLineDash([]);
-
-  // Populate the time axis labels
-  // Add start time
-  const startLabel = document.createElement('span');
-  startLabel.style.cssText = 'font-size:10px; color:var(--muted-purple-grey); position:absolute; left:0;';
-  startLabel.textContent = chartData[0].time.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit', timeZone:'America/Sao_Paulo' });
-  axisEl.style.position = 'relative';
-  axisEl.style.height = '14px';
-  axisEl.appendChild(startLabel);
-
-  fullHours.forEach(fh => {
-    const lbl = document.createElement('span');
-    lbl.style.cssText = 'font-size:10px; color:var(--muted-purple-grey); position:absolute; transform:translateX(-50%);';
-    lbl.style.left = fh.x + 'px';
-    lbl.textContent = String(fh.hour).padStart(2, '0') + ':00';
-    axisEl.appendChild(lbl);
-  });
-
-  // Add end time
-  const endLabel = document.createElement('span');
-  endLabel.style.cssText = 'font-size:10px; color:var(--muted-purple-grey); position:absolute; right:0;';
-  endLabel.textContent = chartData[chartData.length - 1].time.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit', timeZone:'America/Sao_Paulo' });
-  axisEl.appendChild(endLabel);
-
-  // Draw gradient fill
-  const gradient = ctx.createLinearGradient(0, 0, 0, h);
-  gradient.addColorStop(0, 'rgba(78, 166, 215, 0.2)');
-  gradient.addColorStop(1, 'rgba(78, 166, 215, 0.02)');
-  ctx.beginPath();
-  ctx.moveTo(0, h);
-  chartData.forEach((d, i) => {
-    const x = ((d.time.getTime() - firstTime) / timeRange) * w;
-    const y = h - ((d.bid - min) / range) * h;
-    ctx.lineTo(x, y);
-  });
-  ctx.lineTo(w, h);
-  ctx.closePath();
-  ctx.fillStyle = gradient;
-  ctx.fill();
-
-  // Draw line
-  ctx.beginPath();
-  chartData.forEach((d, i) => {
-    const x = ((d.time.getTime() - firstTime) / timeRange) * w;
-    const y = h - ((d.bid - min) / range) * h;
-    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-  });
-  ctx.strokeStyle = '#4EA6D7';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  // Draw current price dot at the end
-  const lastBid = bids[bids.length - 1];
-  const lastY = h - ((lastBid - min) / range) * h;
-  ctx.beginPath();
-  ctx.arc(w - 2, lastY, 4, 0, Math.PI * 2);
-  ctx.fillStyle = '#214CE4';
-  ctx.fill();
-
-  // Min/Max labels
-  ctx.font = '10px Poppins, sans-serif';
-  ctx.fillStyle = '#50485B';
-  ctx.textAlign = 'right';
-  ctx.fillText(max.toFixed(4), w - 8, 12);
-  ctx.fillText(min.toFixed(4), w - 8, h - 4);
-}
-
-function drawFallbackChart() {
-  if (!chartCanvas) return;
-  const ctx = chartCtx;
-  const w = chartCanvas._cssW;
-  const h = chartCanvas._cssH;
-  ctx.clearRect(0, 0, w, h);
-
-  // Draw a flat line at center
-  ctx.strokeStyle = '#E8E6EB';
-  ctx.lineWidth = 1;
-  ctx.setLineDash([4, 4]);
-  ctx.beginPath();
-  ctx.moveTo(0, h / 2);
-  ctx.lineTo(w, h / 2);
-  ctx.stroke();
-  ctx.setLineDash([]);
-
-  ctx.font = '12px Poppins, sans-serif';
-  ctx.fillStyle = '#B8B3BF';
-  ctx.textAlign = 'center';
-  ctx.fillText('Dados indisponíveis', w / 2, h / 2 - 8);
-
-  document.getElementById('chartMeta').textContent = 'Offline';
-}
-
-function initSpotChart() {
-  chartCanvas = document.getElementById('spotChart');
-  const rect = chartCanvas.parentElement.getBoundingClientRect();
-  const dpr = window.devicePixelRatio || 1;
-  chartCanvas.width = rect.width * dpr;
-  chartCanvas.height = rect.height * dpr;
-  chartCanvas.style.width = rect.width + 'px';
-  chartCanvas.style.height = rect.height + 'px';
-  chartCtx = chartCanvas.getContext('2d');
-  chartCtx.scale(dpr, dpr);
-  // Store CSS dimensions for drawing
-  chartCanvas._cssW = rect.width;
-  chartCanvas._cssH = rect.height;
-
-  fetchIntradayRates();
-  // Refresh chart every 60 seconds
-  setInterval(fetchIntradayRates, 60000);
-}
 
 // ===== HubSpot-ready form handler =====
 function initHubspotLeadForm() {
@@ -2220,6 +1980,249 @@ function cmpDrawSpotChart() {
 
   const meta = document.getElementById('cmpChartMeta');
   if (meta && !meta.innerHTML) meta.textContent = 'Offline';
+}
+
+// ===== Spot Rate Intraday Chart =====
+let chartData = [];
+let chartCanvas, chartCtx;
+
+async function fetchIntradayRates() {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    const res = await fetch('https://economia.awesomeapi.com.br/json/USD-BRL/300?_t=' + Date.now(), { signal: controller.signal });
+    clearTimeout(timeout);
+    const data = await res.json();
+    if (!data || !Array.isArray(data) || data.length === 0) { drawFallbackChart(); return; }
+
+    // Data comes newest first — reverse for chronological order
+    const sorted = data.reverse();
+
+    // Get current time in Brasília
+    const now = new Date();
+    const brStr = now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' });
+    const brNow = new Date(brStr);
+    const brHour = brNow.getHours();
+    const todayKey = brNow.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+
+    // Group by date and filter: only include quotes up to 17:00 Brasília
+    const byDate = {};
+    sorted.forEach(function(p) {
+      const ts = new Date(parseInt(p.timestamp) * 1000);
+      const brTs = new Date(ts.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+      const dateKey = brTs.toLocaleDateString('pt-BR');
+      const hour = brTs.getHours();
+      // Only include quotes before 17:00
+      if (hour >= 17) return;
+      if (!byDate[dateKey]) byDate[dateKey] = [];
+      byDate[dateKey].push({ time: ts, bid: parseFloat(p.bid) });
+    });
+
+    const dateKeys = Object.keys(byDate);
+
+    // Determine which day to show:
+    // Before 9:00 → show last business day (previous day's data up to 17:00)
+    // 9:00-17:00 → show today's data (accumulating)
+    // After 17:00 → show today's data frozen at 17:00
+    var useKey;
+    if (brHour < 9) {
+      // Before market open: show last available day
+      useKey = dateKeys[dateKeys.length - 1];
+      // Make sure it's not today (which would have no data before 9)
+      if (useKey === todayKey && dateKeys.length > 1) {
+        useKey = dateKeys[dateKeys.length - 2];
+      }
+    } else {
+      // During or after market hours: show today
+      useKey = todayKey;
+      if (!byDate[useKey] || byDate[useKey].length < 2) {
+        useKey = dateKeys[dateKeys.length - 1];
+      }
+    }
+
+    chartData = byDate[useKey] || [];
+
+    if (chartData.length < 2) { drawFallbackChart(); return; }
+
+    // Update chart meta
+    const isToday = useKey === todayKey;
+    const metaEl = document.getElementById('chartMeta');
+    const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    if (isToday) {
+      const d = chartData[0].time;
+      var dBr = new Date(d.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+      metaEl.innerHTML = 'Hoje<br>' + dBr.getDate() + '-' + months[dBr.getMonth()];
+    } else {
+      // Show the date of the data being displayed
+      var dBr = new Date(chartData[0].time.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+      metaEl.innerHTML = dBr.getDate() + '-' + months[dBr.getMonth()] + '<br><span style="font-size:10px;">Último dia útil</span>';
+    }
+
+    drawChart();
+  } catch (e) {
+    drawFallbackChart();
+  }
+}
+
+function drawChart() {
+  if (!chartCanvas || chartData.length < 2) return;
+  const ctx = chartCtx;
+  const w = chartCanvas._cssW;
+  const h = chartCanvas._cssH;
+  ctx.clearRect(0, 0, w, h);
+
+  const bids = chartData.map(d => d.bid);
+  const min = Math.min(...bids) - 0.002;
+  const max = Math.max(...bids) + 0.002;
+  const range = max - min || 0.01;
+
+  // Time range
+  const firstTime = chartData[0].time.getTime();
+  const lastTime = chartData[chartData.length - 1].time.getTime();
+  const timeRange = lastTime - firstTime || 1;
+
+  // Draw horizontal grid lines
+  ctx.strokeStyle = '#E8E6EB';
+  ctx.lineWidth = 0.5;
+  for (let i = 0; i <= 4; i++) {
+    const y = (h * i) / 4;
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+  }
+
+  // Draw vertical grid lines at full hours and populate time axis
+  const firstHour = chartData[0].time.getHours();
+  const lastHour = chartData[chartData.length - 1].time.getHours();
+  const axisEl = document.getElementById('chartTimeAxis');
+  axisEl.innerHTML = '';
+
+  // Calculate full hours within the data range
+  const fullHours = [];
+  for (let hr = firstHour; hr <= lastHour + 1; hr++) {
+    const hourDate = new Date(chartData[0].time);
+    hourDate.setHours(hr, 0, 0, 0);
+    const t = hourDate.getTime();
+    if (t >= firstTime && t <= lastTime) {
+      fullHours.push({ hour: hr, x: ((t - firstTime) / timeRange) * w });
+    }
+  }
+
+  // Draw vertical dashed lines
+  ctx.strokeStyle = '#E8E6EB';
+  ctx.lineWidth = 0.5;
+  ctx.setLineDash([3, 3]);
+  fullHours.forEach(fh => {
+    ctx.beginPath(); ctx.moveTo(fh.x, 0); ctx.lineTo(fh.x, h); ctx.stroke();
+  });
+  ctx.setLineDash([]);
+
+  // Populate the time axis labels
+  // Add start time
+  const startLabel = document.createElement('span');
+  startLabel.style.cssText = 'font-size:10px; color:var(--muted-purple-grey); position:absolute; left:0;';
+  startLabel.textContent = chartData[0].time.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit', timeZone:'America/Sao_Paulo' });
+  axisEl.style.position = 'relative';
+  axisEl.style.height = '14px';
+  axisEl.appendChild(startLabel);
+
+  fullHours.forEach(fh => {
+    const lbl = document.createElement('span');
+    lbl.style.cssText = 'font-size:10px; color:var(--muted-purple-grey); position:absolute; transform:translateX(-50%);';
+    lbl.style.left = fh.x + 'px';
+    lbl.textContent = String(fh.hour).padStart(2, '0') + ':00';
+    axisEl.appendChild(lbl);
+  });
+
+  // Add end time
+  const endLabel = document.createElement('span');
+  endLabel.style.cssText = 'font-size:10px; color:var(--muted-purple-grey); position:absolute; right:0;';
+  endLabel.textContent = chartData[chartData.length - 1].time.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit', timeZone:'America/Sao_Paulo' });
+  axisEl.appendChild(endLabel);
+
+  // Draw gradient fill
+  const gradient = ctx.createLinearGradient(0, 0, 0, h);
+  gradient.addColorStop(0, 'rgba(78, 166, 215, 0.2)');
+  gradient.addColorStop(1, 'rgba(78, 166, 215, 0.02)');
+  ctx.beginPath();
+  ctx.moveTo(0, h);
+  chartData.forEach((d, i) => {
+    const x = ((d.time.getTime() - firstTime) / timeRange) * w;
+    const y = h - ((d.bid - min) / range) * h;
+    ctx.lineTo(x, y);
+  });
+  ctx.lineTo(w, h);
+  ctx.closePath();
+  ctx.fillStyle = gradient;
+  ctx.fill();
+
+  // Draw line
+  ctx.beginPath();
+  chartData.forEach((d, i) => {
+    const x = ((d.time.getTime() - firstTime) / timeRange) * w;
+    const y = h - ((d.bid - min) / range) * h;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  });
+  ctx.strokeStyle = '#4EA6D7';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Draw current price dot at the end
+  const lastBid = bids[bids.length - 1];
+  const lastY = h - ((lastBid - min) / range) * h;
+  ctx.beginPath();
+  ctx.arc(w - 2, lastY, 4, 0, Math.PI * 2);
+  ctx.fillStyle = '#214CE4';
+  ctx.fill();
+
+  // Min/Max labels
+  ctx.font = '10px Poppins, sans-serif';
+  ctx.fillStyle = '#50485B';
+  ctx.textAlign = 'right';
+  ctx.fillText(max.toFixed(4), w - 8, 12);
+  ctx.fillText(min.toFixed(4), w - 8, h - 4);
+}
+
+function drawFallbackChart() {
+  if (!chartCanvas) return;
+  const ctx = chartCtx;
+  const w = chartCanvas._cssW;
+  const h = chartCanvas._cssH;
+  ctx.clearRect(0, 0, w, h);
+
+  // Draw a flat line at center
+  ctx.strokeStyle = '#E8E6EB';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath();
+  ctx.moveTo(0, h / 2);
+  ctx.lineTo(w, h / 2);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.font = '12px Poppins, sans-serif';
+  ctx.fillStyle = '#B8B3BF';
+  ctx.textAlign = 'center';
+  ctx.fillText('Dados indisponíveis', w / 2, h / 2 - 8);
+
+  document.getElementById('chartMeta').textContent = 'Offline';
+}
+
+function initSpotChart() {
+  chartCanvas = document.getElementById('spotChart');
+  const rect = chartCanvas.parentElement.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  chartCanvas.width = rect.width * dpr;
+  chartCanvas.height = rect.height * dpr;
+  chartCanvas.style.width = rect.width + 'px';
+  chartCanvas.style.height = rect.height + 'px';
+  chartCtx = chartCanvas.getContext('2d');
+  chartCtx.scale(dpr, dpr);
+  // Store CSS dimensions for drawing
+  chartCanvas._cssW = rect.width;
+  chartCanvas._cssH = rect.height;
+
+  fetchIntradayRates();
+  // Refresh chart every 60 seconds
+  setInterval(fetchIntradayRates, 60000);
 }
 
 function cmpRecalculate() {
