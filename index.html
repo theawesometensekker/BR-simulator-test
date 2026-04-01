@@ -226,7 +226,6 @@ p { font-size: 18px; line-height: 1.6; }
   font-size:13px;
   color:rgba(255,255,255,0.70);
   line-height:1.45;
-  max-width:250px;
 }
 .cmp-live-badge{
   display:inline-flex;
@@ -293,7 +292,7 @@ p { font-size: 18px; line-height: 1.6; }
   font-family:var(--font-heading);
   font-weight:700;
   font-size:18px;
-  color:var(--primary-blue);
+  color:var(--almost-black);
   pointer-events:none;
 }
 .cmp-amount-input{
@@ -302,7 +301,7 @@ p { font-size: 18px; line-height: 1.6; }
   font-family:var(--font-heading);
   font-weight:700;
   font-size:32px;
-  color:var(--almost-black);
+  color:var(--primary-blue);
   background:#eef3ff;
   border:1px solid #d8e5ff;
   border-radius:16px;
@@ -418,6 +417,45 @@ p { font-size: 18px; line-height: 1.6; }
   box-shadow:0 0 0 3px rgba(20,53,195,0.12);
   background:#f7faff;
 }
+.cmp-spread-wrapper{
+  position:relative;
+  width:100%;
+}
+.cmp-spread-input-full{
+  width:100%;
+  padding:20px 48px 14px 20px;
+  font-family:var(--font-heading);
+  font-weight:700;
+  font-size:28px;
+  color:var(--primary-blue);
+  background:#eef3ff;
+  border:1px solid #d8e5ff;
+  border-radius:16px;
+  box-shadow:inset 0 0 0 1px rgba(78,166,215,0.12);
+  transition:all var(--timing-fast) var(--easing-standard);
+  text-align:right;
+  letter-spacing:-0.01em;
+  -moz-appearance:textfield;
+}
+.cmp-spread-input-full::-webkit-outer-spin-button,
+.cmp-spread-input-full::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+.cmp-spread-input-full:focus{
+  outline:none;
+  border-color:var(--primary-blue);
+  box-shadow:0 0 0 4px var(--focus-ring);
+  background:#f7faff;
+}
+.cmp-spread-pct-suffix{
+  position:absolute;
+  right:18px;
+  top:50%;
+  transform:translateY(-40%);
+  font-family:var(--font-heading);
+  font-weight:700;
+  font-size:18px;
+  color:var(--almost-black);
+  pointer-events:none;
+}
 .cmp-spot-status-inline{
   font-size:11px;
   font-weight:700;
@@ -495,7 +533,7 @@ p { font-size: 18px; line-height: 1.6; }
     white-space: nowrap;
   }
   .cmp-sim-title{
-    padding-right: 128px;
+    padding-right: 0;
   }
   .cmp-live-badge .cmp-live-dot{
     margin-right: 2px;
@@ -1129,15 +1167,9 @@ footer {
       <div class="cmp-sim-card">
         <!-- HEADER -->
         <div class="cmp-sim-header">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-            <div>
-              <h2 class="cmp-sim-title">Simule uma transação</h2>
-              <p class="cmp-sim-subtitle">Compare o custo total entre seu banco e a Tensec.</p>
-            </div>
-            <div class="cmp-live-badge" id="cmpLiveBadge">
-              <span class="cmp-live-dot"></span>
-              <span id="cmpLiveText">Cotações ao vivo</span>
-            </div>
+          <div>
+            <h2 class="cmp-sim-title" style="font-size:24px;font-weight:800;">Simule uma transação</h2>
+            <p class="cmp-sim-subtitle" style="font-size:15px;">Compare o custo total entre seu banco e a Tensec.</p>
           </div>
         </div>
 
@@ -1154,28 +1186,26 @@ footer {
           </div>
           <div>
             <span class="cmp-input-label" style="display:block;margin-bottom:8px;">SPREAD QUE SEU BANCO COBRA</span>
-            <div style="display:flex;align-items:center;gap:8px;justify-content:flex-end;">
-              <div class="cmp-editable-wrap" id="cmpBankSpreadWrap" style="flex:0 0 auto;">
-                <input type="text" id="cmpBankSpreadPct" class="cmp-spread-input" value="1,00" inputmode="decimal" autocomplete="off" aria-label="Editar spread do banco" style="width:100px;text-align:right;font-size:22px;padding:10px 14px;">
-              </div>
-              <span style="font-size:18px;font-weight:700;color:var(--muted-purple-grey);">%</span>
+            <div class="cmp-spread-wrapper" id="cmpBankSpreadWrap">
+              <input type="text" id="cmpBankSpreadPct" class="cmp-spread-input-full" value="1,00" inputmode="decimal" autocomplete="off" aria-label="Editar spread do banco">
+              <span class="cmp-spread-pct-suffix">%</span>
             </div>
           </div>
         </div>
 
         <!-- SUMMARY BOX -->
         <div style="margin:0 24px 16px;padding:18px 20px;background:#f7f8ff;border-radius:14px;border:1px solid #e8ecf8;">
-          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted-purple-grey);margin-bottom:14px;text-align:center;">
+          <div style="font-size:15px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted-purple-grey);margin-bottom:14px;text-align:center;">
             Custo total da transação
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
             <div style="text-align:center;">
               <div style="font-size:11px;color:var(--muted-purple-grey);margin-bottom:4px;">Seu Banco</div>
-              <div id="cmpBankTotalCostBrl" style="font-family:var(--font-heading);font-weight:700;font-size:20px;color:var(--almost-black);">R$ 24.001,98</div>
+              <div id="cmpBankTotalCostBrl" style="font-family:var(--font-heading);font-weight:700;font-size:24px;color:var(--almost-black);">R$ 24.001,98</div>
             </div>
             <div style="text-align:center;">
               <div style="font-size:11px;color:var(--muted-purple-grey);margin-bottom:4px;">Tensec</div>
-              <div id="cmpTensecTotalCostBrl" style="font-family:var(--font-heading);font-weight:800;font-size:20px;color:var(--primary-blue);">R$ 10.066,39</div>
+              <div id="cmpTensecTotalCostBrl" style="font-family:var(--font-heading);font-weight:800;font-size:24px;color:var(--primary-blue);">R$ 10.066,39</div>
             </div>
           </div>
           <div id="cmpSavingsBox" style="background:var(--brand-gradient);border-radius:12px;padding:16px 20px;text-align:center;color:var(--white);transition:transform 0.3s ease;">
@@ -1188,7 +1218,13 @@ footer {
         <!-- SPOT RATE CHART -->
         <div style="margin:0 24px 12px;background:#f7f9ff;border:1px solid #e0e7f5;border-radius:14px;padding:12px 12px 8px;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-            <span style="font-size:12px;font-weight:600;color:var(--almost-black);">USD/BRL — Spot Intraday</span>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:12px;font-weight:600;color:var(--almost-black);">USD/BRL — Spot Intraday</span>
+              <div class="cmp-live-badge" id="cmpLiveBadge" style="position:static;padding:2px 8px;font-size:10px;">
+                <span class="cmp-live-dot" style="width:6px;height:6px;"></span>
+                <span id="cmpLiveText">Ao vivo</span>
+              </div>
+            </div>
             <span id="chartMeta" style="font-size:10px;color:var(--muted-purple-grey);"></span>
           </div>
           <div style="position:relative;width:100%;height:90px;">
