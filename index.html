@@ -226,7 +226,6 @@ p { font-size: 18px; line-height: 1.6; }
   font-size:13px;
   color:rgba(255,255,255,0.70);
   line-height:1.45;
-  max-width:250px;
 }
 .cmp-live-badge{
   display:inline-flex;
@@ -293,7 +292,7 @@ p { font-size: 18px; line-height: 1.6; }
   font-family:var(--font-heading);
   font-weight:700;
   font-size:18px;
-  color:var(--primary-blue);
+  color:var(--almost-black);
   pointer-events:none;
 }
 .cmp-amount-input{
@@ -302,7 +301,7 @@ p { font-size: 18px; line-height: 1.6; }
   font-family:var(--font-heading);
   font-weight:700;
   font-size:32px;
-  color:var(--almost-black);
+  color:var(--primary-blue);
   background:#eef3ff;
   border:1px solid #d8e5ff;
   border-radius:16px;
@@ -418,6 +417,45 @@ p { font-size: 18px; line-height: 1.6; }
   box-shadow:0 0 0 3px rgba(20,53,195,0.12);
   background:#f7faff;
 }
+.cmp-spread-wrapper{
+  position:relative;
+  width:100%;
+}
+.cmp-spread-input-full{
+  width:100%;
+  padding:20px 48px 14px 20px;
+  font-family:var(--font-heading);
+  font-weight:700;
+  font-size:28px;
+  color:var(--primary-blue);
+  background:#eef3ff;
+  border:1px solid #d8e5ff;
+  border-radius:16px;
+  box-shadow:inset 0 0 0 1px rgba(78,166,215,0.12);
+  transition:all var(--timing-fast) var(--easing-standard);
+  text-align:right;
+  letter-spacing:-0.01em;
+  -moz-appearance:textfield;
+}
+.cmp-spread-input-full::-webkit-outer-spin-button,
+.cmp-spread-input-full::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+.cmp-spread-input-full:focus{
+  outline:none;
+  border-color:var(--primary-blue);
+  box-shadow:0 0 0 4px var(--focus-ring);
+  background:#f7faff;
+}
+.cmp-spread-pct-suffix{
+  position:absolute;
+  right:18px;
+  top:50%;
+  transform:translateY(-40%);
+  font-family:var(--font-heading);
+  font-weight:700;
+  font-size:18px;
+  color:var(--almost-black);
+  pointer-events:none;
+}
 .cmp-spot-status-inline{
   font-size:11px;
   font-weight:700;
@@ -495,7 +533,7 @@ p { font-size: 18px; line-height: 1.6; }
     white-space: nowrap;
   }
   .cmp-sim-title{
-    padding-right: 128px;
+    padding-right: 0;
   }
   .cmp-live-badge .cmp-live-dot{
     margin-right: 2px;
@@ -1106,7 +1144,7 @@ footer {
       <li><a class="nav-link" href="#vantagens-logistica">Vantagens</a></li>
       <li><a class="nav-link" href="#contato">Contato</a></li>
     </ul>
-    <a href="#contato" class="btn-primary" style="font-size:14px; padding:10px 24px;">Falar com um Especialista</a>
+    <a href="#contato" class="btn-primary" style="font-size:14px; padding:10px 24px;">Fale com um Especialista</a>
   </div>
 </nav>
 
@@ -1127,45 +1165,78 @@ footer {
     
     <div class="simulator-wrap">
       <div class="cmp-sim-card">
+        <!-- HEADER -->
         <div class="cmp-sim-header">
-          <h2 class="cmp-sim-title">Simule uma transação</h2>
-          <p class="cmp-sim-subtitle">Compare o custo total da operação entre seu banco e a Tensec.</p>
+          <div>
+            <h2 class="cmp-sim-title" style="font-size:24px;font-weight:800;">Simule uma transação</h2>
+            <p class="cmp-sim-subtitle" style="font-size:15px;">Compare o custo total entre seu banco e a Tensec.</p>
+          </div>
         </div>
 
+        <!-- INPUTS -->
         <div class="cmp-sim-input-section">
-          <div class="cmp-input-label-row">
-            <span class="cmp-input-label">VALOR DE FRETE A PAGAR (USD)</span>
-            <div class="cmp-live-badge" id="cmpLiveBadge">
-              <span class="cmp-live-dot"></span>
-              <span id="cmpLiveText">Cotações ao vivo</span>
+          <div style="margin-bottom:16px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+              <span class="cmp-input-label">VALOR DE FRETE A PAGAR</span>
+              <span style="font-size:13px;font-weight:600;color:var(--primary-blue);">USD</span>
             </div>
-</div>
+            <div class="cmp-amount-input-wrapper" id="cmpUsdAmountWrap">
+              <input type="text" id="cmpUsdAmount" class="cmp-amount-input" value="100.000,00" placeholder="0,00" inputmode="decimal" autocomplete="off" aria-label="Valor da transação">
+            </div>
+          </div>
+          <div>
+            <span class="cmp-input-label" style="display:block;margin-bottom:8px;">SPREAD QUE SEU BANCO COBRA</span>
+            <div class="cmp-spread-wrapper" id="cmpBankSpreadWrap">
+              <input type="text" id="cmpBankSpreadPct" class="cmp-spread-input-full" value="1,00" inputmode="decimal" autocomplete="off" aria-label="Editar spread do banco">
+              <span class="cmp-spread-pct-suffix">%</span>
+            </div>
+          </div>
+        </div>
 
-          <div class="cmp-amount-input-wrapper" id="cmpUsdAmountWrap">
-            <input type="text" id="cmpUsdAmount" class="cmp-amount-input" value="50.000,00" placeholder="0,00" inputmode="decimal" autocomplete="off" aria-label="Valor da transação">
+        <!-- SUMMARY BOX -->
+        <div style="margin:0 24px 16px;padding:18px 20px;background:#f7f8ff;border-radius:14px;border:1px solid #e8ecf8;">
+          <div style="font-size:15px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted-purple-grey);margin-bottom:14px;text-align:center;">
+            Custo total da transação
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+            <div style="text-align:center;">
+              <div style="font-size:11px;color:var(--muted-purple-grey);margin-bottom:4px;">Seu Banco</div>
+              <div id="cmpBankTotalCostBrl" style="font-family:var(--font-heading);font-weight:700;font-size:24px;color:var(--almost-black);">R$ 24.001,98</div>
+            </div>
+            <div style="text-align:center;">
+              <div style="font-size:11px;color:var(--muted-purple-grey);margin-bottom:4px;">Tensec</div>
+              <div id="cmpTensecTotalCostBrl" style="font-family:var(--font-heading);font-weight:800;font-size:24px;color:var(--primary-blue);">R$ 10.066,39</div>
+            </div>
+          </div>
+          <div id="cmpSavingsBox" style="background:var(--brand-gradient);border-radius:12px;padding:16px 20px;text-align:center;color:var(--white);transition:transform 0.3s ease;">
+            <div style="font-size:11px;font-weight:500;opacity:0.8;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.05em;">Economia Tensec</div>
+            <div id="cmpSavingsAmount" style="font-family:var(--font-heading);font-weight:800;font-size:26px;letter-spacing:-0.02em;">R$ 13.935,59</div>
+            <div id="cmpSavingsPercent" style="font-size:13px;font-weight:600;margin-top:2px;opacity:0.9;">(58% menos!)</div>
           </div>
         </div>
 
         <!-- SPOT RATE CHART -->
-        <div style="background:#F7F8FA; border:1px solid #E8E6EB; border-radius:12px; padding:var(--spacing-md); margin-bottom:var(--spacing-md);">
-          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
-            <div>
-              <span style="font-weight:600; font-size:14px; color:var(--almost-black);">USD/BRL — Cotação Spot</span>
-              <div style="font-size:11px; font-style:italic; color:var(--muted-purple-grey); font-weight:400;">(atualizado a cada minuto)</div>
+        <div style="margin:0 24px 12px;background:#f7f9ff;border:1px solid #e0e7f5;border-radius:14px;padding:12px 12px 8px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:12px;font-weight:600;color:var(--almost-black);">USD/BRL — Spot Intraday</span>
+              <div class="cmp-live-badge" id="cmpLiveBadge" style="position:static;padding:2px 8px;font-size:10px;">
+                <span class="cmp-live-dot" style="width:6px;height:6px;"></span>
+                <span id="cmpLiveText">Ao vivo</span>
+              </div>
             </div>
-            <div id="chartMeta" style="font-size:11px; color:var(--muted-purple-grey);"></div>
+            <span id="chartMeta" style="font-size:10px;color:var(--muted-purple-grey);"></span>
           </div>
-          <div style="position:relative; width:100%; height:120px;">
-            <canvas id="spotChart" style="width:100%; height:100%;"></canvas>
-            <div id="chartTooltip" style="display:none; position:absolute; background:var(--almost-black); color:var(--white); padding:4px 8px; border-radius:6px; font-size:11px; font-family:var(--font-body); pointer-events:none; white-space:nowrap; z-index:10;"></div>
+          <div style="position:relative;width:100%;height:90px;">
+            <canvas id="spotChart" style="width:100%;height:100%;display:block;"></canvas>
           </div>
-          <div id="chartTimeAxis" style="display:flex; justify-content:space-between; margin-top:4px; padding:0 2px;">
-          </div>
+          <div id="chartTimeAxis" style="position:relative;height:14px;margin-top:4px;"></div>
         </div>
 
+        <!-- COMPARISON TABLE -->
         <div class="cmp-sim-table">
           <div class="cmp-table-inner">
-            <div class="cmp-table-header">
+            <div class="cmp-table-header" style="background:#e2e5f0;border-radius:8px;padding:16px 12px 12px;margin:0 -12px;">
               <span>Composição</span>
               <span>Seu banco</span>
               <span>Tensec</span>
@@ -1174,24 +1245,20 @@ footer {
             <div class="cmp-table-row">
               <div class="cmp-row-label">
                 <span style="display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                  <span>Taxa USD Spot</span>
+                  <span>Dólar Spot</span>
                   <span id="cmpSpotStatusInline" class="cmp-spot-status-inline">
                     <span id="cmpSpotDotInline" class="cmp-spot-dot-inline"></span>
                     ONLINE
                   </span>
                 </span>
               </div>
-              <div class="cmp-row-value" id="cmpSpotRateBank">5,1398</div>
-              <div class="cmp-row-value-tensec" id="cmpSpotRateTensec">5,1398</div>
+              <div class="cmp-row-value" id="cmpSpotRateBank">5,2981</div>
+              <div class="cmp-row-value-tensec" id="cmpSpotRateTensec">5,2981</div>
             </div>
 
-            <div class="cmp-table-row highlight">
+            <div class="cmp-table-row" style="background:#ebedf5;border-radius:8px;margin:0 -12px;padding:14px 12px;">
               <div class="cmp-row-label">Spread do seu banco</div>
-              <div class="cmp-row-value">
-                <div class="cmp-editable-wrap" id="cmpBankSpreadWrap">
-                  <input type="text" id="cmpBankSpreadPct" class="cmp-spread-input" value="1,00%" inputmode="decimal" autocomplete="off" aria-label="Editar spread do banco">
-                </div>
-              </div>
+              <div class="cmp-row-value" id="cmpBankSpreadDisplay">1,00%</div>
               <div class="cmp-row-value-tensec" id="cmpTensecSpreadPct">1,00%</div>
             </div>
 
@@ -1201,42 +1268,25 @@ footer {
               <div class="cmp-row-value-tensec advantage" id="cmpTensecPaymentFeePct">0,90%</div>
             </div>
 
-            <div class="cmp-table-row">
-              <div class="cmp-row-label">IOF</div>
+            <div class="cmp-table-row" style="background:#ebedf5;border-radius:8px;margin:0 -12px;padding:14px 12px;">
+              <div class="cmp-row-label" style="font-size:17px;font-weight:700;">IOF</div>
               <div class="cmp-row-value" id="cmpBankIofPct">3,50%</div>
               <div class="cmp-row-value-tensec advantage" id="cmpTensecIofPct">0,00%</div>
             </div>
 
-            <div class="cmp-table-row total-row">
+            <div class="cmp-table-row total-row" style="border-bottom:none;">
               <div class="cmp-row-label bold">Custo Total da Transação</div>
-              <div class="cmp-row-value" id="cmpBankTotalCostPct" style="font-weight:700;color:var(--almost-black);">5,97%</div>
-              <div class="cmp-row-value-tensec advantage" id="cmpTensecTotalCostPct" style="font-weight:800;">3,37%</div>
-            </div>
-
-            <div class="cmp-table-row">
-              <div class="cmp-row-label">Custo SWIFT (BRL)</div>
-              <div class="cmp-row-value" id="cmpBankSwiftCostBrl">R$ 160,00</div>
-              <div class="cmp-row-value-tensec advantage" id="cmpTensecSwiftCostBrl">R$ 0,00</div>
-            </div>
-
-            <div class="cmp-table-row" style="border-bottom:none;">
-              <div class="cmp-row-label bold">Custo Total em BRL</div>
-              <div class="cmp-row-value" id="cmpBankTotalCostBrl" style="font-weight:700;color:var(--almost-black);">R$ 30.833,01</div>
-              <div class="cmp-row-value-tensec" id="cmpTensecTotalCostBrl" style="font-weight:800;">R$ 17.321,13</div>
+              <div class="cmp-row-value" id="cmpBankTotalCostPct" style="font-weight:700;color:var(--almost-black);">4,50%</div>
+              <div class="cmp-row-value-tensec advantage" id="cmpTensecTotalCostPct" style="font-weight:800;">1,90%</div>
             </div>
           </div>
         </div>
 
-        <div class="cmp-sim-savings">
-          <div class="cmp-savings-label">Economia Tensec</div>
-          <div class="cmp-savings-amount" id="cmpSavingsAmount">R$ 13.511,88</div>
-          <div class="cmp-savings-percent" id="cmpSavingsPercent">43,8% mais barato que seu banco</div>
-        </div>
-
+        <!-- CTA -->
         <div class="cmp-sim-cta">
-          <button class="sim-lock-btn" type="button">Converse com um Especialista</button>
+          <button class="sim-lock-btn" type="button">Fale com um Especialista →</button>
         </div>
-        <p class="cmp-sim-footer">Próxima cotação aproximada — atualização em <strong id="cmpRateCountdown">10</strong>s.</p>
+        <p class="cmp-sim-footer">Atualização em <strong id="cmpRateCountdown">10</strong>s · Câmbio indicativo</p>
       </div>
     </div>
 
@@ -1260,7 +1310,7 @@ footer {
           <div class="comp-note">Custo médio por transação</div>
         </div>
         <div class="comp-card tensec">
-          <div class="comp-kicker">COM TECNOLOGIA E ARQUITETURA TENSEC</div>
+          <div class="comp-kicker">Com Tecnologia e Arquitetura Tensec</div>
           <div class="comp-value">2,5%</div>
           <div class="comp-note">Custo médio por transação</div>
         </div>
@@ -1350,7 +1400,7 @@ footer {
       </form>
 
       <div class="crm-divider">OU</div>
-      <p class="crm-direct"><span>Envie um e-mail diretamente:</span> <a href="#" onclick="window.location='mai'+'lto:hello'+'@tensec.io'; return false;">hello@tensec.io</a></p>
+      <p class="crm-direct"><span>Envie um e-mail diretamente:</span> <a href="mailto:hello@tensec.io">hello@tensec.io</a></p>
     </div>
   </div>
 </section>
@@ -1373,7 +1423,7 @@ footer {
 
       <div class="footer-col">
         <h3 class="footer-col-title">Contato</h3>
-        <a class="footer-link" href="#" onclick="window.location='mai'+'lto:hello'+'@tensec.io'; return false;">hello@tensec.io</a>
+        <a class="footer-link" href="mailto:hello@tensec.io">hello@tensec.io</a>
       </div>
     </div>
 
@@ -1384,7 +1434,7 @@ footer {
   </div>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 // ===== Scroll Reveal =====
 function initScrollReveal() {
   const els = document.querySelectorAll('.scroll-reveal');
@@ -1428,7 +1478,7 @@ var tickCount = 0;
 // ====================================================================
 // TwelveData API Key
 // ====================================================================
-const TWELVE_DATA_KEY = '62436f7e1fda46ae8973c7ea5606f226';
+const TWELVE_DATA_KEY = 'b04b02d975ff4ad78cb108af8c99e427';
 
 // ====================================================================
 // Multi-source USD/BRL spot fetcher (shared by both simulators)
@@ -1476,8 +1526,114 @@ async function fetchSpotMultiSource() {
 }
 
 // ====================================================================
-// Shared TwelveData chart cache (fetched once, used by both charts)
+// Chart display mode: determines what the chart should show
+// 'live'     → market open, show today's data (accumulating)
+// 'frozen'   → market closed, show last business day's full chart
+// 'clearing' → 8:30-9:00 on business day, show empty "Aguardando..."
 // ====================================================================
+function getChartDisplayMode() {
+  var now = new Date();
+  var br = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+  var day = br.getDay(); // 0=Sun 6=Sat
+  var h = br.getHours(), m = br.getMinutes();
+  var t = h + m / 60;
+
+  // Weekend → frozen
+  if (day === 0 || day === 6) return 'frozen';
+
+  // Check holidays (reuse isMarketClosed logic for holidays only)
+  var month = String(br.getMonth()+1).padStart(2,'0');
+  var dom = String(br.getDate()).padStart(2,'0');
+  var mmdd = month + '-' + dom;
+  var year = br.getFullYear();
+  var fixH = ['01-01','04-21','05-01','09-07','10-12','11-02','11-15','12-25'];
+  var varH2025 = ['03-03','03-04','04-18'];
+  var varH2026 = ['02-16','02-17','04-03','06-04'];
+  if (fixH.includes(mmdd)) return 'frozen';
+  if (year===2025 && varH2025.includes(mmdd)) return 'frozen';
+  if (year===2026 && varH2026.includes(mmdd)) return 'frozen';
+
+  // Business day time windows
+  if (t >= 9 && t < 16.5) return 'live';      // 9:00-16:30 → live
+  if (t >= 8.5 && t < 9) return 'clearing';    // 8:30-9:00 → clearing
+  return 'frozen';                              // before 8:30 or after 16:30
+}
+
+// Filter TwelveData points to only today's intraday data
+function filterTodayPoints(allPoints) {
+  var now = new Date();
+  var brNow = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+  var todayStr = brNow.getFullYear() + '-' + String(brNow.getMonth()+1).padStart(2,'0') + '-' + String(brNow.getDate()).padStart(2,'0');
+
+  return allPoints.filter(function(p) {
+    var brPt = new Date(p.time.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+    var ptStr = brPt.getFullYear() + '-' + String(brPt.getMonth()+1).padStart(2,'0') + '-' + String(brPt.getDate()).padStart(2,'0');
+    return ptStr === todayStr;
+  });
+}
+
+// Filter TwelveData points to the last business day before today
+function filterLastBusinessDayPoints(allPoints) {
+  var now = new Date();
+  var brNow = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+  var todayStr = brNow.getFullYear() + '-' + String(brNow.getMonth()+1).padStart(2,'0') + '-' + String(brNow.getDate()).padStart(2,'0');
+
+  // Group by date
+  var byDate = {};
+  allPoints.forEach(function(p) {
+    var brPt = new Date(p.time.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+    var ds = brPt.getFullYear() + '-' + String(brPt.getMonth()+1).padStart(2,'0') + '-' + String(brPt.getDate()).padStart(2,'0');
+    if (!byDate[ds]) byDate[ds] = [];
+    byDate[ds].push(p);
+  });
+
+  // Sort date keys, find the latest one that isn't today
+  var keys = Object.keys(byDate).sort();
+  var lastKey = null;
+  for (var i = keys.length - 1; i >= 0; i--) {
+    if (keys[i] !== todayStr) { lastKey = keys[i]; break; }
+  }
+  return lastKey ? byDate[lastKey] : allPoints; // if only today exists, show all
+}
+
+// Apply chart display mode to raw TwelveData points
+function selectChartPoints(allPoints) {
+  var mode = getChartDisplayMode();
+  console.log('[Tensec Chart] Display mode:', mode);
+
+  if (mode === 'clearing') return null; // signal to show "Aguardando abertura..."
+
+  if (mode === 'live') {
+    var today = filterTodayPoints(allPoints);
+    // If today has data, use it; otherwise fall back to last biz day
+    return (today.length >= 2) ? today : filterLastBusinessDayPoints(allPoints);
+  }
+
+  // 'frozen' → show last business day
+  return filterLastBusinessDayPoints(allPoints);
+}
+
+function drawClearingChart() {
+  if (!chartCanvas || !chartCtx) return;
+  var w = chartCanvas._cssW, h = chartCanvas._cssH;
+  chartCtx.clearRect(0, 0, chartCanvas.width, chartCanvas.height);
+  // Dashed center line
+  chartCtx.strokeStyle = '#E8E6EB';
+  chartCtx.lineWidth = 1;
+  chartCtx.setLineDash([4, 4]);
+  chartCtx.beginPath();
+  chartCtx.moveTo(0, h / 2);
+  chartCtx.lineTo(w, h / 2);
+  chartCtx.stroke();
+  chartCtx.setLineDash([]);
+  // Message
+  chartCtx.font = '12px Poppins, sans-serif';
+  chartCtx.fillStyle = '#B8B3BF';
+  chartCtx.textAlign = 'center';
+  chartCtx.fillText('Aguardando abertura do mercado...', w / 2, h / 2 - 8);
+  var metaEl = document.getElementById('chartMeta');
+  if (metaEl) metaEl.textContent = 'Pré-mercado';
+}
 var _tdChartCache = null, _tdChartDone = false;
 async function fetchTwelveDataChartOnce() {
   if (_tdChartDone) return _tdChartCache;
@@ -1489,7 +1645,22 @@ async function fetchTwelveDataChartOnce() {
     var d=await r.json();
     if(d&&d.values&&d.values.length>=2){
       var rev=d.values.slice().reverse();
-      _tdChartCache=rev.map(function(p){return {time:new Date(p.datetime.replace(' ','T')),bid:parseFloat(p.close)};});
+      _tdChartCache=rev.map(function(p){
+        // TwelveData returns datetime in São Paulo timezone (as requested via API param).
+        // Parse as naive local time — display will always convert via toLocaleString('en-US', {timeZone:'America/Sao_Paulo'})
+        var parts = p.datetime.split(/[- :]/);
+        // parts = [year, month, day, hour, minute, second]
+        // Create a Date that represents this São Paulo time correctly:
+        // Use Date.UTC then adjust by +3h (BRT = UTC-3, so São Paulo 14:00 = UTC 17:00)
+        var utc = Date.UTC(+parts[0], +parts[1]-1, +parts[2], +parts[3]+3, +parts[4], +parts[5]||0);
+        return {time:new Date(utc), bid:parseFloat(p.close)};
+      });
+      // Filter to Brazilian market hours only (9:00-17:00 BRT)
+      _tdChartCache = _tdChartCache.filter(function(p) {
+        var brH = new Date(p.time.toLocaleString('en-US',{timeZone:'America/Sao_Paulo'}));
+        var h = brH.getHours();
+        return h >= 9 && h < 17;
+      });
       console.log('[Tensec] TwelveData chart: '+_tdChartCache.length+' points');
       return _tdChartCache;
     }
@@ -1793,11 +1964,22 @@ document.addEventListener('DOMContentLoaded', async function() {
     console.warn('[Tensec] Chart fetch error:', e);
   }
 
-  // Draw hero chart
+  // Draw hero chart with market-hours awareness
   if (tdChart && tdChart.length >= 2) {
-    chartData = tdChart;
-    drawChart();
-    console.log('[Tensec] Hero chart drawn: ' + chartData.length + ' pts');
+    var selected = selectChartPoints(tdChart);
+    if (selected === null) {
+      // 8:30-9:00 clearing window
+      drawClearingChart();
+      console.log('[Tensec] Chart in clearing mode (8:30-9:00)');
+    } else if (selected.length >= 2) {
+      chartData = selected;
+      drawChart();
+      console.log('[Tensec] Hero chart drawn: ' + chartData.length + ' pts (' + getChartDisplayMode() + ')');
+    } else {
+      // Not enough points yet (early morning), show all available
+      chartData = tdChart;
+      drawChart();
+    }
   } else {
     // Fallback: AwesomeAPI / BCB for hero chart
     await fetchIntradayRates();
@@ -1812,7 +1994,12 @@ document.addEventListener('DOMContentLoaded', async function() {
       var brL = new Date(last.toLocaleString('en-US',{timeZone:'America/Sao_Paulo'}));
       var brT = new Date(new Date().toLocaleString('en-US',{timeZone:'America/Sao_Paulo'}));
       var isToday = brL.getDate()===brT.getDate() && brL.getMonth()===brT.getMonth();
-      metaEl.innerHTML = isToday ? 'Hoje<br>'+brL.getDate()+'-'+months[brL.getMonth()] : brL.getDate()+'-'+months[brL.getMonth()]+'<br><span style="font-size:10px;">Último dia útil</span>';
+      var mode = getChartDisplayMode();
+      if (mode === 'frozen') {
+        metaEl.innerHTML = brL.getDate()+'-'+months[brL.getMonth()]+'<br><span style="font-size:10px;">Último dia útil</span>';
+      } else {
+        metaEl.innerHTML = isToday ? 'Hoje<br>'+brL.getDate()+'-'+months[brL.getMonth()] : brL.getDate()+'-'+months[brL.getMonth()]+'<br><span style="font-size:10px;">Último dia útil</span>';
+      }
     }
   }
 
@@ -1821,13 +2008,30 @@ document.addEventListener('DOMContentLoaded', async function() {
   cmpStartCountdown();
   cmpFetchSpotAndChart();
 
-  // Refresh chart every 60s
+  // Refresh chart every 60s with market-hours awareness
   setInterval(async function() {
     _tdChartDone = false;
     var fresh = await fetchTwelveDataChartOnce();
     if (fresh && fresh.length >= 2) {
-      chartData = fresh;
-      drawChart();
+      var sel = selectChartPoints(fresh);
+      if (sel === null) {
+        drawClearingChart();
+      } else if (sel.length >= 2) {
+        chartData = sel;
+        drawChart();
+        // Update meta
+        var m2 = document.getElementById('chartMeta');
+        var mo = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+        if (m2 && chartData.length >= 2) {
+          var lt = chartData[chartData.length-1].time;
+          var blt = new Date(lt.toLocaleString('en-US',{timeZone:'America/Sao_Paulo'}));
+          var bnt = new Date(new Date().toLocaleString('en-US',{timeZone:'America/Sao_Paulo'}));
+          var it = blt.getDate()===bnt.getDate() && blt.getMonth()===bnt.getMonth();
+          var md = getChartDisplayMode();
+          if (md === 'frozen') m2.innerHTML = blt.getDate()+'-'+mo[blt.getMonth()]+'<br><span style="font-size:10px;">Último dia útil</span>';
+          else m2.innerHTML = it ? 'Hoje<br>'+blt.getDate()+'-'+mo[blt.getMonth()] : blt.getDate()+'-'+mo[blt.getMonth()]+'<br><span style="font-size:10px;">Último dia útil</span>';
+        }
+      }
     }
   }, 60000);
 
@@ -1876,10 +2080,10 @@ function initHubspotLeadForm() {
     status.textContent = 'Enviando...';
 
     // Substitua pelos IDs reais do HubSpot
-    const PORTAL_ID = 'SEU_PORTAL_ID';
-    const FORM_ID = 'SEU_FORM_ID';
+    const PORTAL_ID = '47709417';
+    const FORM_ID = '05e06eb0-e085-4848-9ce7-c26c69ec459e';
 
-    if (PORTAL_ID === 'SEU_PORTAL_ID' || FORM_ID === 'SEU_FORM_ID') {
+    if (false) {
       console.log('Payload pronto para HubSpot:', payload);
       status.textContent = 'Formulário pronto para integração com o HubSpot. Basta inserir PORTAL_ID e FORM_ID.';
       return;
@@ -2382,23 +2586,31 @@ function drawChart() {
   }
 
   // Draw vertical grid lines at full hours and populate time axis
-  const firstHour = chartData[0].time.getHours();
-  const lastHour = chartData[chartData.length - 1].time.getHours();
   const axisEl = document.getElementById('chartTimeAxis');
-  axisEl.innerHTML = '';
 
-  // Calculate full hours within the data range
+  // Build list of full hours that fall within the data time range
+  // Work backwards from the last data point's hour to the first
+  const firstBr = new Date(chartData[0].time.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+  const lastBr = new Date(chartData[chartData.length - 1].time.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+  const firstHour = firstBr.getHours();
+  const lastHour = lastBr.getHours();
+
   const fullHours = [];
   for (let hr = firstHour; hr <= lastHour + 1; hr++) {
+    // Create a date at this full hour on the same day as the first data point
     const hourDate = new Date(chartData[0].time);
-    hourDate.setHours(hr, 0, 0, 0);
-    const t = hourDate.getTime();
+    const brFirst = new Date(hourDate.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+    brFirst.setHours(hr, 0, 0, 0);
+    // Convert back: find the actual UTC timestamp for this Brasília hour
+    // Approximate by using offset from first point
+    const offsetMs = chartData[0].time.getTime() - firstBr.getTime();
+    const t = brFirst.getTime() + offsetMs;
     if (t >= firstTime && t <= lastTime) {
-      fullHours.push({ hour: hr, x: ((t - firstTime) / timeRange) * w });
+      fullHours.push({ hour: hr, t: t, x: ((t - firstTime) / timeRange) * w });
     }
   }
 
-  // Draw vertical dashed lines
+  // Draw vertical dashed lines at full hours
   ctx.strokeStyle = '#E8E6EB';
   ctx.lineWidth = 0.5;
   ctx.setLineDash([3, 3]);
@@ -2408,27 +2620,33 @@ function drawChart() {
   ctx.setLineDash([]);
 
   // Populate the time axis labels
-  // Add start time
-  const startLabel = document.createElement('span');
-  startLabel.style.cssText = 'font-size:10px; color:var(--muted-purple-grey); position:absolute; left:0;';
-  startLabel.textContent = chartData[0].time.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit', timeZone:'America/Sao_Paulo' });
-  axisEl.style.position = 'relative';
-  axisEl.style.height = '14px';
-  axisEl.appendChild(startLabel);
+  if (axisEl) {
+    axisEl.innerHTML = '';
 
-  fullHours.forEach(fh => {
-    const lbl = document.createElement('span');
-    lbl.style.cssText = 'font-size:10px; color:var(--muted-purple-grey); position:absolute; transform:translateX(-50%);';
-    lbl.style.left = fh.x + 'px';
-    lbl.textContent = String(fh.hour).padStart(2, '0') + ':00';
-    axisEl.appendChild(lbl);
-  });
+    // Show the current/last time at the right edge
+    const endLbl = document.createElement('span');
+    endLbl.style.cssText = 'font-size:10px; color:var(--muted-purple-grey); position:absolute; right:0;';
+    endLbl.textContent = lastBr.getHours().toString().padStart(2,'0') + ':' + lastBr.getMinutes().toString().padStart(2,'0');
+    axisEl.appendChild(endLbl);
 
-  // Add end time
-  const endLabel = document.createElement('span');
-  endLabel.style.cssText = 'font-size:10px; color:var(--muted-purple-grey); position:absolute; right:0;';
-  endLabel.textContent = chartData[chartData.length - 1].time.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit', timeZone:'America/Sao_Paulo' });
-  axisEl.appendChild(endLabel);
+    // Show full hours (skip if too close to edges — within 30px)
+    fullHours.forEach(fh => {
+      var pctFromRight = (w - fh.x);
+      var pctFromLeft = fh.x;
+      if (pctFromRight < 30 || pctFromLeft < 24) return; // avoid overlap with edge labels
+      const lbl = document.createElement('span');
+      lbl.style.cssText = 'font-size:10px; color:var(--muted-purple-grey); position:absolute; transform:translateX(-50%);';
+      lbl.style.left = fh.x + 'px';
+      lbl.textContent = String(fh.hour).padStart(2, '0') + ':00';
+      axisEl.appendChild(lbl);
+    });
+
+    // Show the earliest time at the left edge
+    const startLbl = document.createElement('span');
+    startLbl.style.cssText = 'font-size:10px; color:var(--muted-purple-grey); position:absolute; left:0;';
+    startLbl.textContent = firstBr.getHours().toString().padStart(2,'0') + ':' + firstBr.getMinutes().toString().padStart(2,'0');
+    axisEl.appendChild(startLbl);
+  }
 
   // Draw gradient fill
   const gradient = ctx.createLinearGradient(0, 0, 0, h);
@@ -2495,7 +2713,8 @@ function drawFallbackChart() {
   ctx.textAlign = 'center';
   ctx.fillText('Dados indisponíveis', w / 2, h / 2 - 8);
 
-  document.getElementById('chartMeta').textContent = 'Offline';
+  var mEl = document.getElementById('chartMeta');
+  if (mEl) mEl.textContent = 'Offline';
 }
 
 function initSpotChart() {
@@ -2518,8 +2737,12 @@ function initSpotChart() {
 }
 
 function cmpRecalculate() {
-  const usdVal = cmpParseBrNumber(document.getElementById('cmpUsdAmount').value);
-  const bankSpreadPct = cmpParseBrNumber(document.getElementById('cmpBankSpreadPct').value);
+  var usdEl = document.getElementById('cmpUsdAmount');
+  var spreadEl = document.getElementById('cmpBankSpreadPct');
+  if (!usdEl || !spreadEl) return;
+
+  const usdVal = cmpParseBrNumber(usdEl.value);
+  const bankSpreadPct = cmpParseBrNumber(spreadEl.value);
 
   const bankTotalCostPct = bankSpreadPct + cmpBankPaymentFeePct + cmpBankIofPctValue;
   const tensecTotalCostPct = bankSpreadPct + cmpTensecPaymentFeePctValue + cmpTensecIofPctValue;
@@ -2529,21 +2752,28 @@ function cmpRecalculate() {
   const savingsBrl = bankTotalCostBrl - tensecTotalCostBrl;
   const savingsPct = bankTotalCostBrl > 0 ? (savingsBrl / bankTotalCostBrl) * 100 : 0;
 
-  document.getElementById('cmpSpotRateBank').textContent = cmpFormatBr(CMP_SPOT_RATE, 4);
-  document.getElementById('cmpSpotRateTensec').textContent = cmpFormatBr(CMP_SPOT_RATE, 4);
-  document.getElementById('cmpTensecSpreadPct').textContent = cmpFormatPct(bankSpreadPct);
-  document.getElementById('cmpBankPaymentFeePct').textContent = cmpFormatPct(cmpBankPaymentFeePct);
-  document.getElementById('cmpTensecPaymentFeePct').textContent = cmpFormatPct(cmpTensecPaymentFeePctValue);
-  document.getElementById('cmpBankIofPct').textContent = cmpFormatPct(cmpBankIofPctValue);
-  document.getElementById('cmpTensecIofPct').textContent = cmpFormatPct(cmpTensecIofPctValue);
-  document.getElementById('cmpBankTotalCostPct').textContent = cmpFormatPct(bankTotalCostPct);
-  document.getElementById('cmpTensecTotalCostPct').textContent = cmpFormatPct(tensecTotalCostPct);
-  document.getElementById('cmpBankSwiftCostBrl').textContent = cmpFormatCurrencyBRL(cmpBankSwiftCostBrlValue);
-  document.getElementById('cmpTensecSwiftCostBrl').textContent = cmpFormatCurrencyBRL(cmpTensecSwiftCostBrlValue);
-  document.getElementById('cmpBankTotalCostBrl').textContent = cmpFormatCurrencyBRL(bankTotalCostBrl);
-  document.getElementById('cmpTensecTotalCostBrl').textContent = cmpFormatCurrencyBRL(tensecTotalCostBrl);
-  document.getElementById('cmpSavingsAmount').textContent = cmpFormatCurrencyBRL(savingsBrl);
-  document.getElementById('cmpSavingsPercent').textContent = cmpFormatBr(savingsPct, 1) + '% mais barato que seu banco';
+  // Table rows
+  var el;
+  el = document.getElementById('cmpSpotRateBank'); if (el) el.textContent = cmpFormatBr(CMP_SPOT_RATE, 4);
+  el = document.getElementById('cmpSpotRateTensec'); if (el) el.textContent = cmpFormatBr(CMP_SPOT_RATE, 4);
+  el = document.getElementById('cmpBankSpreadDisplay'); if (el) el.textContent = cmpFormatPct(bankSpreadPct);
+  el = document.getElementById('cmpTensecSpreadPct'); if (el) el.textContent = cmpFormatPct(bankSpreadPct);
+  el = document.getElementById('cmpBankPaymentFeePct'); if (el) el.textContent = cmpFormatPct(cmpBankPaymentFeePct);
+  el = document.getElementById('cmpTensecPaymentFeePct'); if (el) el.textContent = cmpFormatPct(cmpTensecPaymentFeePctValue);
+  el = document.getElementById('cmpBankIofPct'); if (el) el.textContent = cmpFormatPct(cmpBankIofPctValue);
+  el = document.getElementById('cmpTensecIofPct'); if (el) el.textContent = cmpFormatPct(cmpTensecIofPctValue);
+  el = document.getElementById('cmpBankTotalCostPct'); if (el) el.textContent = cmpFormatPct(bankTotalCostPct);
+  el = document.getElementById('cmpTensecTotalCostPct'); if (el) el.textContent = cmpFormatPct(tensecTotalCostPct);
+
+  // Summary box
+  el = document.getElementById('cmpBankTotalCostBrl'); if (el) el.textContent = cmpFormatCurrencyBRL(bankTotalCostBrl);
+  el = document.getElementById('cmpTensecTotalCostBrl'); if (el) el.textContent = cmpFormatCurrencyBRL(tensecTotalCostBrl);
+  el = document.getElementById('cmpSavingsAmount'); if (el) el.textContent = cmpFormatCurrencyBRL(savingsBrl);
+  el = document.getElementById('cmpSavingsPercent'); if (el) el.textContent = '(' + cmpFormatBr(savingsPct, 0) + '% menos!)';
+
+  // Animate savings box
+  var box = document.getElementById('cmpSavingsBox');
+  if (box) { box.style.transform = 'scale(1.03)'; setTimeout(function(){ box.style.transform = ''; }, 300); }
 }
 
 function initComparativeSimulator() {
