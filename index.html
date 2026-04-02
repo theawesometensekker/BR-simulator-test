@@ -345,7 +345,7 @@ p { font-size: 18px; line-height: 1.6; }
 .cmp-table-header span{
   font-family:var(--font-body);
   font-weight:500;
-  font-size:11px;
+  font-size:16px;
   text-transform:uppercase;
   letter-spacing:0.06em;
   color:var(--muted-purple-grey);
@@ -890,7 +890,7 @@ p { font-size: 18px; line-height: 1.6; }
   text-align:center;
   color:rgba(255,255,255,0.52);
   font-size:14px;
-  margin:24px 0 18px;
+  margin:20px 0 20px;
 }
 .crm-direct{
   text-align:center;
@@ -902,10 +902,10 @@ p { font-size: 18px; line-height: 1.6; }
   font-weight:700;
 }
 .crm-status{
-  margin-top:14px;
+  margin-top:0;
   font-size:14px;
   color:rgba(255,255,255,0.82);
-  min-height:20px;
+  min-height:0;
   text-align:center;
 }
 @media (max-width:760px){
@@ -1181,7 +1181,7 @@ footer {
               <span style="font-size:13px;font-weight:600;color:var(--primary-blue);">USD</span>
             </div>
             <div class="cmp-amount-input-wrapper" id="cmpUsdAmountWrap">
-              <input type="text" id="cmpUsdAmount" class="cmp-amount-input" value="100.000,00" placeholder="0,00" inputmode="decimal" autocomplete="off" aria-label="Valor da transação">
+              <input type="text" id="cmpUsdAmount" class="cmp-amount-input" value="100.000" placeholder="0" inputmode="decimal" autocomplete="off" aria-label="Valor da transação">
             </div>
           </div>
           <div>
@@ -1201,16 +1201,16 @@ footer {
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
             <div style="text-align:center;">
               <div style="font-size:11px;color:var(--muted-purple-grey);margin-bottom:4px;">Seu Banco</div>
-              <div id="cmpBankTotalCostBrl" style="font-family:var(--font-heading);font-weight:700;font-size:24px;color:var(--almost-black);">R$ 24.001,98</div>
+              <div id="cmpBankTotalCostBrl" style="font-family:var(--font-heading);font-weight:700;font-size:24px;color:var(--almost-black);">R$ 24.002</div>
             </div>
             <div style="text-align:center;">
               <div style="font-size:11px;color:var(--muted-purple-grey);margin-bottom:4px;">Tensec</div>
-              <div id="cmpTensecTotalCostBrl" style="font-family:var(--font-heading);font-weight:800;font-size:24px;color:var(--primary-blue);">R$ 10.066,39</div>
+              <div id="cmpTensecTotalCostBrl" style="font-family:var(--font-heading);font-weight:800;font-size:24px;color:var(--primary-blue);">R$ 10.066</div>
             </div>
           </div>
           <div id="cmpSavingsBox" style="background:var(--brand-gradient);border-radius:12px;padding:16px 20px;text-align:center;color:var(--white);transition:transform 0.3s ease;">
             <div style="font-size:11px;font-weight:500;opacity:0.8;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.05em;">Economia Tensec</div>
-            <div id="cmpSavingsAmount" style="font-family:var(--font-heading);font-weight:800;font-size:26px;letter-spacing:-0.02em;">R$ 13.935,59</div>
+            <div id="cmpSavingsAmount" style="font-family:var(--font-heading);font-weight:800;font-size:26px;letter-spacing:-0.02em;">R$ 13.936</div>
             <div id="cmpSavingsPercent" style="font-size:13px;font-weight:600;margin-top:2px;opacity:0.9;">(58% menos!)</div>
           </div>
         </div>
@@ -1399,8 +1399,8 @@ footer {
         <div class="crm-status" id="crmFormStatus" aria-live="polite"></div>
       </form>
 
-      <div class="crm-divider">OU</div>
-      <p class="crm-direct"><span>Envie um e-mail diretamente:</span> <a href="mailto:hello@tensec.io">hello@tensec.io</a></p>
+      <div class="crm-divider" style="margin:24px 0 24px;">OU</div>
+      <p class="crm-direct" style="margin:0;"><span>Envie um e-mail diretamente:</span> <a href="mailto:hello@tensec.io">hello@tensec.io</a></p>
     </div>
   </div>
 </section>
@@ -2190,7 +2190,7 @@ function cmpFormatPct(value) {
 }
 
 function cmpFormatCurrencyBRL(value) {
-  return 'R$ ' + cmpFormatBr(value, 2);
+  return 'R$ ' + cmpFormatBr(value, 0);
 }
 
 
@@ -2788,7 +2788,7 @@ function initComparativeSimulator() {
     if (e.key === 'Enter') {
       e.preventDefault();
       const val = cmpParseBrNumber(this.value);
-      this.value = cmpFormatBr(val, 2);
+      this.value = cmpFormatBr(val, 0);
       this.blur();
       cmpShowAcceptanceFeedback('usd');
     }
@@ -2806,7 +2806,7 @@ function initComparativeSimulator() {
 
   usdInput.addEventListener('blur', function () {
     const val = cmpParseBrNumber(this.value);
-    this.value = cmpFormatBr(val, 2);
+    this.value = cmpFormatBr(val, 0);
     cmpShowAcceptanceFeedback('usd');
   });
 
