@@ -272,7 +272,8 @@ p { font-size: 18px; line-height: 1.6; }
 .cmp-currency-select svg{width:14px;height:14px;opacity:.6}
 .cmp-amount-input-wrapper{position:relative;}
 .cmp-amount-input-wrapper::before,
-.cmp-editable-wrap::before{
+.cmp-editable-wrap::before,
+.cmp-spread-wrapper::before{
   content:'✎';
   position:absolute;
   top:8px;
@@ -1298,18 +1299,18 @@ footer {
 <section class="comparison-section" id="comparacao-custos">
   <div class="container">
     <div class="comparison-grid">
-      <div class="comparison-copy">
+      <div class="comparison-copy scroll-reveal" style="transition-delay:0ms;">
         <h2 class="comparison-title">Seus pagamentos cross-border estão custando mais do que deveriam.</h2>
         <p>Quando você paga armadores, fornecedores de frete e parceiros internacionais, bancos tradicionais e provedores de câmbio costumam cobrar pesado em cada transação.</p>
         <p>Muitos operadores logísticos não percebem quanto estão perdendo com spreads ocultos, altas taxas de processamento e tecnologia cambial defasada. A cada semana, milhares em custos desnecessários ficam sobre a mesa.</p>
       </div>
       <div class="comparison-cards">
-        <div class="comp-card">
+        <div class="comp-card scroll-reveal" style="transition-delay:150ms;">
           <div class="comp-kicker">Bancos tradicionais e provedores</div>
           <div class="comp-value">4,5%</div>
           <div class="comp-note">Custo médio por transação</div>
         </div>
-        <div class="comp-card tensec">
+        <div class="comp-card tensec scroll-reveal" style="transition-delay:300ms;">
           <div class="comp-kicker">Com Tecnologia e Arquitetura Tensec</div>
           <div class="comp-value">2,5%</div>
           <div class="comp-note">Custo médio por transação</div>
